@@ -3,8 +3,8 @@
 Fábrica de vídeos tácticos de **@antesdelos90**: guion → animación → YouTube, con revisión de Miguel.
 
 ## Cómo funciona
-1. **Propuestas.** Cada lunes Claude investiga y abre un Pull Request con 5 vídeos nuevos en `queue/` (spec + metadatos), en estado `draft`.
-2. **Revisión (Miguel).** Revisas el PR. Para aprobar un vídeo, cambia `"status": "draft"` por `"approved"` en su `meta.json` (o pídeselo a Claude) y haz merge.
+1. **Propuestas.** Cada lunes Claude mira las estadísticas, investiga y abre un Pull Request con 5 vídeos nuevos en `queue/` y una hoja de fotogramas de cada uno en `previews/`.
+2. **Revisión (Miguel).** Miras las hojas y el resumen del PR. Si te gusta, **Merge** = aprobado. Si quieres cambios, déjalos como comentario en el PR o pídeselos a Claude. Para quitar un vídeo, bórralo del PR o pon `"status": "draft"`.
 3. **Publicación (automática).** `publish.yml` valida, renderiza y sube cada vídeo aprobado como privado programado (`publish_at`). YouTube lo hace público a esa hora.
 4. **Vigilancia (automática, cada 6 h).** `monitor.yml` comprueba que cada vídeo se procesó y se publicó, y descarga las estadísticas a `data/report.md`. Si algo falla, GitHub te manda un email.
 5. **Mejora.** Claude lee `data/metrics.json` cada semana y ajusta temas, duración y ganchos.
