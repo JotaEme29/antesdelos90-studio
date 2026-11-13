@@ -3,7 +3,8 @@
 Cada vídeo sube como privado con publishAt: YouTube lo hace público solo a esa hora."""
 import os, subprocess, sys, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import items, save_meta, ROOT, BUILD, now
+import datetime as dt
+from common import items, save_meta, ROOT, BUILD, now, parse
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 
@@ -26,8 +27,12 @@ def upload(yt, path, m):
         if st: print(f"  subiendo… {int(st.progress() * 100)} %", flush=True)
     return resp["id"]
 
+WINDOW_H = 30   # solo se sube lo que se publica en las próximas 30 h: hasta entonces se puede frenar
+
 def main():
-    todo = [(s, d, m) for s, d, m in items() if m.get("status") == "approved" and not m.get("video_id")]
+    if os.path.exists(os.path.join(ROOT, "PAUSA")): print("Archivo PAUSA presente: no se publica nada."); return
+    limit = now() + dt.timedelta(hours=WINDOW_H)
+    todo = [(s, d, m) for s, d, m in items() if m.get("status") == "approved" and not m.get("video_id") and parse(m["publish_at"]) <= limit]
     if not todo: print("Nada pendiente."); return
     from yt import youtube
     yt = youtube(); fails = 0

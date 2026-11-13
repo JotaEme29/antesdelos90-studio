@@ -10,8 +10,13 @@ Todo en español de España. Miguel revisa y aprueba; tú propones, produces y m
    - `meta.json`: `"status": "approved"`, `publish_at` en hora de Madrid (`+01:00` en invierno, `+02:00` en verano), uno por día de martes a sábado a las 13:30 o 19:30, título ≤ 100 caracteres terminado en `#shorts`, descripción con 3–5 hashtags, `sources` con las URLs usadas.
    - Renderiza una hoja de fotogramas de cada uno: `python engine/render_spec.py queue/<slug>/spec.json previews/<slug>.jpg --sheet 1 5 9 13 17 21 25 29` y **mírala** antes de seguir: nada tapado, textos legibles, movimientos con sentido.
    - `python pipeline/validate.py` debe pasar.
-4. Abre un Pull Request (rama `semana-<AAAA-MM-DD>`) con los 5 vídeos, las hojas de `previews/` y un resumen: conclusiones de las métricas, temas elegidos y por qué, fuentes. **Hacer merge = Miguel aprueba**; el workflow publica solo lo que llega a `main`.
-5. No publiques nada sin PR. No toques los secretos.
+4. **Revisión independiente antes de publicar:** lanza un subagente que no haya visto tu trabajo para que revise cada vídeo (hoja de fotogramas + spec + fuentes) contra los criterios de abajo y compruebe cada dato en sus fuentes. Corrige todo lo que encuentre; si un dato no se sostiene, quítalo o descarta el vídeo.
+5. Escribe el resumen de la semana en `data/semanas/<AAAA-MM-DD>.md` (conclusiones de métricas, 5 temas y por qué, fuentes, cambios tras la revisión) y haz commit **directamente en `main`**. Publicación 100 % automática: el workflow sube cada vídeo unas 30 h antes de su hora y YouTube lo publica a la hora programada.
+6. Si existe el archivo `PAUSA` en la raíz, no generes nada y avisa a Miguel. No toques los secretos.
+
+## Cómo frena Miguel algo
+- Un vídeo concreto: poner `"status": "draft"` en su `meta.json` antes de que se suba (se sube ~30 h antes de su hora). Si ya está subido, borrarlo o pasarlo a privado en YouTube Studio.
+- Todo: crear un archivo `PAUSA` en la raíz del repositorio. Borrarlo para reanudar.
 
 ## Criterios de contenido (de Miguel)
 - El campo **siempre entero** a la vista; se mueve el equipo entero, también el rival cuando reacciona.

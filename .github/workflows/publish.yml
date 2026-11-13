@@ -4,7 +4,8 @@ on:
     branches: [main]
     paths: ["queue/**"]
   schedule:
-    - cron: "17 6 * * *"        # cada día 06:17 UTC por si algo quedó pendiente
+    - cron: "17 6 * * *"        # cada día 06:17 UTC: sube lo que se publica en las próximas 30 h
+    - cron: "17 16 * * *"       # y a las 16:17 UTC, por si algo falló por la mañana
   workflow_dispatch: {}
 concurrency: { group: youtube, cancel-in-progress: false }
 permissions: { contents: write }

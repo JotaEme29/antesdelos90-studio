@@ -3,9 +3,9 @@
 Fábrica de vídeos tácticos de **@antesdelos90**: guion → animación → YouTube, con revisión de Miguel.
 
 ## Cómo funciona
-1. **Propuestas.** Cada lunes Claude mira las estadísticas, investiga y abre un Pull Request con 5 vídeos nuevos en `queue/` y una hoja de fotogramas de cada uno en `previews/`.
-2. **Revisión (Miguel).** Miras las hojas y el resumen del PR. Si te gusta, **Merge** = aprobado. Si quieres cambios, déjalos como comentario en el PR o pídeselos a Claude. Para quitar un vídeo, bórralo del PR o pon `"status": "draft"`.
-3. **Publicación (automática).** `publish.yml` valida, renderiza y sube cada vídeo aprobado como privado programado (`publish_at`). YouTube lo hace público a esa hora.
+1. **Producción (automática, cada lunes).** Claude mira las estadísticas, investiga, crea 5 vídeos en `queue/` con su hoja de fotogramas en `previews/`, los hace revisar por un segundo agente y los sube a `main` con un resumen en `data/semanas/`.
+2. **Freno (opcional, Miguel).** Para parar un vídeo: `"status": "draft"` en su `meta.json` antes de que se suba (~30 h antes de su hora). Para parar todo: crea un archivo `PAUSA` en la raíz.
+3. **Publicación (automática).** `publish.yml` corre dos veces al día: valida, renderiza y sube los vídeos aprobados que se publican en las próximas 30 h, como privados programados (`publish_at`). YouTube los hace públicos a esa hora.
 4. **Vigilancia (automática, cada 6 h).** `monitor.yml` comprueba que cada vídeo se procesó y se publicó, y descarga las estadísticas a `data/report.md`. Si algo falla, GitHub te manda un email.
 5. **Mejora.** Claude lee `data/metrics.json` cada semana y ajusta temas, duración y ganchos.
 
