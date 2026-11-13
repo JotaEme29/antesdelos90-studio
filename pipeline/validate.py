@@ -28,7 +28,7 @@ def check(slug, d, m):
                 if not m.get("voice"): e.append("spec con voz: pon \"voice\": true también en meta.json")
                 if len(" ".join(s.get("script", [])).split()) > 230: e.append("guion de más de ~230 palabras: pasaría de 3 min (límite de Shorts)")
             elif s["end"] + s.get("endcard", {}).get("dur", 3) > 60: e.append("un Short sin voz debe durar menos de 60 s")
-    elif not os.path.isfile(os.path.join(d, "video.mp4")): e.append("formato long: falta video.mp4 en la carpeta")
+    elif not os.path.isfile(os.path.join(d, "video.mp4")): e.append("formato long/file: falta video.mp4 en la carpeta")
     return e
 bad = 0
 for slug, d, m in items():

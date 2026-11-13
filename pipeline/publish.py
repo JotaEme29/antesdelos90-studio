@@ -59,7 +59,7 @@ def main():
     for slug, d, m in todo:
         print("→", slug)
         try:
-            path = os.path.join(d, "video.mp4") if m.get("format") == "long" else render(slug, d, voice=bool(m.get("voice")))
+            path = os.path.join(d, "video.mp4") if m.get("format") in ("long", "file") else render(slug, d, voice=bool(m.get("voice")))
             vid = upload(yt, path, m)
             thumb = os.path.join(d, "thumbnail.jpg")
             if m.get("format") == "long" and os.path.isfile(thumb):
