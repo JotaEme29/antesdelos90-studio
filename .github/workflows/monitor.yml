@@ -1,0 +1,34 @@
+name: Vigilar y medir
+on:
+  schedule:
+    - cron: "43 */6 * * *"      # cada 6 horas
+  workflow_dispatch: {}
+concurrency: { group: youtube, cancel-in-progress: false }
+permissions: { contents: write }
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+      YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+      YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11", cache: pip }
+      - run: pip install -r requirements.txt
+      - name: Comprobar vídeos
+        id: check
+        continue-on-error: true
+        run: python pipeline/check.py
+      - name: Estadísticas
+        run: python pipeline/analytics.py
+      - name: Guardar
+        run: |
+          git config user.name "antesdelos90-bot"; git config user.email "actions@users.noreply.github.com"
+          git add data queue && git commit -m "Estadísticas $(date -u +%F)" || echo "sin cambios"
+          git pull --rebase && git push
+      - name: Avisar si hubo problemas
+        if: steps.check.outcome == 'failure'
+        run: echo "::error::Hay vídeos con problemas, mira el paso 'Comprobar vídeos'" && exit 1

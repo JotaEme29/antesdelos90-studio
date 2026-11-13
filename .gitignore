@@ -1,0 +1,6 @@
+build/
+__pycache__/
+*.part.mp4
+client_secret*.json
+token*.json
+.env
