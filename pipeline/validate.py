@@ -3,7 +3,7 @@
 import json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import items, parse, now, ROOT
-STATES = {"draft", "approved", "scheduled", "published", "failed"}
+STATES = {"draft", "awaiting_voice", "approved", "scheduled", "published", "failed"}
 def check(slug, d, m):
     e = []
     if m.get("status") not in STATES: e.append(f"status inválido: {m.get('status')}")
@@ -12,7 +12,7 @@ def check(slug, d, m):
     if "<" in t or ">" in t: e.append("el título no puede llevar < ni >")
     if len(m.get("description", "")) > 5000: e.append("descripción de más de 5000 caracteres")
     if sum(len(x) + 1 for x in m.get("tags", [])) > 480: e.append("etiquetas: más de 480 caracteres en total")
-    if m.get("status") == "approved":
+    if m.get("status") == "approved" and not m.get("voice"):
         try:
             if parse(m["publish_at"]) <= now(): e.append("publish_at ya ha pasado")
         except Exception: e.append("publish_at falta o no es una fecha ISO (2026-11-15T13:30:00+01:00)")
@@ -23,7 +23,11 @@ def check(slug, d, m):
             s = json.load(open(sp))
             if len(s["team"]["base"]) != 11 or len(s["team"]["nums"]) != 11: e.append("team.base y team.nums deben tener 11 jugadores")
             if not os.path.isfile(os.path.join(ROOT, s["music"])): e.append(f"no existe la música {s['music']}")
-            if s["end"] + s.get("endcard", {}).get("dur", 3) > 60: e.append("un Short debe durar menos de 60 s")
+            if s.get("voice"):
+                if not s.get("script"): e.append("vídeo con voz sin 'script'")
+                if not m.get("voice"): e.append("spec con voz: pon \"voice\": true también en meta.json")
+                if len(" ".join(s.get("script", [])).split()) > 230: e.append("guion de más de ~230 palabras: pasaría de 3 min (límite de Shorts)")
+            elif s["end"] + s.get("endcard", {}).get("dur", 3) > 60: e.append("un Short sin voz debe durar menos de 60 s")
     elif not os.path.isfile(os.path.join(d, "video.mp4")): e.append("formato long: falta video.mp4 en la carpeta")
     return e
 bad = 0

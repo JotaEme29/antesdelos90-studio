@@ -8,11 +8,24 @@ from common import items, save_meta, ROOT, BUILD, now, parse
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 
-def render(slug, d):
+def render(slug, d, voice=False):
     os.makedirs(BUILD, exist_ok=True); out = os.path.join(BUILD, f"{slug}.mp4")
+    if voice: subprocess.run([sys.executable, os.path.join(ROOT, "engine", "voice.py"), d], check=True)
     if not os.path.isfile(out):
         subprocess.run([sys.executable, os.path.join(ROOT, "engine", "render_spec.py"), os.path.join(d, "spec.json"), out], check=True)
     return out
+
+def has_voice(d):
+    sys.path.insert(0, os.path.join(ROOT, "engine")); from voice import find_voice; return find_voice(d) is not None
+
+def next_slot(taken):
+    """Siguiente hueco libre a las 19:30 (Madrid), desde mañana."""
+    from zoneinfo import ZoneInfo
+    tz = ZoneInfo("Europe/Madrid"); day = now().astimezone(tz).date() + dt.timedelta(days=1)
+    while True:
+        cand = dt.datetime.combine(day, dt.time(19, 30), tz)
+        if all(abs((cand - t).total_seconds()) > 3 * 3600 for t in taken): return cand.isoformat()
+        day += dt.timedelta(days=1)
 
 def upload(yt, path, m):
     body = {"snippet": {"title": m["title"], "description": m.get("description", ""), "tags": m.get("tags", []),
@@ -32,6 +45,13 @@ WINDOW_H = 30   # solo se sube lo que se publica en las próximas 30 h: hasta en
 def main():
     if os.path.exists(os.path.join(ROOT, "PAUSA")): print("Archivo PAUSA presente: no se publica nada."); return
     limit = now() + dt.timedelta(hours=WINDOW_H)
+    allm = list(items())
+    taken = [parse(m["publish_at"]) for _, _, m in allm if m.get("publish_at") and m.get("status") in ("approved", "scheduled", "published")]
+    for slug, d, m in allm:                         # vídeos con voz: en cuanto llega la grabación, se programan
+        if m.get("status") == "awaiting_voice" and has_voice(d):
+            if not m.get("publish_at") or parse(m["publish_at"]) < now() + dt.timedelta(hours=3):
+                m["publish_at"] = next_slot(taken); taken.append(parse(m["publish_at"]))
+            m["status"] = "approved"; save_meta(d, m); print(f"voz recibida: {slug} → {m['publish_at']}")
     todo = [(s, d, m) for s, d, m in items() if m.get("status") == "approved" and not m.get("video_id") and parse(m["publish_at"]) <= limit]
     if not todo: print("Nada pendiente."); return
     from yt import youtube
@@ -39,7 +59,7 @@ def main():
     for slug, d, m in todo:
         print("→", slug)
         try:
-            path = os.path.join(d, "video.mp4") if m.get("format") == "long" else render(slug, d)
+            path = os.path.join(d, "video.mp4") if m.get("format") == "long" else render(slug, d, voice=bool(m.get("voice")))
             vid = upload(yt, path, m)
             thumb = os.path.join(d, "thumbnail.jpg")
             if m.get("format") == "long" and os.path.isfile(thumb):

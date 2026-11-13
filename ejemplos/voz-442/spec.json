@@ -1,0 +1,703 @@
+{
+ "voice": true,
+ "kicker": "SISTEMAS DE JUEGO · EP.2",
+ "title": [
+  "El 4-4-2",
+  "explicado"
+ ],
+ "music": "music/okay_for_now-televisions.mp3",
+ "end": "auto",
+ "captions": "auto",
+ "endcard": {
+  "q1": "¿Tu equipo",
+  "q2": "juega 4-4-2?",
+  "dur": 3.0
+ },
+ "keywords": [
+  "4-4-2",
+  "Leicester",
+  "Ranieri",
+  "42%",
+  "Atlético",
+  "Simeone",
+  "rígido",
+  "brilla",
+  "bloque",
+  "espacio",
+  "contra",
+  "horizontal",
+  "moverse",
+  "espalda",
+  "riesgo",
+  "dos",
+  "tres",
+  "Kanté",
+  "juntos"
+ ],
+ "script": [
+  "El 4-4-2. Es el sistema más entrenado en fútbol base, pero no es solo de niños: el Leicester de Ranieri ganó la Premier League con él teniendo solo un 42% de posesión, y el Atlético de Simeone lleva años compitiendo con él. Da seguridad, pero a veces parece rígido.",
+  "Dos líneas de cuatro y dos delanteros. Cada uno sabe dónde está y a quién ayuda. Por eso se entiende tan rápido.",
+  "Sin balón es donde brilla: las dos líneas se juntan, todo el bloque se mueve hacia el balón y por dentro no hay espacio. Un delantero va a ayudar y el otro se queda para la contra.",
+  "Con balón es donde parece rígido, porque todos están en línea y el pase parece horizontal. La solución es moverse: un delantero baja entre líneas, el otro ataca la espalda, y los de banda y los laterales se combinan.",
+  "El riesgo: en el medio solo tienes dos. Contra tres centrocampistas, te superan en número.",
+  "Por eso pide dos mediocentros que corran y lean el juego, como Kanté en aquel Leicester, y dos delanteros que se entiendan. En fútbol base es un gran punto de partida: primero aprenden a defender juntos.",
+  "¿Tu equipo juega 4-4-2? Cuéntame en los comentarios y sígueme."
+ ],
+ "team": {
+  "nums": [
+   1,
+   3,
+   4,
+   5,
+   2,
+   11,
+   6,
+   8,
+   7,
+   9,
+   10
+  ],
+  "base": [
+   [
+    0,
+    6
+   ],
+   [
+    -24,
+    28
+   ],
+   [
+    -8,
+    25
+   ],
+   [
+    8,
+    25
+   ],
+   [
+    24,
+    28
+   ],
+   [
+    -24,
+    48
+   ],
+   [
+    -8,
+    46
+   ],
+   [
+    8,
+    46
+   ],
+   [
+    24,
+    48
+   ],
+   [
+    -7,
+    66
+   ],
+   [
+    7,
+    68
+   ]
+  ],
+  "moves": [
+   {
+    "t": "@las dos líneas se juntan",
+    "dur": 1.4,
+    "to": {
+     "0": [
+      2,
+      8
+     ],
+     "1": [
+      -14,
+      25
+     ],
+     "2": [
+      -2,
+      23
+     ],
+     "3": [
+      10,
+      23
+     ],
+     "4": [
+      22,
+      25
+     ],
+     "5": [
+      -14,
+      37
+     ],
+     "6": [
+      -2,
+      36
+     ],
+     "7": [
+      10,
+      36
+     ],
+     "8": [
+      22,
+      37
+     ],
+     "9": [
+      0,
+      55
+     ],
+     "10": [
+      11,
+      57
+     ]
+    }
+   },
+   {
+    "t": "@un delantero va a ayudar",
+    "dur": 1.0,
+    "to": {
+     "9": [
+      4,
+      45
+     ]
+    }
+   },
+   {
+    "t": "@con balón es donde",
+    "dur": 1.2,
+    "to": {
+     "0": [
+      0,
+      12
+     ],
+     "1": [
+      -26,
+      34
+     ],
+     "2": [
+      -9,
+      32
+     ],
+     "3": [
+      9,
+      32
+     ],
+     "4": [
+      26,
+      34
+     ],
+     "5": [
+      -26,
+      56
+     ],
+     "6": [
+      -9,
+      54
+     ],
+     "7": [
+      9,
+      54
+     ],
+     "8": [
+      26,
+      56
+     ],
+     "9": [
+      -8,
+      76
+     ],
+     "10": [
+      8,
+      76
+     ]
+    }
+   },
+   {
+    "t": "@un delantero baja",
+    "dur": 1.0,
+    "to": {
+     "9": [
+      -3,
+      72
+     ]
+    }
+   },
+   {
+    "t": "@el otro ataca",
+    "dur": 1.0,
+    "to": {
+     "10": [
+      8,
+      94
+     ]
+    }
+   },
+   {
+    "t": "@los de banda",
+    "dur": 1.0,
+    "stagger": 0.3,
+    "to": {
+     "4": [
+      28,
+      76
+     ],
+     "8": [
+      14,
+      70
+     ]
+    }
+   },
+   {
+    "t": "@el riesgo",
+    "dur": 1.0,
+    "to": {
+     "0": [
+      0,
+      6
+     ],
+     "1": [
+      -24,
+      28
+     ],
+     "2": [
+      -8,
+      25
+     ],
+     "3": [
+      8,
+      25
+     ],
+     "4": [
+      24,
+      28
+     ],
+     "5": [
+      -24,
+      48
+     ],
+     "6": [
+      -8,
+      46
+     ],
+     "7": [
+      8,
+      46
+     ],
+     "8": [
+      24,
+      48
+     ],
+     "9": [
+      -7,
+      66
+     ],
+     "10": [
+      7,
+      68
+     ]
+    }
+   },
+   {
+    "t": "@defender juntos",
+    "dur": 1.0,
+    "to": {
+     "1": [
+      -18,
+      25
+     ],
+     "2": [
+      -6,
+      23
+     ],
+     "3": [
+      6,
+      23
+     ],
+     "4": [
+      18,
+      25
+     ],
+     "5": [
+      -18,
+      37
+     ],
+     "6": [
+      -6,
+      36
+     ],
+     "7": [
+      6,
+      36
+     ],
+     "8": [
+      18,
+      37
+     ],
+     "9": [
+      -5,
+      55
+     ],
+     "10": [
+      6,
+      57
+     ]
+    }
+   }
+  ]
+ },
+ "rivals": {
+  "show": "@contra tres",
+  "hide": "@por eso pide",
+  "base": [
+   [
+    -13,
+    52
+   ],
+   [
+    0,
+    56
+   ],
+   [
+    13,
+    52
+   ]
+  ]
+ },
+ "ball": [
+  [
+   0,
+   6
+  ],
+  [
+   "@con balón es donde+0.5",
+   2
+  ],
+  [
+   "@el pase parece horizontal",
+   5
+  ],
+  [
+   "@el pase parece horizontal+0.6",
+   6
+  ],
+  [
+   "@el pase parece horizontal+1.2",
+   7
+  ],
+  [
+   "@el pase parece horizontal+1.8",
+   8
+  ],
+  [
+   "@un delantero baja+0.6",
+   9
+  ],
+  [
+   "@los de banda+0.5",
+   4
+  ],
+  [
+   "@el riesgo",
+   6
+  ]
+ ],
+ "events": [
+  {
+   "type": "pill",
+   "t0": "@fútbol base",
+   "t1": "@el Leicester",
+   "at": [
+    0,
+    40
+   ],
+   "text": "el más entrenado",
+   "col": "white"
+  },
+  {
+   "type": "pill",
+   "t0": "@el Leicester",
+   "t1": "@y el Atlético",
+   "at": [
+    0,
+    40
+   ],
+   "text": "Leicester 2016 · 42 % de posesión",
+   "col": "yellow"
+  },
+  {
+   "type": "pill",
+   "t0": "@y el Atlético",
+   "t1": "@Da seguridad",
+   "at": [
+    0,
+    40
+   ],
+   "text": "Atlético · Simeone",
+   "col": "white"
+  },
+  {
+   "type": "pill",
+   "t0": "@Da seguridad",
+   "t1": "@parece rígido",
+   "at": [
+    0,
+    40
+   ],
+   "text": "seguridad",
+   "col": "green"
+  },
+  {
+   "type": "pill",
+   "t0": "@parece rígido",
+   "t1": "@Dos líneas de cuatro",
+   "at": [
+    0,
+    40
+   ],
+   "text": "¿rígido?",
+   "col": "red"
+  },
+  {
+   "type": "lines",
+   "t0": "@Dos líneas de cuatro",
+   "t1": "@Sin balón es donde",
+   "groups": [
+    [
+     1,
+     2,
+     3,
+     4
+    ],
+    [
+     5,
+     6,
+     7,
+     8
+    ],
+    [
+     9,
+     10
+    ]
+   ]
+  },
+  {
+   "type": "count",
+   "t0": "@Dos líneas de cuatro",
+   "t1": "@Sin balón es donde",
+   "at": [
+    -39.5,
+    27
+   ],
+   "text": "4"
+  },
+  {
+   "type": "count",
+   "t0": "@Dos líneas de cuatro+0.4",
+   "t1": "@Sin balón es donde",
+   "at": [
+    -39.5,
+    47
+   ],
+   "text": "4"
+  },
+  {
+   "type": "count",
+   "t0": "@dos delanteros",
+   "t1": "@Sin balón es donde",
+   "at": [
+    -39.5,
+    67
+   ],
+   "text": "2"
+  },
+  {
+   "type": "lines",
+   "t0": "@las dos líneas se juntan",
+   "t1": "@Con balón es donde",
+   "groups": [
+    [
+     1,
+     2,
+     3,
+     4
+    ],
+    [
+     5,
+     6,
+     7,
+     8
+    ]
+   ]
+  },
+  {
+   "type": "zone",
+   "t0": "@por dentro no hay espacio",
+   "t1": "@un delantero va a ayudar+1",
+   "rect": [
+    -10,
+    26,
+    14,
+    35
+   ],
+   "col": "red"
+  },
+  {
+   "type": "pill",
+   "t0": "@por dentro no hay espacio",
+   "t1": "@un delantero va a ayudar+1",
+   "at": [
+    2,
+    30
+   ],
+   "text": "sin espacio",
+   "col": "red"
+  },
+  {
+   "type": "pill",
+   "t0": "@el otro se queda",
+   "t1": "@Con balón es donde",
+   "at": [
+    11,
+    63
+   ],
+   "text": "la contra",
+   "col": "green"
+  },
+  {
+   "type": "lines",
+   "t0": "@todos están en línea",
+   "t1": "@La solución es moverse",
+   "groups": [
+    [
+     1,
+     2,
+     3,
+     4
+    ],
+    [
+     5,
+     6,
+     7,
+     8
+    ],
+    [
+     9,
+     10
+    ]
+   ],
+   "col": "white",
+   "w": 4
+  },
+  {
+   "type": "pill",
+   "t0": "@el pase parece horizontal",
+   "t1": "@La solución es moverse",
+   "at": [
+    0,
+    62
+   ],
+   "text": "pase horizontal",
+   "col": "red"
+  },
+  {
+   "type": "pill",
+   "t0": "@La solución es moverse",
+   "t1": "@un delantero baja",
+   "at": [
+    0,
+    62
+   ],
+   "text": "moverse",
+   "col": "green"
+  },
+  {
+   "type": "zone",
+   "t0": "@un delantero baja",
+   "t1": "@El riesgo",
+   "rect": [
+    -18,
+    66,
+    18,
+    79
+   ],
+   "col": "yellow"
+  },
+  {
+   "type": "arrow",
+   "t0": "@el otro ataca",
+   "t1": "@El riesgo",
+   "from": [
+    8,
+    76
+   ],
+   "to": [
+    8,
+    94
+   ]
+  },
+  {
+   "type": "ring",
+   "t0": "@en el medio solo",
+   "t1": "@Por eso pide",
+   "players": [
+    6,
+    7
+   ],
+   "col": "yellow"
+  },
+  {
+   "type": "pill",
+   "t0": "@Contra tres",
+   "t1": "@Por eso pide",
+   "at": [
+    0,
+    62
+   ],
+   "text": "2 contra 3",
+   "col": "red",
+   "size": 40
+  },
+  {
+   "type": "ring",
+   "t0": "@dos mediocentros",
+   "t1": "@En fútbol base",
+   "players": [
+    6,
+    7
+   ],
+   "col": "green"
+  },
+  {
+   "type": "pill",
+   "t0": "@como Kanté",
+   "t1": "@En fútbol base",
+   "at": [
+    0,
+    40
+   ],
+   "text": "Kanté · Leicester",
+   "col": "white"
+  },
+  {
+   "type": "lines",
+   "t0": "@defender juntos",
+   "groups": [
+    [
+     1,
+     2,
+     3,
+     4
+    ],
+    [
+     5,
+     6,
+     7,
+     8
+    ]
+   ],
+   "col": "green"
+  }
+ ]
+}

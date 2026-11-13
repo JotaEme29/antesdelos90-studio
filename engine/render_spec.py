@@ -16,6 +16,12 @@ Formato del spec (todas las posiciones en metros: x = ancho (-34..34), z = largo
   "captions": [[t, "Texto con *clave*|segunda línea"], ...],
   "events": [ {"type": "lines"|"count"|"arrow"|"zone"|"pill"|"ring", "t0": .., "t1": .., ...} ]
 }
+
+VÍDEO CON VOZ (Miguel graba el guion):
+  "voice": true, "script": ["párrafo 1", ...], "keywords": ["4-4-2", "Simeone", ...], "captions": "auto", "end": "auto"
+  Cualquier tiempo puede ser una frase del guion: "@los laterales suben" (inicio de esa frase en la voz),
+  con desfase opcional: "@los laterales suben+0.4". Los subtítulos salen solos de la transcripción.
+  Necesita build/<slug>/voice.wav y words.json (los crea engine/voice.py).
 """
 import json, math, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -23,9 +29,77 @@ from flat import *
 COL = {"yellow": YEL, "white": WHT, "green": GRN, "red": RED, "navy": NAVY, "grey": GREY}
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+import re, unicodedata, subprocess
+def norm(w):
+    w = unicodedata.normalize("NFD", w.lower()); w = "".join(c for c in w if unicodedata.category(c) != "Mn")
+    return re.sub(r"[^a-z0-9%\-]", "", w)
+
+class Voice:
+    """Alinea el GUION con la voz grabada: cada palabra del guion recibe su tiempo.
+    Los subtítulos salen del guion (no de la transcripción, que puede equivocarse)."""
+    OFF = 0.35
+    def __init__(s, build_dir, script):
+        import difflib
+        s.sw = " ".join(script).split()                              # palabras del guion, tal cual
+        wj = os.path.join(build_dir, "words.json"); s.wav = os.path.join(build_dir, "voice.wav")
+        if not os.path.isfile(wj):                                   # aún sin grabación: tiempos estimados (solo para previsualizar)
+            rate = 2.6; s.W = [{"w": w, "s": i / rate, "e": (i + .85) / rate} for i, w in enumerate(s.sw)]; s.dur = len(s.sw) / rate; s.wav = None
+        else:
+            s.W = json.load(open(wj))
+            s.dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", s.wav], capture_output=True, text=True).stdout)
+        a = [norm(w) for w in s.sw]; b = [norm(w["w"]) for w in s.W]
+        T = [None] * len(a)
+        for m in difflib.SequenceMatcher(None, a, b, autojunk=False).get_matching_blocks():
+            for k in range(m.size): T[m.a + k] = (s.W[m.b + k]["s"], s.W[m.b + k]["e"])
+        known = [i for i, x in enumerate(T) if x]                    # interpolar las que no casan
+        if not known: T = [(s.dur * i / len(a), s.dur * (i + 1) / len(a)) for i in range(len(a))]
+        else:
+            for i in range(len(a)):
+                if T[i]: continue
+                lo = max([k for k in known if k < i], default=None); hi = min([k for k in known if k > i], default=None)
+                t0 = T[lo][1] if lo is not None else 0.0; t1 = T[hi][0] if hi is not None else s.dur
+                n0 = lo if lo is not None else -1; n1 = hi if hi is not None else len(a)
+                f0 = (i - n0) / (n1 - n0); f1 = (i + 1 - n0) / (n1 - n0); T[i] = (t0 + (t1 - t0) * f0 - .0, t0 + (t1 - t0) * f1)
+        s.T = T; s.na = a
+    def at(s, phrase):
+        q = [norm(x) for x in phrase.split() if norm(x)]
+        for i in range(len(s.na) - len(q) + 1):
+            if s.na[i:i + len(q)] == q: return s.OFF + s.T[i][0]
+        best, bi = 0, None
+        for i in range(len(s.na)):
+            k = sum(1 for j, t in enumerate(q) if i + j < len(s.na) and s.na[i + j] == t)
+            if k > best: best, bi = k, i
+        if bi is None or best < max(1, int(len(q) * .6)): raise SystemExit(f"Frase no encontrada en el guion: {phrase!r}")
+        return s.OFF + s.T[bi][0]
+    def captions(s, keywords):
+        keys = {norm(k) for k in keywords}; out, cur, c0 = [], [], None
+        for i, w in enumerate(s.sw):
+            if c0 is None: c0 = s.T[i][0]
+            cur.append(w); gap = (s.T[i + 1][0] - s.T[i][1]) if i + 1 < len(s.sw) else 9
+            if len(" ".join(cur)) > 26 or w[-1:] in ".,;:?!" or gap > .35 or i == len(s.sw) - 1:
+                txt = " ".join(("*" + x + "*") if norm(x) in keys else x for x in cur).replace("* *", " ")
+                out.append([s.OFF + c0, txt]); cur, c0 = [], None
+        return out
+
 class Spec:
     def __init__(s, path):
-        s.d = json.load(open(path)); d = s.d
+        s.d = json.load(open(path)); d = s.d; s.voice = None
+        if d.get("voice"):
+            slug = os.path.basename(os.path.dirname(os.path.abspath(path)))
+            s.voice = Voice(os.path.join(ROOT, "build", slug), d.get("script", []))
+            def res(v):
+                if isinstance(v, str) and v.startswith("@"):
+                    m = re.match(r"@(.*?)([+-]\d+(?:\.\d+)?)?$", v); return s.voice.at(m.group(1).strip()) + float(m.group(2) or 0)
+                return v
+            def walk(o):
+                if isinstance(o, dict): return {k: (res(v) if k in ("t", "t0", "t1", "show", "hide") else walk(v)) for k, v in o.items()}
+                if isinstance(o, list): return [walk(x) for x in o]
+                return o
+            d = s.d = walk(d)
+            d["ball"] = [[res(t), h] for t, h in d.get("ball", [])]
+            if d.get("end", "auto") == "auto": d["end"] = s.voice.dur + Voice.OFF + 0.4
+            if d.get("captions") == "auto": d["captions"] = s.voice.captions(d.get("keywords", []))
+            else: d["captions"] = [[res(t), c] for t, c in d.get("captions", [])]
         s.end = float(d["end"]); s.ec = d.get("endcard", {}); s.total = s.end + float(s.ec.get("dur", 3.0))
         s.team = d["team"]; s.riv = d.get("rivals"); s.cam = Cam(56, 166, 52.5, 0, 850)
         s.caps = sorted(d.get("captions", []), key=lambda c: c[0]); s.ev = d.get("events", [])
@@ -63,7 +137,7 @@ class Spec:
             if e["type"] == "zone":
                 a = s.fade(e, t) * ((.75 + .25 * math.sin(t * 6)) if e.get("pulse") else 1)
                 zone(b, cam, *e["rect"], COL[e.get("col", "yellow")], a)
-        if s.riv and t >= s.riv.get("show", 0):                        # capa 2: rivales
+        if s.riv and s.riv.get("show", 0) <= t < s.riv.get("hide", 1e9):                        # capa 2: rivales
             k = ease((t - s.riv.get("show", 0)) / .5); R_ = s.positions(s.riv, t)
             for x, z in sorted(R_, key=lambda p: -p[1]): disc(b, cam, x, z, RIVC, None, r=2.7, a=k)
         for e in E:                                                    # capa 3: líneas, flechas
@@ -104,4 +178,14 @@ if __name__ == "__main__":
     if "--sheet" in sys.argv:
         ts = [float(x) for x in sys.argv[sys.argv.index("--sheet") + 1:]]; sheet(sp.compose, ts, out)
     elif out.endswith(".jpg"): thumbnail(sp, out)
-    else: encode(sp.compose, sp.total, out, os.path.join(ROOT, sp.d["music"]), sp.d.get("music_gain", -5))
+    else:
+        music = os.path.join(ROOT, sp.d["music"])
+        if sp.voice:
+            if not sp.voice.wav: raise SystemExit("Falta la grabación: ejecuta antes engine/voice.py (o sube voz.m4a)")
+            mix = out + ".mix.wav"; T = sp.total
+            fc = (f"[0:a]adelay={int(Voice.OFF * 1000)},apad,atrim=0:{T:.2f},asplit=2[v][k];"
+                  f"[1:a]aloop=loop=-1:size=2e9,atrim=0:{T:.2f},volume=-9dB,afade=t=in:d=0.6,afade=t=out:st={T - 2:.2f}:d=2[m];"
+                  f"[m][k]sidechaincompress=threshold=0.03:ratio=5:attack=20:release=900[d];[v][d]amix=inputs=2:normalize=0[a]")
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", sp.voice.wav, "-i", music, "-filter_complex", fc, "-map", "[a]", "-ar", "48000", mix], check=True)
+            encode(sp.compose, T, out, mix, 0); os.remove(mix)
+        else: encode(sp.compose, sp.total, out, music, sp.d.get("music_gain", -5))
