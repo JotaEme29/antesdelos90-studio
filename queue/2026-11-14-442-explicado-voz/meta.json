@@ -1,5 +1,5 @@
 {
-  "status": "awaiting_voice",
+  "status": "scheduled",
   "voice": true,
   "format": "short",
   "publish_at": "2026-11-14T19:30:00+01:00",
@@ -18,5 +18,7 @@
     "https://www.premierleague.com/en/news/2748139",
     "https://www.socios.com/atletico-de-madrid-2026-27-season/"
   ],
-  "video_id": null
+  "video_id": "ACrl01Jm3QI",
+  "uploaded_at": "2026-11-13T15:41:26+00:00",
+  "error": null
 }
