@@ -56,6 +56,13 @@ def main():
     if not todo: print("Nada pendiente."); return
     from yt import youtube
     yt = youtube(); fails = 0
+    want = os.environ.get("YT_CHANNEL_HANDLE", "@antesdelos90").lower()
+    ch = yt.channels().list(part="snippet", mine=True).execute().get("items", [])
+    got = [(c["snippet"].get("customUrl", "") or "").lower() for c in ch]
+    if want not in got:
+        names = ", ".join(f"{c['snippet'].get('title')} ({c['snippet'].get('customUrl')})" for c in ch) or "ninguno"
+        print(f"PARADO: la autorización es del canal {names}, no de {want}. No se sube nada. Repite get_token.py eligiendo {want}.")
+        sys.exit(1)
     for slug, d, m in todo:
         print("→", slug)
         try:
