@@ -1,5 +1,5 @@
 {
-  "status": "approved",
+  "status": "scheduled",
   "format": "file",
   "publish_at": "2026-11-15T19:30:00+01:00",
   "title": "El 4-3-3 no existe: mismo dibujo, otro fútbol #shorts",
@@ -20,5 +20,7 @@
     "https://www.uefa.com/uefachampionsleague/news/newsid=2253548.html",
     "https://blogarchive.statsbomb.com/articles/soccer/messi-moments-with-alex-delmas-real-madrid-2-6-barcelona-may-2009/"
   ],
-  "video_id": null
+  "video_id": "wvfFVvlTyF0",
+  "uploaded_at": "2026-11-14T13:34:27+00:00",
+  "error": null
 }
