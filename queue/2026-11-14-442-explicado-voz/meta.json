@@ -1,5 +1,5 @@
 {
-  "status": "scheduled",
+  "status": "published",
   "voice": true,
   "format": "short",
   "publish_at": "2026-11-14T19:30:00+01:00",
@@ -21,5 +21,6 @@
   "video_id": "XK35KKryEUI",
   "uploaded_at": "2026-11-13T16:10:59+00:00",
   "error": null,
-  "wrong_channel_video_id": "ACrl01Jm3QI"
+  "wrong_channel_video_id": "ACrl01Jm3QI",
+  "published_at": "2026-11-14T22:43:35+00:00"
 }
