@@ -1,5 +1,8 @@
 name: Vigilar y medir
 on:
+  push:
+    branches: [main]
+    paths: ["pipeline/analytics.py", "pipeline/check.py", ".github/workflows/monitor.yml"]
   schedule:
     - cron: "43 */6 * * *"      # cada 6 horas
   workflow_dispatch: {}
