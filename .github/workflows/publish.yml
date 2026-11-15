@@ -29,6 +29,13 @@ jobs:
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
         run: python pipeline/publish.py
+      - name: Dejar los vídeos para TikTok
+        if: always()
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          ls build/*.mp4 >/dev/null 2>&1 || exit 0
+          gh release view tiktok >/dev/null 2>&1 || gh release create tiktok --title "Vídeos para TikTok" --notes "Vídeos renderizados para subir a TikTok. El texto de cada uno está en queue/<vídeo>/tiktok.txt."
+          gh release upload tiktok build/*.mp4 --clobber
       - name: Guardar estado
         if: always()
         run: |
