@@ -1,5 +1,5 @@
 {
-  "status": "approved",
+  "status": "scheduled",
   "format": "file",
   "publish_at": "2026-11-16T19:30:00+01:00",
   "title": "El 4-2-3-1 explicado por un entrenador #shorts",
@@ -15,5 +15,7 @@
     "Kompany",
     "Emery"
   ],
-  "video_id": null
+  "video_id": "ZFRsHNqIHhU",
+  "uploaded_at": "2026-11-15T13:58:20+00:00",
+  "error": null
 }
