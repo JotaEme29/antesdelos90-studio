@@ -1,5 +1,5 @@
 {
-  "status": "scheduled",
+  "status": "published",
   "format": "file",
   "publish_at": "2026-11-15T13:30:00+01:00",
   "title": "4-2-3-1: el lateral, ¿por fuera o por dentro? #shorts",
@@ -16,5 +16,6 @@
   ],
   "video_id": "XXCkhduOdcU",
   "uploaded_at": "2026-11-14T13:34:24+00:00",
-  "error": null
+  "error": null,
+  "published_at": "2026-11-15T19:05:39+00:00"
 }

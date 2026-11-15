@@ -1,5 +1,5 @@
 {
-  "status": "scheduled",
+  "status": "published",
   "format": "file",
   "publish_at": "2026-11-15T19:30:00+01:00",
   "title": "El 4-3-3 no existe: mismo dibujo, otro fútbol #shorts",
@@ -22,5 +22,6 @@
   ],
   "video_id": "wvfFVvlTyF0",
   "uploaded_at": "2026-11-14T13:34:27+00:00",
-  "error": null
+  "error": null,
+  "published_at": "2026-11-15T19:05:39+00:00"
 }
