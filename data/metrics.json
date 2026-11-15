@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-15T19:05:39+00:00",
+  "updated": "2026-11-15T21:16:04+00:00",
   "channel": {
     "viewCount": "36",
     "subscriberCount": "1",
@@ -11,25 +11,37 @@
       "slug": "2026-11-14-4231-estructura-226",
       "id": "fHijWa6IBfs",
       "title": "La estructura 2-2-6 del 4-2-3-1 explicada #shorts",
-      "published_at": "2026-11-14T18:28:26+00:00"
+      "published_at": "2026-11-14T18:28:26+00:00",
+      "live_views": 204,
+      "live_likes": 2,
+      "live_comments": 0
     },
     {
       "slug": "2026-11-14-442-explicado-voz",
       "id": "XK35KKryEUI",
       "title": "El 4-4-2 explicado: seguridad o rigidez #shorts",
-      "published_at": "2026-11-14T22:43:35+00:00"
+      "published_at": "2026-11-14T22:43:35+00:00",
+      "live_views": 359,
+      "live_likes": 7,
+      "live_comments": 0
     },
     {
       "slug": "2026-11-15-4231-laterales",
       "id": "XXCkhduOdcU",
       "title": "4-2-3-1: el lateral, ¿por fuera o por dentro? #shorts",
-      "published_at": "2026-11-15T19:05:39+00:00"
+      "published_at": "2026-11-15T19:05:39+00:00",
+      "live_views": 239,
+      "live_likes": 2,
+      "live_comments": 0
     },
     {
       "slug": "2026-11-15-433-no-existe",
       "id": "wvfFVvlTyF0",
       "title": "El 4-3-3 no existe: mismo dibujo, otro fútbol #shorts",
-      "published_at": "2026-11-15T19:05:39+00:00"
+      "published_at": "2026-11-15T19:05:39+00:00",
+      "live_views": 80,
+      "live_likes": 1,
+      "live_comments": 0
     }
   ]
 }
