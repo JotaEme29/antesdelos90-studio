@@ -1,6 +1,6 @@
-# Informe @antesdelos90 · 2026-11-14
+# Informe @antesdelos90 · 2026-11-15
 
-Suscriptores: 0 · Vistas totales: 6 · Vídeos: 3
+Suscriptores: 0 · Vistas totales: 18 · Vídeos: 3
 
 | Vídeo | Vistas | Min vistos | Dur. media (s) | % visto | Likes | Coment. | Subs |
 |---|---|---|---|---|---|---|---|
