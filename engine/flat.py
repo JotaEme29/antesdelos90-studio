@@ -119,12 +119,23 @@ def progress(b, t, T):
     d.rounded_rectangle((x0, y, x0 + (x1 - x0) * min(1, t / T), y + 6 * SS), radius=3 * SS, fill=(*YEL, 230))
 def handle(b, txt="@antesdelos90"):
     ImageDraw.Draw(b, "RGBA").text(((W - 60) * SS, 395 * SS), txt, font=font(26, "SemiBold"), fill=(255, 255, 255, 120), anchor="rm")
+_MARK = None
+def _mark():
+    global _MARK
+    if _MARK is None:
+        p = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "brand", "mark_transparente.png")
+        _MARK = Image.open(p).convert("RGBA") if os.path.isfile(p) else False
+    return _MARK
 def endcard(b, u, q1, q2):
     d = ImageDraw.Draw(b, "RGBA"); d.rectangle((0, 0, W2, H2), fill=(*BG, int(235 * ease(u / .4))))
+    m = _mark(); k0 = back((u - .05) / .4)
+    if m and k0 > .05:                                     # logo del canal encima de la pregunta
+        w = int(300 * SS * k0); h = int(w * m.height / m.width); mm = m.resize((w, h), Image.LANCZOS)
+        b.paste(mm, (int(W2 / 2 - w / 2), int(600 * SS - h / 2)), mm)
     k = back((u - .1) / .4)
     if k > .05:
-        d.text((W2 / 2, 820 * SS), q1, font=font(84 * k, "Black"), fill=WHT, anchor="mm")
-        d.text((W2 / 2, 915 * SS), q2, font=font(84 * k, "Black"), fill=YEL, anchor="mm")
+        d.text((W2 / 2, 830 * SS), q1, font=font(84 * k, "Black"), fill=WHT, anchor="mm")
+        d.text((W2 / 2, 925 * SS), q2, font=font(84 * k, "Black"), fill=YEL, anchor="mm")
     k2 = back((u - .35) / .4)
     if k2 > .05:
         w, h = 620 * SS * k2, 110 * SS * k2; d.rounded_rectangle((W2 / 2 - w / 2, 1080 * SS - h / 2, W2 / 2 + w / 2, 1080 * SS + h / 2), radius=h / 2, fill=YEL)
