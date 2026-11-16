@@ -1,5 +1,5 @@
 {
-  "status": "approved",
+  "status": "scheduled",
   "format": "short",
   "publish_at": "2026-11-17T13:30:00+01:00",
   "title": "Salida de tres: por qué el pivote baja entre centrales #shorts",
@@ -17,5 +17,8 @@
   "sources": [
     "https://www.premierleague.com/en/news/4243851",
     "https://www.premierleague.com/en/news/4244123"
-  ]
+  ],
+  "video_id": "dCSiaVOFfxU",
+  "uploaded_at": "2026-11-16T10:04:08+00:00",
+  "error": null
 }
