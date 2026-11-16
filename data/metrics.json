@@ -1,10 +1,10 @@
 {
-  "updated": "2026-11-16T07:13:48+00:00",
+  "updated": "2026-11-16T22:29:37+00:00",
   "channel": {
-    "viewCount": "1233",
+    "viewCount": "1748",
     "subscriberCount": "4",
     "hiddenSubscriberCount": false,
-    "videoCount": "5"
+    "videoCount": "6"
   },
   "videos": [
     {
@@ -12,7 +12,15 @@
       "id": "fHijWa6IBfs",
       "title": "La estructura 2-2-6 del 4-2-3-1 explicada #shorts",
       "published_at": "2026-11-14T18:28:26+00:00",
-      "live_views": 408,
+      "views": 16,
+      "estimatedMinutesWatched": 2,
+      "averageViewDuration": 15,
+      "averageViewPercentage": 49.19,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0,
+      "subscribersGained": 0,
+      "live_views": 434,
       "live_likes": 5,
       "live_comments": 0
     },
@@ -21,8 +29,16 @@
       "id": "XK35KKryEUI",
       "title": "El 4-4-2 explicado: seguridad o rigidez #shorts",
       "published_at": "2026-11-14T22:43:35+00:00",
-      "live_views": 590,
-      "live_likes": 13,
+      "views": 10,
+      "estimatedMinutesWatched": 5,
+      "averageViewDuration": 54,
+      "averageViewPercentage": 71.38,
+      "likes": 1,
+      "comments": 0,
+      "shares": 0,
+      "subscribersGained": 0,
+      "live_views": 635,
+      "live_likes": 14,
       "live_comments": 0
     },
     {
@@ -30,7 +46,7 @@
       "id": "XXCkhduOdcU",
       "title": "4-2-3-1: el lateral, ¿por fuera o por dentro? #shorts",
       "published_at": "2026-11-15T19:05:39+00:00",
-      "live_views": 431,
+      "live_views": 473,
       "live_likes": 4,
       "live_comments": 0
     },
@@ -39,8 +55,17 @@
       "id": "wvfFVvlTyF0",
       "title": "El 4-3-3 no existe: mismo dibujo, otro fútbol #shorts",
       "published_at": "2026-11-15T19:05:39+00:00",
-      "live_views": 223,
+      "live_views": 228,
       "live_likes": 4,
+      "live_comments": 0
+    },
+    {
+      "slug": "2026-11-16-4231-explicado",
+      "id": "ZFRsHNqIHhU",
+      "title": "El 4-2-3-1 explicado por un entrenador #shorts",
+      "published_at": "2026-11-16T22:29:36+00:00",
+      "live_views": 3,
+      "live_likes": 1,
       "live_comments": 0
     }
   ]
