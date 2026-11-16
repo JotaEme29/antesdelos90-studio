@@ -1,0 +1,713 @@
+{
+ "voice": true,
+ "kicker": "4-1-4-1 · SISTEMAS DE JUEGO",
+ "title": [
+  "El 4-1-4-1",
+  "explicado"
+ ],
+ "music": "music/glitter_and_gold-patrick_patrikios.mp3",
+ "end": "auto",
+ "captions": "auto",
+ "endcard": {
+  "q1": "¿Quién es el pivote",
+  "q2": "de tu equipo?",
+  "dur": 3.0
+ },
+ "keywords": [
+  "4-1-4-1",
+  "pivote",
+  "Guardiola",
+  "Klopp",
+  "compacto",
+  "juntas",
+  "clave",
+  "Corta",
+  "cubre",
+  "protege",
+  "agujero",
+  "4-3-3",
+  "solo",
+  "riesgo",
+  "presionan"
+ ],
+ "script": [
+  "El 4-1-4-1. Un solo pivote delante de los centrales, cuatro por delante y un delantero. Guardiola y Klopp lo han usado en la Premier, sobre todo sin balón, y es un sistema muy compacto.",
+  "Sin balón es donde mejor se ve: dos líneas de cuatro muy juntas y, entre ellas, el pivote tapando el espacio delante de los centrales.",
+  "Ese pivote es la pieza clave. Corta, cubre y protege. Si sale de su sitio, se abre un agujero justo delante de la defensa.",
+  "Con balón, los dos interiores suben y el dibujo se convierte en un 4-3-3, con los extremos abiertos y el delantero fijando.",
+  "El riesgo: el delantero puede quedarse muy solo, y si te presionan arriba, sacar el balón cuesta más.",
+  "En fútbol base es muy útil para enseñar a ocupar bien el campo: cada línea sabe a quién protege.",
+  "¿Quién es el pivote de tu equipo? Cuéntamelo en comentarios y sígueme."
+ ],
+ "team": {
+  "nums": [
+   1,
+   3,
+   4,
+   5,
+   2,
+   6,
+   11,
+   8,
+   10,
+   7,
+   9
+  ],
+  "base": [
+   [
+    0,
+    6
+   ],
+   [
+    -24,
+    28
+   ],
+   [
+    -8,
+    25
+   ],
+   [
+    8,
+    25
+   ],
+   [
+    24,
+    28
+   ],
+   [
+    0,
+    38
+   ],
+   [
+    -24,
+    52
+   ],
+   [
+    -9,
+    52
+   ],
+   [
+    9,
+    52
+   ],
+   [
+    24,
+    52
+   ],
+   [
+    0,
+    70
+   ]
+  ],
+  "moves": [
+   {
+    "t": "@Sin balón es donde",
+    "dur": 1.6,
+    "to": {
+     "0": [
+      0,
+      5
+     ],
+     "1": [
+      -18,
+      22
+     ],
+     "2": [
+      -6,
+      21
+     ],
+     "3": [
+      6,
+      21
+     ],
+     "4": [
+      18,
+      22
+     ],
+     "5": [
+      0,
+      31
+     ],
+     "6": [
+      -18,
+      40
+     ],
+     "7": [
+      -6,
+      40
+     ],
+     "8": [
+      6,
+      40
+     ],
+     "9": [
+      18,
+      40
+     ],
+     "10": [
+      0,
+      56
+     ]
+    }
+   },
+   {
+    "t": "@Corta, cubre",
+    "dur": 0.9,
+    "to": {
+     "5": [
+      -3,
+      32
+     ]
+    }
+   },
+   {
+    "t": "@Si sale de su",
+    "dur": 1.0,
+    "to": {
+     "5": [
+      -12,
+      30
+     ]
+    }
+   },
+   {
+    "t": "@Con balón, los dos",
+    "dur": 1.8,
+    "to": {
+     "0": [
+      0,
+      10
+     ],
+     "1": [
+      -27,
+      44
+     ],
+     "2": [
+      -10,
+      26
+     ],
+     "3": [
+      10,
+      26
+     ],
+     "4": [
+      27,
+      44
+     ],
+     "5": [
+      0,
+      40
+     ],
+     "6": [
+      -29,
+      74
+     ],
+     "7": [
+      -11,
+      66
+     ],
+     "8": [
+      11,
+      66
+     ],
+     "9": [
+      29,
+      74
+     ],
+     "10": [
+      0,
+      84
+     ]
+    }
+   },
+   {
+    "t": "@si te presionan arriba",
+    "dur": 1.4,
+    "to": {
+     "0": [
+      0,
+      6
+     ],
+     "1": [
+      -24,
+      28
+     ],
+     "2": [
+      -8,
+      25
+     ],
+     "3": [
+      8,
+      25
+     ],
+     "4": [
+      24,
+      28
+     ],
+     "5": [
+      0,
+      38
+     ],
+     "6": [
+      -24,
+      52
+     ],
+     "7": [
+      -9,
+      52
+     ],
+     "8": [
+      9,
+      52
+     ],
+     "9": [
+      24,
+      52
+     ],
+     "10": [
+      0,
+      70
+     ]
+    }
+   },
+   {
+    "t": "@En fútbol base",
+    "dur": 1.4,
+    "to": {
+     "0": [
+      0,
+      5
+     ],
+     "1": [
+      -18,
+      22
+     ],
+     "2": [
+      -6,
+      21
+     ],
+     "3": [
+      6,
+      21
+     ],
+     "4": [
+      18,
+      22
+     ],
+     "5": [
+      0,
+      31
+     ],
+     "6": [
+      -18,
+      40
+     ],
+     "7": [
+      -6,
+      40
+     ],
+     "8": [
+      6,
+      40
+     ],
+     "9": [
+      18,
+      40
+     ],
+     "10": [
+      0,
+      56
+     ]
+    }
+   }
+  ]
+ },
+ "rivals": {
+  "show": "@Sin balón es donde",
+  "hide": "@En fútbol base",
+  "base": [
+   [
+    -10,
+    49
+   ],
+   [
+    10,
+    49
+   ],
+   [
+    0,
+    48
+   ]
+  ],
+  "moves": [
+   {
+    "t": "@Corta, cubre",
+    "dur": 0.9,
+    "to": {
+     "0": [
+      -8,
+      37
+     ]
+    }
+   },
+   {
+    "t": "@Si sale de su",
+    "dur": 1.0,
+    "to": {
+     "0": [
+      -20,
+      33
+     ],
+     "2": [
+      4,
+      31
+     ]
+    }
+   },
+   {
+    "t": "@Con balón, los dos",
+    "dur": 1.8,
+    "to": {
+     "0": [
+      -18,
+      58
+     ],
+     "1": [
+      18,
+      58
+     ],
+     "2": [
+      0,
+      73
+     ]
+    }
+   },
+   {
+    "t": "@si te presionan arriba",
+    "dur": 1.4,
+    "to": {
+     "0": [
+      -11,
+      31
+     ],
+     "1": [
+      11,
+      31
+     ],
+     "2": [
+      0,
+      44
+     ]
+    }
+   }
+  ]
+ },
+ "ball": [
+  [
+   0,
+   2
+  ],
+  [
+   "@Sin balón es donde",
+   [
+    0,
+    62
+   ]
+  ],
+  [
+   "@Ese pivote es",
+   [
+    0,
+    48
+   ]
+  ],
+  [
+   "@Corta, cubre",
+   [
+    -8,
+    37
+   ]
+  ],
+  [
+   "@Si sale de su",
+   [
+    -20,
+    33
+   ]
+  ],
+  [
+   "@se abre un agujero",
+   [
+    4,
+    31
+   ]
+  ],
+  [
+   "@Con balón, los dos",
+   5
+  ],
+  [
+   "@los extremos abiertos",
+   9
+  ],
+  [
+   "@el delantero fijando",
+   10
+  ],
+  [
+   "@si te presionan arriba",
+   0
+  ]
+ ],
+ "events": [
+  {
+   "type": "lines",
+   "t0": "@Un solo pivote",
+   "t1": "@Sin balón es donde",
+   "groups": [
+    [
+     1,
+     2,
+     3,
+     4
+    ],
+    [
+     6,
+     7,
+     8,
+     9
+    ]
+   ]
+  },
+  {
+   "type": "ring",
+   "t0": "@Un solo pivote",
+   "t1": "@Sin balón es donde",
+   "players": [
+    5
+   ],
+   "col": "yellow"
+  },
+  {
+   "type": "count",
+   "t0": "@Un solo pivote",
+   "t1": "@Sin balón es donde",
+   "at": [
+    -39.5,
+    27
+   ],
+   "text": "4"
+  },
+  {
+   "type": "count",
+   "t0": "@Un solo pivote",
+   "t1": "@Sin balón es donde",
+   "at": [
+    -39.5,
+    38
+   ],
+   "text": "1"
+  },
+  {
+   "type": "count",
+   "t0": "@cuatro por delante",
+   "t1": "@Sin balón es donde",
+   "at": [
+    -39.5,
+    52
+   ],
+   "text": "4"
+  },
+  {
+   "type": "count",
+   "t0": "@un delantero",
+   "t1": "@Sin balón es donde",
+   "at": [
+    -39.5,
+    70
+   ],
+   "text": "1"
+  },
+  {
+   "type": "pill",
+   "t0": "@Guardiola y Klopp",
+   "t1": "@Sin balón es donde",
+   "at": [
+    0,
+    96
+   ],
+   "text": "Guardiola · Klopp",
+   "col": "white"
+  },
+  {
+   "type": "lines",
+   "t0": "@dos líneas de cuatro",
+   "t1": "@Con balón, los dos",
+   "groups": [
+    [
+     1,
+     2,
+     3,
+     4
+    ],
+    [
+     6,
+     7,
+     8,
+     9
+    ]
+   ],
+   "col": "green"
+  },
+  {
+   "type": "zone",
+   "t0": "@el pivote tapando",
+   "t1": "@Si sale de su",
+   "rect": [
+    -14,
+    25,
+    14,
+    36
+   ],
+   "col": "green"
+  },
+  {
+   "type": "ring",
+   "t0": "@Ese pivote es",
+   "t1": "@Si sale de su",
+   "players": [
+    5
+   ],
+   "col": "green"
+  },
+  {
+   "type": "zone",
+   "t0": "@se abre un agujero",
+   "t1": "@Con balón, los dos",
+   "rect": [
+    -6,
+    25,
+    14,
+    36
+   ],
+   "col": "red",
+   "pulse": true
+  },
+  {
+   "type": "pill",
+   "t0": "@se abre un agujero",
+   "t1": "@Con balón, los dos",
+   "at": [
+    4,
+    14
+   ],
+   "text": "agujero",
+   "col": "red",
+   "size": 34
+  },
+  {
+   "type": "arrow",
+   "t0": "@los dos interiores suben",
+   "t1": "@El riesgo",
+   "from": [
+    -6,
+    40
+   ],
+   "to": [
+    -11,
+    66
+   ],
+   "col": "white"
+  },
+  {
+   "type": "arrow",
+   "t0": "@los dos interiores suben",
+   "t1": "@El riesgo",
+   "from": [
+    6,
+    40
+   ],
+   "to": [
+    11,
+    66
+   ],
+   "col": "white"
+  },
+  {
+   "type": "lines",
+   "t0": "@se convierte en un",
+   "t1": "@El riesgo",
+   "groups": [
+    [
+     7,
+     5,
+     8
+    ]
+   ],
+   "col": "yellow"
+  },
+  {
+   "type": "pill",
+   "t0": "@se convierte en un",
+   "t1": "@El riesgo",
+   "at": [
+    0,
+    95
+   ],
+   "text": "4-3-3",
+   "size": 38
+  },
+  {
+   "type": "ring",
+   "t0": "@El riesgo",
+   "t1": "@si te presionan arriba",
+   "players": [
+    10
+   ],
+   "col": "red"
+  },
+  {
+   "type": "pill",
+   "t0": "@quedarse muy solo",
+   "t1": "@si te presionan arriba",
+   "at": [
+    0,
+    96
+   ],
+   "text": "delantero solo",
+   "col": "red",
+   "size": 32
+  },
+  {
+   "type": "pill",
+   "t0": "@si te presionan arriba",
+   "t1": "@En fútbol base",
+   "at": [
+    -18,
+    12
+   ],
+   "text": "salida más difícil",
+   "col": "red",
+   "size": 32
+  },
+  {
+   "type": "lines",
+   "t0": "@En fútbol base",
+   "groups": [
+    [
+     1,
+     2,
+     3,
+     4
+    ],
+    [
+     6,
+     7,
+     8,
+     9
+    ]
+   ],
+   "col": "green"
+  }
+ ]
+}

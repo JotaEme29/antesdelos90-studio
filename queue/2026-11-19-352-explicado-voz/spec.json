@@ -1,0 +1,863 @@
+{
+ "voice": true,
+ "kicker": "3-5-2 · SISTEMAS DE JUEGO",
+ "title": [
+  "El 3-5-2",
+  "explicado"
+ ],
+ "music": "music/glitter_and_gold-patrick_patrikios.mp3",
+ "end": "auto",
+ "captions": "auto",
+ "endcard": {
+  "q1": "¿Has jugado",
+  "q2": "con tres centrales?",
+  "dur": 3.0
+ },
+ "keywords": [
+  "3-5-2",
+  "Conte",
+  "Juventus",
+  "Inter",
+  "Inzaghi",
+  "Champions",
+  "carrileros",
+  "extremos",
+  "cinco",
+  "seguridad",
+  "libre",
+  "tres",
+  "fija",
+  "banda",
+  "riesgo",
+  "espalda",
+  "recorrido",
+  "anchura",
+  "coberturas"
+ ],
+ "script": [
+  "El 3-5-2. Tres centrales, cinco en el medio y dos delanteros. Conte lo usó en la Juventus que ganó tres ligas seguidas, y el Inter de Inzaghi llegó con él a dos finales de Champions en tres años.",
+  "La clave son los carrileros. Con balón, suben tanto que son casi extremos. Sin balón, bajan y se forma una línea de cinco.",
+  "Atrás, los tres centrales dan seguridad: si el rival presiona con dos, siempre sale uno libre. Y por dentro tienes tres centrocampistas para tener el balón.",
+  "Arriba, dos delanteros juntos: uno fija a los centrales y el otro cae a la banda o baja a combinar.",
+  "El riesgo está en la espalda de los carrileros. Si pierdes el balón con ellos arriba, el rival ataca ese espacio y el central de ese lado tiene que salir a la banda.",
+  "Por eso pide carrileros con mucho recorrido y centrales que sepan defender abiertos. En fútbol base ayuda a entender la anchura y las coberturas.",
+  "¿Has jugado alguna vez con tres centrales? Cuéntamelo en comentarios y sígueme."
+ ],
+ "team": {
+  "nums": [
+   1,
+   2,
+   4,
+   5,
+   3,
+   7,
+   6,
+   8,
+   10,
+   9,
+   11
+  ],
+  "base": [
+   [
+    0,
+    6
+   ],
+   [
+    -14,
+    24
+   ],
+   [
+    0,
+    22
+   ],
+   [
+    14,
+    24
+   ],
+   [
+    -28,
+    44
+   ],
+   [
+    28,
+    44
+   ],
+   [
+    0,
+    38
+   ],
+   [
+    -11,
+    50
+   ],
+   [
+    11,
+    50
+   ],
+   [
+    -6,
+    72
+   ],
+   [
+    6,
+    72
+   ]
+  ],
+  "moves": [
+   {
+    "t": "@Con balón, suben",
+    "dur": 1.6,
+    "to": {
+     "0": [
+      0,
+      10
+     ],
+     "1": [
+      -17,
+      30
+     ],
+     "2": [
+      0,
+      27
+     ],
+     "3": [
+      17,
+      30
+     ],
+     "4": [
+      -30,
+      76
+     ],
+     "5": [
+      30,
+      76
+     ],
+     "6": [
+      0,
+      44
+     ],
+     "7": [
+      -10,
+      56
+     ],
+     "8": [
+      10,
+      56
+     ],
+     "9": [
+      -6,
+      82
+     ],
+     "10": [
+      6,
+      82
+     ]
+    }
+   },
+   {
+    "t": "@Sin balón, bajan",
+    "dur": 1.6,
+    "to": {
+     "0": [
+      0,
+      5
+     ],
+     "1": [
+      -12,
+      22
+     ],
+     "2": [
+      0,
+      21
+     ],
+     "3": [
+      12,
+      22
+     ],
+     "4": [
+      -27,
+      24
+     ],
+     "5": [
+      27,
+      24
+     ],
+     "6": [
+      0,
+      34
+     ],
+     "7": [
+      -11,
+      38
+     ],
+     "8": [
+      11,
+      38
+     ],
+     "9": [
+      -6,
+      54
+     ],
+     "10": [
+      6,
+      54
+     ]
+    }
+   },
+   {
+    "t": "@Atrás, los tres centrales",
+    "dur": 1.4,
+    "to": {
+     "0": [
+      0,
+      6
+     ],
+     "1": [
+      -18,
+      22
+     ],
+     "2": [
+      0,
+      18
+     ],
+     "3": [
+      18,
+      22
+     ],
+     "4": [
+      -29,
+      46
+     ],
+     "5": [
+      29,
+      46
+     ],
+     "6": [
+      0,
+      36
+     ],
+     "7": [
+      -11,
+      48
+     ],
+     "8": [
+      11,
+      48
+     ],
+     "9": [
+      -6,
+      72
+     ],
+     "10": [
+      6,
+      72
+     ]
+    }
+   },
+   {
+    "t": "@siempre sale uno libre",
+    "dur": 1.0,
+    "to": {
+     "3": [
+      20,
+      32
+     ]
+    }
+   },
+   {
+    "t": "@Arriba, dos delanteros",
+    "dur": 1.4,
+    "to": {
+     "0": [
+      0,
+      10
+     ],
+     "1": [
+      -17,
+      30
+     ],
+     "2": [
+      0,
+      27
+     ],
+     "3": [
+      17,
+      30
+     ],
+     "4": [
+      -30,
+      76
+     ],
+     "5": [
+      30,
+      76
+     ],
+     "6": [
+      0,
+      44
+     ],
+     "7": [
+      -10,
+      56
+     ],
+     "8": [
+      10,
+      56
+     ],
+     "9": [
+      -6,
+      82
+     ],
+     "10": [
+      6,
+      82
+     ]
+    }
+   },
+   {
+    "t": "@uno fija",
+    "dur": 1.0,
+    "to": {
+     "9": [
+      -3,
+      88
+     ]
+    }
+   },
+   {
+    "t": "@el otro cae",
+    "dur": 1.2,
+    "to": {
+     "10": [
+      20,
+      70
+     ]
+    }
+   },
+   {
+    "t": "@el central de ese lado",
+    "dur": 1.2,
+    "to": {
+     "3": [
+      27,
+      42
+     ],
+     "2": [
+      8,
+      26
+     ],
+     "1": [
+      -6,
+      28
+     ],
+     "5": [
+      29,
+      60
+     ],
+     "8": [
+      16,
+      48
+     ],
+     "6": [
+      6,
+      34
+     ]
+    }
+   },
+   {
+    "t": "@Por eso pide",
+    "dur": 1.4,
+    "to": {
+     "0": [
+      0,
+      6
+     ],
+     "1": [
+      -14,
+      24
+     ],
+     "2": [
+      0,
+      22
+     ],
+     "3": [
+      14,
+      24
+     ],
+     "4": [
+      -28,
+      44
+     ],
+     "5": [
+      28,
+      44
+     ],
+     "6": [
+      0,
+      38
+     ],
+     "7": [
+      -11,
+      50
+     ],
+     "8": [
+      11,
+      50
+     ],
+     "9": [
+      -6,
+      72
+     ],
+     "10": [
+      6,
+      72
+     ]
+    }
+   },
+   {
+    "t": "@En fútbol base",
+    "dur": 1.4,
+    "to": {
+     "0": [
+      0,
+      5
+     ],
+     "1": [
+      -12,
+      22
+     ],
+     "2": [
+      0,
+      21
+     ],
+     "3": [
+      12,
+      22
+     ],
+     "4": [
+      -27,
+      24
+     ],
+     "5": [
+      27,
+      24
+     ],
+     "6": [
+      0,
+      34
+     ],
+     "7": [
+      -11,
+      38
+     ],
+     "8": [
+      11,
+      38
+     ],
+     "9": [
+      -6,
+      54
+     ],
+     "10": [
+      6,
+      54
+     ]
+    }
+   }
+  ]
+ },
+ "rivals": {
+  "show": "@si el rival presiona",
+  "hide": "@Por eso pide",
+  "base": [
+   [
+    -7,
+    30
+   ],
+   [
+    7,
+    30
+   ]
+  ],
+  "moves": [
+   {
+    "t": "@siempre sale uno libre",
+    "dur": 1.0,
+    "to": {
+     "1": [
+      11,
+      26
+     ]
+    }
+   },
+   {
+    "t": "@Arriba, dos delanteros",
+    "dur": 1.4,
+    "to": {
+     "0": [
+      -15,
+      38
+     ],
+     "1": [
+      15,
+      38
+     ]
+    }
+   },
+   {
+    "t": "@Si pierdes el balón",
+    "dur": 1.0,
+    "to": {
+     "1": [
+      26,
+      58
+     ],
+     "0": [
+      2,
+      44
+     ]
+    }
+   },
+   {
+    "t": "@el rival ataca ese espacio",
+    "dur": 1.4,
+    "to": {
+     "1": [
+      27,
+      44
+     ],
+     "0": [
+      2,
+      38
+     ]
+    }
+   }
+  ]
+ },
+ "ball": [
+  [
+   0,
+   2
+  ],
+  [
+   "@son casi extremos",
+   5
+  ],
+  [
+   "@Sin balón, bajan",
+   [
+    0,
+    70
+   ]
+  ],
+  [
+   "@Atrás, los tres centrales",
+   2
+  ],
+  [
+   "@siempre sale uno libre",
+   3
+  ],
+  [
+   "@tres centrocampistas",
+   6
+  ],
+  [
+   "@uno fija",
+   9
+  ],
+  [
+   "@el otro cae+0.6",
+   10
+  ],
+  [
+   "@Si pierdes el balón",
+   [
+    26,
+    58
+   ]
+  ],
+  [
+   "@el rival ataca ese espacio+0.3",
+   [
+    27,
+    44
+   ]
+  ],
+  [
+   "@Por eso pide",
+   2
+  ]
+ ],
+ "events": [
+  {
+   "type": "lines",
+   "t0": "@Tres centrales",
+   "t1": "@La clave son",
+   "groups": [
+    [
+     1,
+     2,
+     3
+    ],
+    [
+     4,
+     7,
+     6,
+     8,
+     5
+    ],
+    [
+     9,
+     10
+    ]
+   ]
+  },
+  {
+   "type": "count",
+   "t0": "@Tres centrales",
+   "t1": "@La clave son",
+   "at": [
+    -39.5,
+    23
+   ],
+   "text": "3"
+  },
+  {
+   "type": "count",
+   "t0": "@cinco en el medio",
+   "t1": "@La clave son",
+   "at": [
+    -39.5,
+    46
+   ],
+   "text": "5"
+  },
+  {
+   "type": "count",
+   "t0": "@dos delanteros",
+   "t1": "@La clave son",
+   "at": [
+    -39.5,
+    72
+   ],
+   "text": "2"
+  },
+  {
+   "type": "pill",
+   "t0": "@Conte lo usó",
+   "t1": "@y el Inter",
+   "at": [
+    0,
+    96
+   ],
+   "text": "Juventus · Conte",
+   "col": "white"
+  },
+  {
+   "type": "pill",
+   "t0": "@y el Inter",
+   "t1": "@La clave son",
+   "at": [
+    0,
+    96
+   ],
+   "text": "Inter · Inzaghi",
+   "col": "white"
+  },
+  {
+   "type": "ring",
+   "t0": "@La clave son",
+   "t1": "@Atrás, los tres centrales",
+   "players": [
+    4,
+    5
+   ],
+   "col": "white"
+  },
+  {
+   "type": "arrow",
+   "t0": "@Con balón, suben",
+   "t1": "@Sin balón, bajan",
+   "from": [
+    -28,
+    44
+   ],
+   "to": [
+    -30,
+    76
+   ],
+   "col": "white"
+  },
+  {
+   "type": "arrow",
+   "t0": "@Con balón, suben",
+   "t1": "@Sin balón, bajan",
+   "from": [
+    28,
+    44
+   ],
+   "to": [
+    30,
+    76
+   ],
+   "col": "white"
+  },
+  {
+   "type": "lines",
+   "t0": "@se forma una línea",
+   "t1": "@Atrás, los tres centrales",
+   "groups": [
+    [
+     4,
+     1,
+     2,
+     3,
+     5
+    ]
+   ],
+   "col": "green"
+  },
+  {
+   "type": "count",
+   "t0": "@se forma una línea",
+   "t1": "@Atrás, los tres centrales",
+   "at": [
+    -39.5,
+    23
+   ],
+   "text": "5",
+   "col": "green"
+  },
+  {
+   "type": "pill",
+   "t0": "@si el rival presiona",
+   "t1": "@Y por dentro",
+   "at": [
+    -21,
+    10
+   ],
+   "text": "3 contra 2",
+   "col": "green",
+   "size": 36
+  },
+  {
+   "type": "ring",
+   "t0": "@tres centrocampistas",
+   "t1": "@Arriba, dos delanteros",
+   "players": [
+    6,
+    7,
+    8
+   ],
+   "col": "yellow"
+  },
+  {
+   "type": "lines",
+   "t0": "@tres centrocampistas",
+   "t1": "@Arriba, dos delanteros",
+   "groups": [
+    [
+     7,
+     6,
+     8,
+     7
+    ]
+   ]
+  },
+  {
+   "type": "arrow",
+   "t0": "@el otro cae",
+   "t1": "@El riesgo está",
+   "from": [
+    6,
+    82
+   ],
+   "to": [
+    20,
+    70
+   ]
+  },
+  {
+   "type": "zone",
+   "t0": "@El riesgo está",
+   "t1": "@Por eso pide",
+   "rect": [
+    -34,
+    30,
+    -20,
+    62
+   ],
+   "col": "red",
+   "pulse": true
+  },
+  {
+   "type": "zone",
+   "t0": "@El riesgo está",
+   "t1": "@Por eso pide",
+   "rect": [
+    20,
+    30,
+    34,
+    62
+   ],
+   "col": "red",
+   "pulse": true
+  },
+  {
+   "type": "pill",
+   "t0": "@El riesgo está",
+   "t1": "@Por eso pide",
+   "at": [
+    0,
+    68
+   ],
+   "text": "espalda del carrilero",
+   "col": "red",
+   "size": 32
+  },
+  {
+   "type": "arrow",
+   "t0": "@el central de ese lado",
+   "t1": "@Por eso pide",
+   "from": [
+    18,
+    30
+   ],
+   "to": [
+    27,
+    42
+   ],
+   "col": "white"
+  },
+  {
+   "type": "ring",
+   "t0": "@carrileros con mucho",
+   "t1": "@En fútbol base",
+   "players": [
+    4,
+    5
+   ],
+   "col": "green"
+  },
+  {
+   "type": "lines",
+   "t0": "@En fútbol base",
+   "groups": [
+    [
+     4,
+     1,
+     2,
+     3,
+     5
+    ],
+    [
+     7,
+     6,
+     8
+    ]
+   ],
+   "col": "green"
+  }
+ ]
+}
