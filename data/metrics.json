@@ -1,8 +1,8 @@
 {
-  "updated": "2026-11-16T22:29:37+00:00",
+  "updated": "2026-11-17T08:27:32+00:00",
   "channel": {
-    "viewCount": "1748",
-    "subscriberCount": "4",
+    "viewCount": "1783",
+    "subscriberCount": "5",
     "hiddenSubscriberCount": false,
     "videoCount": "6"
   },
@@ -20,7 +20,7 @@
       "comments": 0,
       "shares": 0,
       "subscribersGained": 0,
-      "live_views": 434,
+      "live_views": 439,
       "live_likes": 5,
       "live_comments": 0
     },
@@ -37,7 +37,7 @@
       "comments": 0,
       "shares": 0,
       "subscribersGained": 0,
-      "live_views": 635,
+      "live_views": 647,
       "live_likes": 14,
       "live_comments": 0
     },
@@ -46,7 +46,7 @@
       "id": "XXCkhduOdcU",
       "title": "4-2-3-1: el lateral, ¿por fuera o por dentro? #shorts",
       "published_at": "2026-11-15T19:05:39+00:00",
-      "live_views": 473,
+      "live_views": 480,
       "live_likes": 4,
       "live_comments": 0
     },
@@ -55,7 +55,7 @@
       "id": "wvfFVvlTyF0",
       "title": "El 4-3-3 no existe: mismo dibujo, otro fútbol #shorts",
       "published_at": "2026-11-15T19:05:39+00:00",
-      "live_views": 228,
+      "live_views": 230,
       "live_likes": 4,
       "live_comments": 0
     },
@@ -64,8 +64,8 @@
       "id": "ZFRsHNqIHhU",
       "title": "El 4-2-3-1 explicado por un entrenador #shorts",
       "published_at": "2026-11-16T22:29:36+00:00",
-      "live_views": 3,
-      "live_likes": 1,
+      "live_views": 12,
+      "live_likes": 2,
       "live_comments": 0
     }
   ]
