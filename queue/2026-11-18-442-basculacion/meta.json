@@ -1,5 +1,5 @@
 {
-  "status": "approved",
+  "status": "scheduled",
   "format": "short",
   "publish_at": "2026-11-18T19:30:00+01:00",
   "title": "Basculación en el 4-4-2: todo el bloque hacia el balón #shorts",
@@ -17,5 +17,8 @@
   "sources": [
     "https://www.premierleague.com/en/news/2748139",
     "https://www.premierleague.com/en/news/4243851"
-  ]
+  ],
+  "video_id": "9kxm4cxKrcs",
+  "uploaded_at": "2026-11-17T16:06:27+00:00",
+  "error": null
 }
