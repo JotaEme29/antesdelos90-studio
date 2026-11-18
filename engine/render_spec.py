@@ -14,6 +14,7 @@ Formato del spec (todas las posiciones en metros: x = ancho (-34..34), z = largo
   "rivals": {"show": 13.0, "base": [[x,z]...], "moves": [...]},       # opcional
   "ball":   [[t, i], ...]   # i = índice del jugador que la tiene desde t (pase de 0,55 s); o [t, [x,z]]
   "captions": [[t, "Texto con *clave*|segunda línea"], ...],
+  "hook": {"text": "¿Te presionan con dos|y no sales?", "t1": 2.0},   # gancho grande en el primer segundo (obligatorio)
   "events": [ {"type": "lines"|"count"|"arrow"|"zone"|"pill"|"ring"|"card", "t0": .., "t1": .., ...} ]
   card: {"type": "card", "t0": .., "t1": .., "items": [{"name": "INTER", "sub": "Simone Inzaghi", "colors": ["#0068A8", "#111111"]}]}
         fichas de equipo/entrenador: escudo GENÉRICO con los colores del club (nunca el escudo oficial ni fotos)
@@ -111,7 +112,7 @@ class Spec:
             if d.get("captions") == "auto": d["captions"] = s.voice.captions(d.get("keywords", []))
             else: d["captions"] = [[res(t), c] for t, c in d.get("captions", [])]
         s.end = float(d["end"]); s.ec = d.get("endcard", {}); s.total = max(s.end + float(s.ec.get("dur", 3.0)), getattr(s, "vend", 0) + 1.2)
-        s.team = d["team"]; s.riv = d.get("rivals"); s.cam = Cam(56, 200, 52.5, 0, 900)
+        s.team = d["team"]; Spec._team = s.team; s.riv = d.get("rivals"); s.cam = Cam(56, 200, 52.5, 0, 900)
         s.caps = sorted(d.get("captions", []), key=lambda c: c[0]); s.ev = d.get("events", [])
         s.ballseq = d.get("ball", [])
     # posiciones: cada movimiento interpola desde donde estaba el jugador al empezar
@@ -124,6 +125,8 @@ class Spec:
             for k, (i, tgt) in enumerate(sorted(m["to"].items(), key=lambda kv: int(kv[0]))):
                 i = int(i); ek = ease((t - m["t"] - st * k) / max(.05, m.get("dur", 1.0))) if st else e
                 P[i] = lerp2(P[i], tuple(tgt), ek)
+        if group is getattr(Spec, "_team", None) and t < 1.1:          # entrada: el equipo se abre desde el centro en el primer segundo
+            e = ease(t / 1.1); P = [lerp2((x * .78, 52.5 + (z - 52.5) * .82), (x, z), e) for x, z in P]
         if wobble: P = [(x + .35 * math.sin(t * 2.2 + i * 1.7), z + .35 * math.cos(t * 1.9 + i * 2.3)) for i, (x, z) in enumerate(P)]
         return P
     def ball(s, t, P):
@@ -174,10 +177,13 @@ class Spec:
         title(b, s.d.get("kicker", ""), *(s.d["title"] + [None])[:2], t, 0); handle(b, s.d.get("handle", "@antesdelos90")); progress(b, t, s.end)
         for e in E:
             if e["type"] == "card": card(b, e["items"], t, e["t0"], e.get("t1"))
+        hk = s.d.get("hook")
+        hk_on = bool(hk) and t < float(hk.get("t1", 2.0))
+        if hk_on: hook(b, hk["text"], t, float(hk.get("t1", 2.0)))
         cur = None
         for c in s.caps:
             if t >= c[0]: cur = c
-        if cur and t < s.end:
+        if cur and t < s.end and not hk_on:
             if len(cur) > 2 and cur[2]: caption_words(b, cur[2], t)
             else: caption(b, cur[1], t, cur[0])
         if t >= s.end: endcard(b, t - s.end, s.ec.get("q1", "¿Y tu equipo?"), s.ec.get("q2", ""))

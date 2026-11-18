@@ -1,6 +1,6 @@
 # El 4-1-4-1 explicado (guion para grabar)
 
-El 4-1-4-1. Un solo pivote delante de los centrales, cuatro por delante y un delantero. Guardiola y Klopp lo han usado en la Premier, sobre todo sin balón, y es un sistema muy compacto.
+¿Se puede sostener a todo un equipo con un único pivote? El 4-1-4-1 lo hace. Un solo pivote delante de los centrales, cuatro por delante y un delantero. Guardiola y Klopp lo han usado en la Premier, sobre todo sin balón, y es un sistema muy compacto.
 
 Sin balón es donde mejor se ve: dos líneas de cuatro muy juntas y, entre ellas, el pivote tapando el espacio delante de los centrales.
 

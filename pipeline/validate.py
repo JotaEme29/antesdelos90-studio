@@ -22,6 +22,8 @@ def check(slug, d, m):
         else:
             s = json.load(open(sp))
             if len(s["team"]["base"]) != 11 or len(s["team"]["nums"]) != 11: e.append("team.base y team.nums deben tener 11 jugadores")
+            if m.get("status") in ("approved", "awaiting_voice") and not (s.get("hook") or {}).get("text"):
+                e.append("falta 'hook' (gancho del primer segundo): {\"text\": \"¿Pregunta corta|segunda línea?\", \"t1\": 2.0}")
             if not os.path.isfile(os.path.join(ROOT, s["music"])): e.append(f"no existe la música {s['music']}")
             if s.get("voice"):
                 if not s.get("script"): e.append("vídeo con voz sin 'script'")

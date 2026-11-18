@@ -124,6 +124,15 @@ def card(b, items, t, t0, t1=None):
             d.text((tx, y - 14 * SS), i["name"], font=fN, fill=(*WHT, a), anchor="lm"); d.text((tx, y + 22 * SS), i["sub"], font=fS, fill=(*YEL, a), anchor="lm")
         else: d.text((tx, y), i["name"], font=fN, fill=(*WHT, a), anchor="lm")
         x += w + gap
+def hook(b, txt, t, t1):
+    """Gancho del primer segundo: frase grande en el centro, sobre el campo. '|' separa líneas; la 2.ª va en amarillo."""
+    if t >= t1: return
+    d = ImageDraw.Draw(b, "RGBA"); out = ease((t1 - t) / .3); pop = .9 + .1 * back(t / .25) if t < .25 else 1.0
+    lines = txt.split("|"); f = font(70 * pop, "Black"); lh = 84 * SS; y0 = 880 * SS - lh * (len(lines) - 1) / 2
+    wmax = max(d.textlength(l, font=f) for l in lines)
+    d.rounded_rectangle((W2 / 2 - wmax / 2 - 40 * SS, y0 - lh / 2 - 26 * SS, W2 / 2 + wmax / 2 + 40 * SS, y0 + lh * (len(lines) - .5) + 26 * SS), radius=28 * SS, fill=(*BG, int(238 * out)))
+    for j, l in enumerate(lines):
+        d.text((W2 / 2, y0 + lh * j), l, font=f, fill=(*(YEL if j % 2 else WHT), int(255 * out)), anchor="mm")
 def caption_words(b, words, t, y=CAP_Y):
     """Subtítulo palabra a palabra: la que suena va en caja amarilla; las clave, en amarillo."""
     d = ImageDraw.Draw(b, "RGBA"); f = font(52, "Black"); sp = d.textlength(" ", font=f); maxw = 860 * SS
@@ -146,7 +155,7 @@ def caption_words(b, words, t, y=CAP_Y):
                 d.text((x, yy), w, font=f, fill=(*(YEL if key else WHT), int(255 * k * (1 if t >= ts else .55))), anchor="lm")
             x += ww + sp
 def title(b, kicker, l1, l2=None, t=9, t0=0):
-    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .4)
+    d = ImageDraw.Draw(b, "RGBA"); k = 1.0                     # visible desde el primer fotograma (nada de fundidos al empezar)
     d.text((W2 / 2, 240 * SS), kicker, font=font(30, "Bold"), fill=(*YEL, int(255 * k)), anchor="mm")
     d.text((W2 / 2, 302 * SS), l1, font=font(64, "Black"), fill=(*WHT, int(255 * k)), anchor="mm")
     if l2: d.text((W2 / 2, 374 * SS), l2, font=font(64, "Black"), fill=(*WHT, int(255 * k)), anchor="mm")

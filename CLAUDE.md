@@ -4,7 +4,7 @@ Canal de táctica de fútbol **@antesdelos90** (YouTube y TikTok) de Miguel, ent
 Todo en español de España. Miguel revisa y aprueba; tú propones, produces y mides.
 
 ## Rutina semanal (tarea programada de los lunes)
-1. Lee `data/metrics.json` y `data/report.md` (si existen): qué vídeos tienen más vistas, % visto y suscriptores ganados. Saca 2–3 conclusiones concretas.
+1. Lee `data/metrics.json`, `data/report.md`, `data/history.csv` y **`data/aprendizajes.md`**. Compara vídeos a la misma edad (columna "Vistas a 24 h"), % visto y suscriptores. Contrasta el experimento de la semana pasada con su resultado y apúntalo en `aprendizajes.md` (qué se probó, qué pasó, qué se mantiene). Elige **un solo cambio nuevo** que probar esta semana (gancho, duración, tema, hora, voz/sin voz…) y anótalo como experimento. Pide a Miguel en el mensaje final el dato "Lo vieron / Lo pasaron" de los vídeos de la semana (solo sale en YouTube Studio).
 2. Decide el **formato según el tema**:
    - **Con la voz de Miguel** (1–2 por semana): sistemas completos, actualidad de equipos/entrenadores, opinión o historia — temas que ganan con explicación y criterio de entrenador. Guion conversacional de 60–75 s (150–190 palabras), nada de listas rígidas, gancho en la primera frase, cierre con pregunta y "sígueme".
    - **Sin voz** (el resto): micro-conceptos de 20–35 s (estructuras, movimientos, roles) que se entienden con animación y subtítulos.
@@ -25,6 +25,9 @@ Todo en español de España. Miguel revisa y aprueba; tú propones, produces y m
 - Todo: crear un archivo `PAUSA` en la raíz del repositorio. Borrarlo para reanudar.
 
 ## Criterios de contenido (de Miguel)
+- **Gancho en el primer segundo** (campo `hook` del spec, obligatorio): pregunta o idea polémica corta, 2 líneas, en el centro. En los vídeos con voz, la **primera frase del guion es esa pregunta** (nunca "El 3-5-2. Tres centrales…"). El 95 % de las vistas viene del feed de Shorts: si no engancha en 1 s, se pasa.
+- Zona segura: nada importante en los ~220 px de arriba ni los ~420 de abajo ni en la columna derecha (ya lo respeta el motor).
+- Equipos y entrenadores que se nombran → ficha `card` (nombre, entrenador y años, escudo genérico con colores del club). Nunca escudos oficiales ni fotos.
 - El campo **siempre entero** a la vista; se mueve el equipo entero, también el rival cuando reacciona.
 - Explicado paso a paso (subtítulos numerados o frases cortas con *clave* resaltada). Sin voz: 20–35 s. Con voz: 60–75 s.
 - Nada de datos inventados ni estadísticas sin fuente. Si un dato no se puede verificar, no va.

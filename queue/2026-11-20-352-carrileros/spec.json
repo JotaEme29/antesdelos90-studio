@@ -564,5 +564,9 @@
    "col": "green",
    "size": 30
   }
- ]
+ ],
+ "hook": {
+  "text": "¿Extremo o defensa?|Los dos",
+  "t1": 2.0
+ }
 }
