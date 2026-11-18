@@ -1,5 +1,5 @@
 {
-  "status": "awaiting_voice",
+  "status": "scheduled",
   "voice": true,
   "format": "short",
   "publish_at": "2026-11-19T19:30:00+01:00",
@@ -26,5 +26,8 @@
   "replaced_video_ids": [
     "RfmOro_p02w",
     "mTi5OGGXk3g"
-  ]
+  ],
+  "video_id": "91Ruq6c4cSw",
+  "uploaded_at": "2026-11-18T13:37:00+00:00",
+  "error": null
 }
