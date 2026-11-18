@@ -1,5 +1,5 @@
 {
-  "status": "scheduled",
+  "status": "published",
   "format": "short",
   "publish_at": "2026-11-18T19:30:00+01:00",
   "title": "Basculación en el 4-4-2: todo el bloque hacia el balón #shorts",
@@ -20,5 +20,6 @@
   ],
   "video_id": "9kxm4cxKrcs",
   "uploaded_at": "2026-11-17T16:06:27+00:00",
-  "error": null
+  "error": null,
+  "published_at": "2026-11-18T20:53:12+00:00"
 }
