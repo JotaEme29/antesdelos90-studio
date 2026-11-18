@@ -25,6 +25,12 @@ def main():
     out = {"updated": now().isoformat(timespec="seconds"), "channel": ch, "videos": []}
     for slug, m in pub:
         out["videos"].append({"slug": slug, "id": m["video_id"], "title": m["title"], "published_at": m.get("published_at"), **rows.get(m["video_id"], {}), **live.get(m["video_id"], {})})
+    pls = []                                          # listas de reproducción del canal y sus vídeos
+    for pl in yt.playlists().list(part="snippet,status,contentDetails", mine=True, maxResults=50).execute().get("items", []):
+        its = yt.playlistItems().list(part="snippet", playlistId=pl["id"], maxResults=50).execute().get("items", [])
+        pls.append({"id": pl["id"], "title": pl["snippet"]["title"], "description": pl["snippet"].get("description", ""), "privacy": pl["status"]["privacyStatus"],
+                    "videos": [{"pos": i["snippet"]["position"], "id": i["snippet"]["resourceId"].get("videoId"), "title": i["snippet"]["title"]} for i in its]})
+    out["playlists"] = pls
     json.dump(out, open(os.path.join(DATA, "metrics.json"), "w"), ensure_ascii=False, indent=2)
     # histórico de vistas para comparar vídeos a la misma edad (no es justo comparar uno de 13 h con otro de 3 días)
     hp = os.path.join(DATA, "history.csv"); new = not os.path.isfile(hp); ts = now()
