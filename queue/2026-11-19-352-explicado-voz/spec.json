@@ -8,11 +8,6 @@
  "music": "music/glitter_and_gold-patrick_patrikios.mp3",
  "end": "auto",
  "captions": "auto",
- "endcard": {
-  "q1": "¿Has jugado",
-  "q2": "con tres centrales?",
-  "dur": 3.0
- },
  "keywords": [
   "3-5-2",
   "Conte",
@@ -644,28 +639,6 @@
    "text": "2"
   },
   {
-   "type": "pill",
-   "t0": "@Conte lo usó",
-   "t1": "@y el Inter",
-   "at": [
-    0,
-    96
-   ],
-   "text": "Juventus · Conte",
-   "col": "white"
-  },
-  {
-   "type": "pill",
-   "t0": "@y el Inter",
-   "t1": "@La clave son",
-   "at": [
-    0,
-    96
-   ],
-   "text": "Inter · Inzaghi",
-   "col": "white"
-  },
-  {
    "type": "ring",
    "t0": "@La clave son",
    "t1": "@Atrás, los tres centrales",
@@ -858,6 +831,33 @@
     ]
    ],
    "col": "green"
+  },
+  {
+   "type": "card",
+   "t0": "@Conte lo usó",
+   "t1": "@La clave son",
+   "items": [
+    {
+     "name": "JUVENTUS",
+     "sub": "Antonio Conte · 2011-14",
+     "colors": [
+      "#FFFFFF",
+      "#111111"
+     ]
+    },
+    {
+     "name": "INTER",
+     "sub": "Simone Inzaghi · 2021-25",
+     "colors": [
+      "#1F5FD1",
+      "#111111"
+     ]
+    }
+   ]
   }
- ]
+ ],
+ "endcard": {
+  "q1": "¿Has jugado",
+  "q2": "con tres centrales?"
+ }
 }

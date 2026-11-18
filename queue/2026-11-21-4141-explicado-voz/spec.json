@@ -529,17 +529,6 @@
    "text": "1"
   },
   {
-   "type": "pill",
-   "t0": "@Guardiola y Klopp",
-   "t1": "@Sin balón es donde",
-   "at": [
-    0,
-    96
-   ],
-   "text": "Guardiola · Klopp",
-   "col": "white"
-  },
-  {
    "type": "lines",
    "t0": "@dos líneas de cuatro",
    "t1": "@Con balón, los dos",
@@ -708,6 +697,29 @@
     ]
    ],
    "col": "green"
+  },
+  {
+   "type": "card",
+   "t0": "@Guardiola y Klopp",
+   "t1": "@Sin balón es donde",
+   "items": [
+    {
+     "name": "GUARDIOLA",
+     "sub": "Man. City · 2016-26",
+     "colors": [
+      "#6CABDD",
+      "#1C2C5B"
+     ]
+    },
+    {
+     "name": "KLOPP",
+     "sub": "Liverpool · 2015-24",
+     "colors": [
+      "#C8102E",
+      "#C8102E"
+     ]
+    }
+   ]
   }
  ]
 }

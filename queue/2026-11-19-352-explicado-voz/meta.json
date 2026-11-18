@@ -1,5 +1,5 @@
 {
-  "status": "scheduled",
+  "status": "awaiting_voice",
   "voice": true,
   "format": "short",
   "publish_at": "2026-11-19T19:30:00+01:00",
@@ -23,7 +23,5 @@
     "https://www.cbssports.com/soccer/news/inters-path-to-the-2024-25-champions-league-final-how-nerazzurri-reached-their-second-final-in-three-years/",
     "https://www.cbssports.com/soccer/news/champions-league-final-tactical-profiles-explaining-psgs-wing-focus-and-energy-inters-vital-wingbacks"
   ],
-  "video_id": "RfmOro_p02w",
-  "uploaded_at": "2026-11-18T12:41:02+00:00",
-  "error": null
+  "replaced_video_id": "RfmOro_p02w"
 }

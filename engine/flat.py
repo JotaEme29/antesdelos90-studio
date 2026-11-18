@@ -98,12 +98,59 @@ def pill(b, cam, x, z, txt, col, fg=NAVY, size=34, t=0, t0=0, dur=None):
     d.rounded_rectangle((cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2), radius=h / 2, fill=(*col, int(245 * a)))
     d.text((cx, cy), txt, font=f, fill=(*fg, int(255 * a)), anchor="mm")
 # ---------------------------------------------------------------- texto de pantalla
+# Zona segura: YouTube Shorts y TikTok tapan ~220 px arriba, ~420 px abajo y la columna de botones a la derecha.
+CAP_Y, PROG_Y, CARD_Y = 1408, 1362, 496
+def hexcol(h): h = h.lstrip("#"); return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+def card(b, items, t, t0, t1=None):
+    """Fichas de equipo/entrenador en la franja entre título y campo.
+    items: [{"name": "INTER", "sub": "Simone Inzaghi", "colors": ["#0068A8", "#111111"]}, ...] (escudo genérico con los colores, no el oficial)"""
+    d = ImageDraw.Draw(b, "RGBA"); k = back((t - t0) / .45)
+    if t1 is not None: k *= 1 - ease((t - t1 + .3) / .3)
+    if k <= .02: return
+    fN, fS = font(38, "Black"), font(26, "SemiBold"); gap = 22 * SS; hgt = 96 * SS
+    ws = [max(d.textlength(i["name"], font=fN), d.textlength(i.get("sub", ""), font=fS)) + (hgt if i.get("colors") else 30 * SS) + 34 * SS for i in items]
+    x = W2 / 2 - (sum(ws) + gap * (len(ws) - 1)) / 2; y = CARD_Y * SS + (1 - k) * 30 * SS; a = int(255 * min(1, k))
+    for i, w in zip(items, ws):
+        d.rounded_rectangle((x, y - hgt / 2, x + w, y + hgt / 2), radius=18 * SS, fill=(24, 28, 34, int(235 * min(1, k))), outline=(255, 255, 255, int(40 * min(1, k))), width=int(2 * SS))
+        tx = x + 26 * SS
+        if i.get("colors"):                                            # escudo genérico: dos franjas con los colores del club
+            c1, c2 = hexcol(i["colors"][0]), hexcol(i["colors"][-1]); sx, sw_, sh = x + 20 * SS, 44 * SS, 54 * SS; sy = y - sh / 2
+            sh_pts = [(sx, sy), (sx + sw_, sy), (sx + sw_, sy + sh * .55), (sx + sw_ / 2, sy + sh), (sx, sy + sh * .55)]
+            m = Image.new("L", b.size, 0); ImageDraw.Draw(m).polygon(sh_pts, fill=a)
+            st = Image.new("RGBA", b.size, (*c1, 255)); ImageDraw.Draw(st).rectangle((sx + sw_ / 2, sy, sx + sw_, sy + sh), fill=(*c2, 255))
+            b.paste(st, (0, 0), m); d.line(sh_pts + [sh_pts[0]], fill=(255, 255, 255, int(200 * min(1, k))), width=int(2.5 * SS), joint="curve")
+            tx = x + 82 * SS
+        if i.get("sub"):
+            d.text((tx, y - 14 * SS), i["name"], font=fN, fill=(*WHT, a), anchor="lm"); d.text((tx, y + 22 * SS), i["sub"], font=fS, fill=(*YEL, a), anchor="lm")
+        else: d.text((tx, y), i["name"], font=fN, fill=(*WHT, a), anchor="lm")
+        x += w + gap
+def caption_words(b, words, t, y=CAP_Y):
+    """Subtítulo palabra a palabra: la que suena va en caja amarilla; las clave, en amarillo."""
+    d = ImageDraw.Draw(b, "RGBA"); f = font(52, "Black"); sp = d.textlength(" ", font=f); maxw = 860 * SS
+    lines, cur, cw = [], [], 0
+    for w in words:
+        ww = d.textlength(w[0], font=f)
+        if cur and cw + sp + ww > maxw: lines.append(cur); cur, cw = [], 0
+        cur.append((w, ww)); cw += (sp if len(cur) > 1 else 0) + ww
+    if cur: lines.append(cur)
+    k = ease((t - words[0][1]) / .2)
+    for j, ln in enumerate(lines[:2]):
+        tw = sum(ww for _, ww in ln) + sp * (len(ln) - 1); x = W2 / 2 - tw / 2; yy = (y + 70 * j + (1 - k) * 12) * SS
+        for (w, ts, te, key), ww in ln:
+            on = ts <= t < max(te, ts + .12)
+            if on:
+                d.rounded_rectangle((x - 10 * SS, yy - 36 * SS, x + ww + 10 * SS, yy + 34 * SS), radius=12 * SS, fill=(*YEL, int(255 * k)))
+                d.text((x, yy), w, font=f, fill=(*NAVY, int(255 * k)), anchor="lm")
+            else:
+                d.text((x + 2 * SS, yy + 3 * SS), w, font=f, fill=(0, 0, 0, int(170 * k)), anchor="lm")
+                d.text((x, yy), w, font=f, fill=(*(YEL if key else WHT), int(255 * k * (1 if t >= ts else .55))), anchor="lm")
+            x += ww + sp
 def title(b, kicker, l1, l2=None, t=9, t0=0):
     d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .4)
-    d.text((W2 / 2, 185 * SS), kicker, font=font(30, "Bold"), fill=(*YEL, int(255 * k)), anchor="mm")
-    d.text((W2 / 2, 255 * SS), l1, font=font(70, "Black"), fill=(*WHT, int(255 * k)), anchor="mm")
-    if l2: d.text((W2 / 2, 335 * SS), l2, font=font(70, "Black"), fill=(*WHT, int(255 * k)), anchor="mm")
-def caption(b, txt, t, t0, y=1500):
+    d.text((W2 / 2, 240 * SS), kicker, font=font(30, "Bold"), fill=(*YEL, int(255 * k)), anchor="mm")
+    d.text((W2 / 2, 302 * SS), l1, font=font(64, "Black"), fill=(*WHT, int(255 * k)), anchor="mm")
+    if l2: d.text((W2 / 2, 374 * SS), l2, font=font(64, "Black"), fill=(*WHT, int(255 * k)), anchor="mm")
+def caption(b, txt, t, t0, y=CAP_Y):
     """txt con *clave* en amarillo; '|' separa líneas."""
     k = ease((t - t0) / .25); d = ImageDraw.Draw(b, "RGBA"); f = font(50, "Bold")
     for j, line in enumerate(txt.split("|")):
@@ -114,11 +161,11 @@ def caption(b, txt, t, t0, y=1500):
             d.text((x + 2 * SS, yy + 3 * SS), p, font=f, fill=(0, 0, 0, int(180 * k)), anchor="lm")
             d.text((x, yy), p, font=f, fill=(*col, int(255 * k)), anchor="lm"); x += widths[i]
 def progress(b, t, T):
-    d = ImageDraw.Draw(b, "RGBA"); x0, x1, y = 140 * SS, (W - 140) * SS, 1446 * SS
+    d = ImageDraw.Draw(b, "RGBA"); x0, x1, y = 140 * SS, (W - 140) * SS, PROG_Y * SS
     d.rounded_rectangle((x0, y, x1, y + 6 * SS), radius=3 * SS, fill=(255, 255, 255, 40))
     d.rounded_rectangle((x0, y, x0 + (x1 - x0) * min(1, t / T), y + 6 * SS), radius=3 * SS, fill=(*YEL, 230))
 def handle(b, txt="@antesdelos90"):
-    ImageDraw.Draw(b, "RGBA").text(((W - 60) * SS, 395 * SS), txt, font=font(26, "SemiBold"), fill=(255, 255, 255, 120), anchor="rm")
+    ImageDraw.Draw(b, "RGBA").text(((W - 80) * SS, 430 * SS), txt, font=font(26, "SemiBold"), fill=(255, 255, 255, 120), anchor="rm")
 _MARK = None
 def _mark():
     global _MARK

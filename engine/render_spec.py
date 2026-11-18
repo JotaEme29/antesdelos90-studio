@@ -14,7 +14,9 @@ Formato del spec (todas las posiciones en metros: x = ancho (-34..34), z = largo
   "rivals": {"show": 13.0, "base": [[x,z]...], "moves": [...]},       # opcional
   "ball":   [[t, i], ...]   # i = índice del jugador que la tiene desde t (pase de 0,55 s); o [t, [x,z]]
   "captions": [[t, "Texto con *clave*|segunda línea"], ...],
-  "events": [ {"type": "lines"|"count"|"arrow"|"zone"|"pill"|"ring", "t0": .., "t1": .., ...} ]
+  "events": [ {"type": "lines"|"count"|"arrow"|"zone"|"pill"|"ring"|"card", "t0": .., "t1": .., ...} ]
+  card: {"type": "card", "t0": .., "t1": .., "items": [{"name": "INTER", "sub": "Simone Inzaghi", "colors": ["#0068A8", "#111111"]}]}
+        fichas de equipo/entrenador: escudo GENÉRICO con los colores del club (nunca el escudo oficial ni fotos)
 }
 
 VÍDEO CON VOZ (Miguel graba el guion):
@@ -78,7 +80,8 @@ class Voice:
             cur.append(w); gap = (s.T[i + 1][0] - s.T[i][1]) if i + 1 < len(s.sw) else 9
             if len(" ".join(cur)) > 26 or w[-1:] in ".,;:?!" or gap > .35 or i == len(s.sw) - 1:
                 txt = " ".join(("*" + x + "*") if norm(x) in keys else x for x in cur).replace("* *", " ")
-                out.append([s.OFF + c0, txt]); cur, c0 = [], None
+                ws = [(x, s.OFF + s.T[i - len(cur) + 1 + j][0], s.OFF + s.T[i - len(cur) + 1 + j][1], norm(x) in keys) for j, x in enumerate(cur)]
+                out.append([s.OFF + c0, txt, ws]); cur, c0 = [], None
         return out
 
 class Spec:
@@ -97,11 +100,18 @@ class Spec:
                 return o
             d = s.d = walk(d)
             d["ball"] = [[res(t), h] for t, h in d.get("ball", [])]
-            if d.get("end", "auto") == "auto": d["end"] = s.voice.dur + Voice.OFF + 0.4
+            s.vend = s.voice.dur + Voice.OFF + 0.4
+            if d.get("end", "auto") == "auto":                  # si el guion acaba en pregunta, la tarjeta final sale mientras Miguel la dice (no se repite)
+                last = d.get("script", [""])[-1].strip()
+                if last.endswith("?") or "comentarios" in last.lower():
+                    d["end"] = s.voice.OFF + s.voice.T[len(s.voice.sw) - len(last.split())][0] - 0.15
+                    q = last.split("?")[0].strip() + "?"; ws_ = q.split(); h = (len(ws_) + 1) // 2
+                    d.setdefault("endcard", {}).setdefault("q1", " ".join(ws_[:h])); d["endcard"].setdefault("q2", " ".join(ws_[h:]))
+                else: d["end"] = s.vend
             if d.get("captions") == "auto": d["captions"] = s.voice.captions(d.get("keywords", []))
             else: d["captions"] = [[res(t), c] for t, c in d.get("captions", [])]
-        s.end = float(d["end"]); s.ec = d.get("endcard", {}); s.total = s.end + float(s.ec.get("dur", 3.0))
-        s.team = d["team"]; s.riv = d.get("rivals"); s.cam = Cam(56, 166, 52.5, 0, 850)
+        s.end = float(d["end"]); s.ec = d.get("endcard", {}); s.total = max(s.end + float(s.ec.get("dur", 3.0)), getattr(s, "vend", 0) + 1.2)
+        s.team = d["team"]; s.riv = d.get("rivals"); s.cam = Cam(56, 200, 52.5, 0, 900)
         s.caps = sorted(d.get("captions", []), key=lambda c: c[0]); s.ev = d.get("events", [])
         s.ballseq = d.get("ball", [])
     # posiciones: cada movimiento interpola desde donde estaba el jugador al empezar
@@ -139,7 +149,7 @@ class Spec:
                 zone(b, cam, *e["rect"], COL[e.get("col", "yellow")], a)
         if s.riv and s.riv.get("show", 0) <= t < s.riv.get("hide", 1e9):                        # capa 2: rivales
             k = ease((t - s.riv.get("show", 0)) / .5); R_ = s.positions(s.riv, t)
-            for x, z in sorted(R_, key=lambda p: -p[1]): disc(b, cam, x, z, RIVC, None, r=2.7, a=k)
+            for x, z in sorted(R_, key=lambda p: -p[1]): disc(b, cam, x, z, RIVC, None, r=3.0, a=k)
         for e in E:                                                    # capa 3: líneas, flechas
             c = COL[e.get("col", "yellow")]
             if e["type"] == "lines":
@@ -154,7 +164,7 @@ class Spec:
             if e["type"] == "ring":
                 for i in e["players"]: rings[i] = COL[e.get("col", "white")]
         nums = s.team["nums"]
-        for i in sorted(range(len(P)), key=lambda i: -P[i][1]): disc(b, cam, P[i][0], P[i][1], YEL, nums[i], r=3.0, ring=rings.get(i))
+        for i in sorted(range(len(P)), key=lambda i: -P[i][1]): disc(b, cam, P[i][0], P[i][1], YEL, nums[i], r=3.35, ring=rings.get(i))
         bp = s.ball(t, P)
         if bp: ball(b, cam, *bp)
         for e in E:                                                    # capa 4: etiquetas
@@ -162,10 +172,14 @@ class Spec:
                 fg = WHT if e.get("col") in ("red",) else NAVY
                 pill(b, cam, e["at"][0], e["at"][1], e["text"], COL[e.get("col", "yellow")], fg, e.get("size", 34), t, e["t0"], (e["t1"] - e["t0"] - .3) if "t1" in e else None)
         title(b, s.d.get("kicker", ""), *(s.d["title"] + [None])[:2], t, 0); handle(b, s.d.get("handle", "@antesdelos90")); progress(b, t, s.end)
+        for e in E:
+            if e["type"] == "card": card(b, e["items"], t, e["t0"], e.get("t1"))
         cur = None
-        for t0, txt in s.caps:
-            if t >= t0: cur = (t0, txt)
-        if cur and t < s.end: caption(b, cur[1], t, cur[0])
+        for c in s.caps:
+            if t >= c[0]: cur = c
+        if cur and t < s.end:
+            if len(cur) > 2 and cur[2]: caption_words(b, cur[2], t)
+            else: caption(b, cur[1], t, cur[0])
         if t >= s.end: endcard(b, t - s.end, s.ec.get("q1", "¿Y tu equipo?"), s.ec.get("q2", ""))
         return finish(b)
 
