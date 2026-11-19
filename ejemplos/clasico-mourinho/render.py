@@ -1,7 +1,7 @@
 """Prototipo formato v3: 'Así ganó Mourinho el Clásico' (Barça 1-2 Real Madrid, 25-10-2026).
 Fuentes: Coaches' Voice (análisis táctico), Claro Sports (previa), crónicas del partido. Ver meta en README del ejemplo.
 Uso: python ejemplos/clasico-mourinho/render.py salida.mp4 [--sheet t1 t2 ...]"""
-import sys, os
+import sys, os, math
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "engine"))
 from PIL import Image
 from flat import W2, H2, BG, YEL, WHT, ease, lerp2, finish
@@ -9,7 +9,14 @@ import cine as C
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 MAD = (255, 204, 0); BAR = (196, 46, 82)
-TOTAL = 37.5; END = 33.2
+SLOW0, SLOW1, SLOWF = 30.0, 31.2, 0.4            # cámara lenta en el remate (tiempo de escena)
+END = 39.6; SCENE_TOTAL = 43.6
+EXTRA = (SLOW1 - SLOW0) / SLOWF - (SLOW1 - SLOW0); TOTAL = SCENE_TOTAL + EXTRA
+def scene_t(r):
+    if r < SLOW0: return r
+    if r < SLOW0 + (SLOW1 - SLOW0) / SLOWF: return SLOW0 + (r - SLOW0) * SLOWF
+    return r - EXTRA
+def real_t(sc): return sc if sc < SLOW0 else (SLOW0 + (sc - SLOW0) / SLOWF if sc < SLOW1 else sc + EXTRA)
 
 def track(keys, t):
     if t <= keys[0][0]: return keys[0][1]
@@ -68,6 +75,7 @@ CAMK = [
     (28.0, dict(el=34, d=100, tx=6,   tz=72, az=12,  cy=920)),
     (30.2, dict(el=36, d=92,  tx=2,   tz=92, az=4,   cy=920)),
     (32.2, dict(el=32, d=84,  tx=0,   tz=95, az=-6,  cy=920)),
+    (39.6, dict(el=44, d=130, tx=0,   tz=78, az=28,  cy=900)),
 ]
 HEAD = [
     (0.0,  "BARÇA 1-2 MADRID · 25 OCT", "Así ganó Mourinho", "el Clásico"),
@@ -110,7 +118,13 @@ def ball_at(t):
         prev = (t0, h)
     h = BALL[-1][1]; return (pos(h, t) if isinstance(h, str) else h), .25
 
-def compose(t):
+LOWER = [(8.3, 10.0, "Jude Bellingham", "Mediapunta", "→ marca a Rodri"), (20.8, 23.4, "Marc Cucurella", "Lateral izquierdo", "→ encima de Lamine")]
+MOVING = {"Bellingham", "Güler", "Camavinga", "Mbappé", "Cucurella", "Diomandé"}
+
+def compose(r):
+    t = scene_t(r); img = scene(t, r); return img
+
+def scene(t, r):
     global VIG
     if VIG is None: VIG = C.vignette()
     b = Image.new("RGBA", (W2, H2), (*BG, 255)); cam = C.camkeys(CAMK, min(t, END))
@@ -123,10 +137,10 @@ def compose(t):
         a = ease((t - 21.2) / .4) * (1 - ease((t - 24.6) / .4))
         C.ring(b, cam, -26, 57, 7.5, YEL, a)
     # marcajes
-    for t0, m, r in LINKS:
+    for t0, m, rr_ in LINKS:
         if t0 <= t < 24.8:
             e = ease((t - t0) / .5); a = 1 - ease((t - 24.4) / .4)
-            C.link(b, cam, pos(m, t), pos(r, t), YEL, e, a)
+            C.link(b, cam, pos(m, t), pos(rr_, t), YEL, e, a)
     # líneas de pase cerradas por Güler y Diomandé
     if 16.4 < t < 20.0:
         a = ease((t - 16.6) / .4) * (1 - ease((t - 19.6) / .4))
@@ -141,9 +155,15 @@ def compose(t):
     for f0, f1, s in FOCUS:
         if f0 <= t < f1: focus = s
     def depth(p): x, z = pos(p[0], t); return -(cam.P(x, z)[2])
+    for n, col, dark in people:                                   # estelas de carrera
+        if n in MOVING or t > 25:
+            pts = [pos(n, t - .07 * k) for k in range(9, -1, -1)]
+            if abs(pts[0][0] - pts[-1][0]) + abs(pts[0][1] - pts[-1][1]) > 1.2: C.trail(b, cam, pts, col)
+    if focus:
+        for n in focus:
+            x, z = pos(n, t); C.glow_ring(b, cam, x, z, 2.6 + .3 * math.sin(t * 6), YEL)
     for n, col, dark in sorted(people, key=depth):
         x, z = pos(n, t); hi = 0.0; nm = n if n in NAMED else None; na = None
-        if focus and n in focus: hi = (t % 1.0)
         # nombres: solo los que importan en cada momento
         show = {(3.4, 7.4): {"Rodri", "Pedri", "Fermín"}, (7.6, 15.0): {"Bellingham", "Rodri", "Bernardo", "Pedri", "Tchouaméni", "Fermín"},
                 (15.4, 20.2): {"Güler", "Diomandé", "Martín"}, (20.4, 25.0): {"Lamine", "Cucurella", "Diomandé"},
@@ -154,23 +174,32 @@ def compose(t):
         a = 1.0
         if n == "Camavinga": a = ease((t - 25.4) / .3)
         C.player(b, cam, x, z, col, None, nm, a, hi, dark, na, below=(col == MAD))
+    bts = [ball_at(t - .04 * k) for k in range(8, -1, -1)]
+    if abs(bts[0][0][0] - bts[-1][0][0]) + abs(bts[0][0][1] - bts[-1][0][1]) > 2: C.ball_trail(b, cam, [(p[0], p[1], y) for p, y in bts])
     bx, bz = ball_at(t)[0]; C.ballp(b, cam, bx, bz, ball_at(t)[1])
+    b = C.motion_blur(b, C.cam_speed(CAMK, min(t, END)) if t < END else 0)
     b.alpha_composite(VIG)
     C.bigtitle(b, t, 2.6, "Así ganó Mourinho", "el Clásico")
     C.headline(b, t, HEAD) if 2.4 < t < END else None
     C.subs(b, t, SUBS) if t < END else None
+    for l in LOWER: C.lower_third(b, t, *l)
+    C.scoreboard(b, t, 25.2, 30.95, "BAR", "RMA", 1, 1, "87'"); C.scoreboard(b, t, 30.95, 32.0, "BAR", "RMA", 1, 2, "87'")
     C.flash(b, t, 21.4, "2 vs 1")
     C.flash(b, t, 30.95, "GOL", "Mbappé · Barça 1-2 Madrid")
+    C.white_flash(b, r, real_t(30.95))
+    C.quote(b, t, 32.0, 35.6, "Muy organizados, muy concentrados y con mucho coraje.", "JOSÉ MOURINHO, tras el partido")
+    C.table(b, t, 35.6, END, [(1, "Barcelona", 33, False), (2, "Real Madrid", 30, True), (3, "Atlético", 28, False)], "LALIGA HOY · 3 PUNTOS DE DIFERENCIA")
     if t >= END: C.endcard(b, t - END, "¿Plan de Mourinho", "o fallo del Barça?", "Cuéntamelo en comentarios")
+    b = C.shake(b, r, real_t(30.95))
     return finish(b.convert("RGB"))
 
 if __name__ == "__main__":
     out = sys.argv[1]
     if "--sheet" in sys.argv:
         ts = [float(x) for x in sys.argv[sys.argv.index("--sheet") + 1:]]
-        ims = [compose(t).resize((540, 960)) for t in ts]
+        ims = [scene(t, real_t(t)).resize((540, 960)) for t in ts]
         sh = Image.new("RGB", (540 * len(ims), 960)); [sh.paste(im, (540 * i, 0)) for i, im in enumerate(ims)]; sh.save(out, quality=85)
     else:
         sfx = out + ".sfx.wav"
-        C.sfx_track(sfx, TOTAL, whooshes=[2.5, 7.4, 15.0, 20.0, 25.0, 33.0], hits=[21.4, 30.95])
-        C.encode(compose, TOTAL, out, os.path.join(ROOT, "music", "okay_for_now-televisions.mp3"), sfx)
+        C.sfx_track(sfx, TOTAL, whooshes=[real_t(x) for x in (2.5, 7.4, 15.0, 20.0, 25.0, 31.9, 35.5, 39.5)], hits=[21.4, real_t(30.95)])
+        C.encode(compose, TOTAL, out, os.path.join(ROOT, "music", "got_it-cory_barker.mp3"), sfx)

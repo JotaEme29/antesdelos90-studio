@@ -213,3 +213,106 @@ def encode(compose, total, out, music, sfx, gain=-6):
         if k % 150 == 0: print("frame", k, "/", n, flush=True)
     enc.stdin.close()
     if enc.wait() == 0: os.replace(tmp, out); print("OK", out, round(total, 1), "s")
+
+# ------------------------------------------------------------------ efectos avanzados (v3.1)
+from PIL import ImageFilter
+
+def trail(b, cam, pts, col, w=7, a=1.0):
+    """estela de carrera: pts = posiciones pasadas (más antigua primero)."""
+    if len(pts) < 2 or a <= .02: return
+    d = ImageDraw.Draw(b, "RGBA"); n = len(pts)
+    for i in range(n - 1):
+        k = (i + 1) / n
+        d.line([cam.P(*pts[i])[:2], cam.P(*pts[i + 1])[:2]], fill=(*col, int(170 * a * k * k)), width=max(1, int(w * SS * k)))
+
+def ball_trail(b, cam, pts, a=1.0):
+    """estela luminosa del balón (pts con altura: (x, z, y))."""
+    if len(pts) < 2: return
+    layer = Image.new("RGBA", b.size, (0, 0, 0, 0)); d = ImageDraw.Draw(layer); n = len(pts)
+    for i in range(n - 1):
+        k = (i + 1) / n
+        d.line([cam.P(*pts[i])[:2], cam.P(*pts[i + 1])[:2]], fill=(255, 236, 140, int(230 * a * k)), width=max(2, int(9 * SS * k)))
+    glow = layer.filter(ImageFilter.GaussianBlur(10 * SS)); b.alpha_composite(glow); b.alpha_composite(layer)
+
+def glow_ring(b, cam, x, z, r, col, a=1.0):
+    """anillo con brillo bajo un jugador clave."""
+    if a <= .02: return
+    layer = Image.new("RGBA", b.size, (0, 0, 0, 0)); d = ImageDraw.Draw(layer)
+    q = [cam.P(px, pz)[:2] for px, pz in arc(x, z, r, 0, 360, 40)]
+    d.line(q, fill=(*col, int(255 * a)), width=int(6 * SS), joint="curve")
+    b.alpha_composite(layer.filter(ImageFilter.GaussianBlur(8 * SS))); b.alpha_composite(layer)
+
+def motion_blur(img, amount):
+    """desenfoque de movimiento cuando la cámara gira rápido (amount 0..1)."""
+    if amount < .08: return img
+    return img.filter(ImageFilter.GaussianBlur(min(10, amount * 10) * SS))
+
+def shake(img, t, t0, dur=.45, amp=22):
+    u = t - t0
+    if u < 0 or u > dur: return img
+    k = (1 - u / dur) ** 2; dx = int(amp * SS * k * math.sin(u * 90)); dy = int(amp * SS * k * math.cos(u * 70))
+    out = Image.new("RGBA", img.size, (*BG, 255)); out.paste(img, (dx, dy)); return out
+
+def white_flash(b, t, t0, dur=.25):
+    u = t - t0
+    if 0 <= u <= dur:
+        d = ImageDraw.Draw(b, "RGBA"); d.rectangle((0, 0, W2, H2), fill=(255, 255, 255, int(140 * (1 - u / dur))))
+
+def lower_third(b, t, t0, t1, name, role, extra=None, y=1210):
+    """ficha tipo retransmisión: barra amarilla + nombre + rol."""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .3) * (1 - ease((t - t1 + .3) / .3))
+    if k <= .02: return
+    x0 = (64 - (1 - k) * 120) * SS; fN = font(44, "Black"); fR = font(28, "SemiBold")
+    w = max(d.textlength(name, font=fN), d.textlength(role, font=fR) + (d.textlength(extra, font=fR) + 30 * SS if extra else 0)) + 60 * SS
+    d.rectangle((x0, (y - 52) * SS, x0 + w, (y + 50) * SS), fill=(14, 18, 22, int(235 * k)))
+    d.rectangle((x0, (y - 52) * SS, x0 + 10 * SS, (y + 50) * SS), fill=(*YEL, int(255 * k)))
+    d.text((x0 + 30 * SS, (y - 16) * SS), name.upper(), font=fN, fill=(*WHT, int(255 * k)), anchor="lm")
+    d.text((x0 + 30 * SS, (y + 26) * SS), role, font=fR, fill=(*YEL, int(255 * k)), anchor="lm")
+    if extra: d.text((x0 + 30 * SS + d.textlength(role, font=fR) + 30 * SS, (y + 26) * SS), extra, font=fR, fill=(200, 206, 212, int(255 * k)), anchor="lm")
+
+def scoreboard(b, t, t0, t1, home, away, sh, sa, minute):
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .3) * (1 - ease((t - t1 + .3) / .3))
+    f = font(34, "Black"); fm = font(28, "Bold"); y = 470 * SS; x1 = W2 - 64 * SS
+    txt = f"{home}  {sh} - {sa}  {away}"; tw = d.textlength(txt, font=f)
+    x0 = x1 - tw - 150 * SS
+    d.rounded_rectangle((x0, y - 34 * SS, x1, y + 34 * SS), radius=12 * SS, fill=(14, 18, 22, int(235 * k)))
+    d.rounded_rectangle((x1 - 110 * SS, y - 34 * SS, x1, y + 34 * SS), radius=12 * SS, fill=(*YEL, int(255 * k)))
+    d.text((x0 + 22 * SS, y), txt, font=f, fill=(*WHT, int(255 * k)), anchor="lm")
+    d.text((x1 - 55 * SS, y), minute, font=fm, fill=(*NAVY, int(255 * k)), anchor="mm")
+
+def quote(b, t, t0, t1, text, who):
+    """cita del entrenador a pantalla completa sobre el campo desenfocado."""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .35) * (1 - ease((t - t1 + .3) / .3))
+    d.rectangle((0, 0, W2, H2), fill=(*BG, int(200 * k)))
+    f = font(66, "Black"); words = text.split(); lines, cur = [], ""
+    for w in words:
+        if d.textlength(cur + " " + w, font=f) > 880 * SS and cur: lines.append(cur); cur = w
+        else: cur = (cur + " " + w).strip()
+    lines.append(cur); y0 = (860 - 40 * len(lines)) * SS
+    d.text((W2 / 2, y0 - 100 * SS), "“", font=font(180, "Black"), fill=(*YEL, int(255 * k)), anchor="mm")
+    for j, l in enumerate(lines):
+        d.text((W2 / 2, y0 + j * 84 * SS), l, font=f, fill=(*WHT, int(255 * k)), anchor="mm")
+    d.text((W2 / 2, y0 + len(lines) * 84 * SS + 40 * SS), who, font=font(34, "Bold"), fill=(*YEL, int(255 * k)), anchor="mm")
+
+def table(b, t, t0, t1, rows, title):
+    """mini clasificación animada: rows = [(pos, equipo, pts, destacado)]."""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .35) * (1 - ease((t - t1 + .3) / .3))
+    d.rectangle((0, 0, W2, H2), fill=(*BG, int(210 * k)))
+    d.text((W2 / 2, 600 * SS), title, font=font(40, "Bold"), fill=(*YEL, int(255 * k)), anchor="mm")
+    for i, (p, team, pts, hi) in enumerate(rows):
+        u = ease((t - t0 - .25 - i * .15) / .3) * k; y = (700 + i * 112) * SS; x0 = (140 + (1 - u) * 80) * SS; x1 = W2 - 140 * SS
+        d.rounded_rectangle((x0, y - 44 * SS, x1, y + 44 * SS), radius=16 * SS, fill=((*YEL, int(255 * u)) if hi else (30, 36, 42, int(240 * u))))
+        c = NAVY if hi else WHT
+        d.text((x0 + 40 * SS, y), str(p), font=font(44, "Black"), fill=(*c, int(255 * u)), anchor="lm")
+        d.text((x0 + 120 * SS, y), team, font=font(44, "Black"), fill=(*c, int(255 * u)), anchor="lm")
+        d.text((x1 - 40 * SS, y), f"{pts} pts", font=font(40, "Bold"), fill=(*c, int(255 * u)), anchor="rm")
+
+def cam_speed(keys, t, dt=1 / 30):
+    """velocidad de la cámara (para el desenfoque): cambio de un punto del centro de la imagen."""
+    a = camkeys(keys, t); b = camkeys(keys, max(0, t - dt))
+    pa = a.P(0, 52.5); pb = b.P(0, 52.5)
+    return math.hypot(pa[0] - pb[0], pa[1] - pb[1]) / SS / 40
