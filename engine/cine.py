@@ -1,0 +1,215 @@
+"""Estilo 'cine' (v3): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
+titular que cambia en cada bloque, subtítulos que entran palabra a palabra y efectos de sonido.
+Inspirado en lo que funciona en los canales grandes de táctica (planos cambiantes, historia real con nombres,
+gancho provocador), no en una plantilla fija."""
+import math, os, subprocess, wave, random
+import numpy as np
+from PIL import Image, ImageDraw
+from flat import (W, H, FPS, SS, W2, H2, BG, YEL, WHT, NAVY, font, ease, back, lerp2, FOC, PL, PW, arc, _mark)
+
+# ------------------------------------------------------------------ cámara con objetivo libre (x, z)
+class Cam:
+    def __init__(s, el=50, d=150, tx=0.0, tz=52.5, az=0.0, cy=900, roll=0.0):
+        s.cy = cy; a, e = math.radians(az), math.radians(el)
+        tgt = np.array([tx, 0.0, tz])
+        s.pos = tgt + np.array([d * math.sin(a) * math.cos(e), d * math.sin(e), -d * math.cos(a) * math.cos(e)])
+        f = tgt - s.pos; s.f = f / np.linalg.norm(f)
+        r = np.cross([0, 1, 0], s.f); s.r = r / np.linalg.norm(r); s.u = np.cross(s.f, s.r)
+    def P(s, x, z, y=0.0):
+        v = np.array([x, y, z]) - s.pos; dz = max(.5, v @ s.f)
+        return ((W / 2 + FOC * (v @ s.r) / dz) * SS, (s.cy - FOC * (v @ s.u) / dz) * SS, FOC / dz)
+
+def camkeys(keys, t):
+    """keys: [(t, dict(el, d, tx, tz, az, cy)), ...] interpolación suave entre planos."""
+    if t <= keys[0][0]: return Cam(**keys[0][1])
+    for (t0, a), (t1, b) in zip(keys, keys[1:]):
+        if t0 <= t <= t1:
+            e = ease((t - t0) / max(1e-6, t1 - t0)); return Cam(**{k: a[k] + (b[k] - a[k]) * e for k in a})
+    return Cam(**keys[-1][1])
+
+# ------------------------------------------------------------------ campo oscuro
+LINE = (120, 132, 146, 200)
+def pitch(b, cam):
+    d = ImageDraw.Draw(b, "RGBA"); hx = PW / 2
+    def poly(pts, fill): d.polygon([cam.P(x, z)[:2] for x, z in pts], fill=fill)
+    def pl(pts, col=LINE, w=2.6): d.line([cam.P(x, z)[:2] for x, z in pts], fill=col, width=int(w * SS), joint="curve")
+    poly([(-hx - 4, -4), (hx + 4, -4), (hx + 4, PL + 4), (-hx - 4, PL + 4)], (20, 25, 30, 255))
+    for i in range(14):
+        z0, z1 = PL * i / 14, PL * (i + 1) / 14
+        poly([(-hx, z0), (hx, z0), (hx, z1), (-hx, z1)], (24, 30, 36, 255) if i % 2 else (28, 35, 42, 255))
+    pl([(-hx, 0), (hx, 0), (hx, PL), (-hx, PL), (-hx, 0)]); pl([(-hx, PL / 2), (hx, PL / 2)])
+    pl(arc(0, PL / 2, 9.15, 0, 360, 72))
+    for zs, sg in ((0, 1), (PL, -1)):
+        pl([(-20.15, zs), (-20.15, zs + sg * 16.5), (20.15, zs + sg * 16.5), (20.15, zs)])
+        pl([(-9.15, zs), (-9.15, zs + sg * 5.5), (9.15, zs + sg * 5.5), (9.15, zs)])
+        pl(arc(0, zs + sg * 11, 9.15, 37, 143, 24) if sg > 0 else arc(0, zs + sg * 11, 9.15, 217, 323, 24))
+        # portería en 3D
+        g = [cam.P(x, zs, y)[:2] for x, y in ((-3.66, 0), (-3.66, 2.44), (3.66, 2.44), (3.66, 0))]
+        d.line(g, fill=(230, 236, 242, 230), width=int(3 * SS), joint="curve")
+
+def zone(b, cam, pts, col, a=1.0, fill=55):
+    if a <= .02: return
+    d = ImageDraw.Draw(b, "RGBA"); q = [cam.P(x, z)[:2] for x, z in pts]
+    d.polygon(q, fill=(*col, int(fill * a))); d.line(q + [q[0]], fill=(*col, int(220 * a)), width=int(3 * SS), joint="curve")
+
+def ring(b, cam, x, z, r, col, a=1.0, w=4):
+    if a <= .02: return
+    d = ImageDraw.Draw(b, "RGBA"); q = [cam.P(px, pz)[:2] for px, pz in arc(x, z, r, 0, 360, 40)]
+    d.line(q, fill=(*col, int(235 * a)), width=int(w * SS), joint="curve")
+
+def link(b, cam, p, q, col, e=1.0, a=1.0, w=4.5):
+    """línea discontinua a ras de suelo (marcaje)."""
+    if e <= .01 or a <= .02: return
+    d = ImageDraw.Draw(b, "RGBA"); n = 14
+    for i in range(n):
+        if i % 2: continue
+        u0, u1 = i / n * e, min(e, (i + 1) / n * e)
+        d.line([cam.P(*lerp2(p, q, u0))[:2], cam.P(*lerp2(p, q, u1))[:2]], fill=(*col, int(235 * a)), width=int(w * SS))
+
+def arrow(b, cam, p, q, col, e=1.0, a=1.0, w=6, y=0.0):
+    if e <= .01 or a <= .02: return
+    d = ImageDraw.Draw(b, "RGBA"); m = lerp2(p, q, e)
+    pts = [cam.P(*lerp2(p, m, i / 20), y + 0)[:2] for i in range(21)]
+    d.line(pts, fill=(*col, int(240 * a)), width=int(w * SS), joint="curve")
+    (x1, y1), (x0, y0) = pts[-1], pts[-3]; ang = math.atan2(y1 - y0, x1 - x0); s = 20 * SS
+    d.polygon([(x1, y1), (x1 - s * math.cos(ang - .5), y1 - s * math.sin(ang - .5)), (x1 - s * math.cos(ang + .5), y1 - s * math.sin(ang + .5))], fill=(*col, int(240 * a)))
+
+# ------------------------------------------------------------------ jugadores en 3D
+def player(b, cam, x, z, col, num=None, name=None, a=1.0, hi=0.0, dark=False, name_a=None, below=False):
+    """Figura: sombra, cuerpo vertical, cabeza con dorsal; 'hi' (0..1) resalta con anillo; nombre encima."""
+    if a <= .02: return
+    d = ImageDraw.Draw(b, "RGBA"); gx, gy, sc = cam.P(x, z)
+    _, hy, _ = cam.P(x, z, 2.5); _, my, _ = cam.P(x, z, 1.2)
+    r = 1.05 * sc * SS
+    d.ellipse((gx - r * 1.6, gy - r * .55, gx + r * 1.6, gy + r * .55), fill=(0, 0, 0, int(120 * a)))
+    if hi > .02:
+        rr = r * (2.6 + .4 * math.sin(hi * 6)); d.ellipse((gx - rr, gy - rr * .42, gx + rr, gy + rr * .42), outline=(*YEL, int(230 * a * min(1, hi * 3))), width=int(4 * SS))
+    bw = max(r * 1.15, 3.5 * SS)
+    d.rounded_rectangle((gx - bw, min(my, gy - 1), gx + bw, gy), radius=bw * .9, fill=(*[int(c * .78) for c in col], int(255 * a)))
+    hr = max(r * 1.25, 9 * SS)
+    d.ellipse((gx - hr, hy - hr, gx + hr, hy + hr), fill=(*col, int(255 * a)), outline=(*NAVY, int(255 * a)), width=int(2.5 * SS))
+    if num is not None:
+        d.text((gx, hy + 1), str(num), font=font(hr / SS * 1.05, "Black"), fill=((*WHT, int(255 * a)) if dark else (*NAVY, int(255 * a))), anchor="mm")
+    na = a if name_a is None else name_a
+    if name and na > .02:
+        f = font(max(22, min(34, hr / SS * 1.5)), "Bold"); ty = (gy + r * .55 + 26 * SS) if below else (hy - hr - 22 * SS)
+        tw = d.textlength(name, font=f)
+        d.rounded_rectangle((gx - tw / 2 - 10 * SS, ty - 19 * SS, gx + tw / 2 + 10 * SS, ty + 17 * SS), radius=10 * SS, fill=(0, 0, 0, int(170 * na)))
+        d.text((gx, ty), name, font=f, fill=(*WHT, int(255 * na)), anchor="mm")
+
+def ballp(b, cam, x, z, y=0.25):
+    d = ImageDraw.Draw(b, "RGBA"); gx, gy, sc = cam.P(x, z); bx, by, _ = cam.P(x, z, y)
+    r = max(.55 * sc * SS, 6 * SS)
+    d.ellipse((gx - r, gy - r * .35, gx + r, gy + r * .35), fill=(0, 0, 0, 110))
+    d.ellipse((bx - r, by - r, bx + r, by + r), fill=(255, 255, 255, 255), outline=(*NAVY, 255), width=int(2 * SS))
+
+# ------------------------------------------------------------------ texto
+def headline(b, t, beats, top=236):
+    """beats: [(t0, kicker, linea1, linea2|None)]; entra deslizando, el anterior sale."""
+    cur = None
+    for bt in beats:
+        if t >= bt[0]: cur = bt
+    if not cur: return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - cur[0]) / .35); dx = (1 - k) * 60 * SS
+    x0 = 64 * SS + dx
+    d.rectangle((x0, (top - 14) * SS, x0 + 8 * SS, (top + 128) * SS), fill=(*YEL, int(255 * k)))
+    d.text((x0 + 26 * SS, top * SS), cur[1], font=font(28, "Bold"), fill=(*YEL, int(255 * k)), anchor="lm")
+    d.text((x0 + 26 * SS, (top + 52) * SS), cur[2], font=font(60, "Black"), fill=(*WHT, int(255 * k)), anchor="lm")
+    if cur[3]: d.text((x0 + 26 * SS, (top + 112) * SS), cur[3], font=font(60, "Black"), fill=(*YEL, int(255 * k)), anchor="lm")
+
+def subs(b, t, items, y=1420):
+    """items: [(t0, t1, 'texto con *clave*')]: palabras que entran una a una con salto."""
+    cur = None
+    for it in items:
+        if it[0] <= t < it[1]: cur = it
+    if not cur: return
+    d = ImageDraw.Draw(b, "RGBA"); f = font(56, "Black"); words = cur[2].split()
+    plain = [w.strip("*") for w in words]; sp = d.textlength(" ", font=f)
+    widths = [d.textlength(w, font=f) for w in plain]
+    lines, ln, lw = [], [], 0
+    for i, w in enumerate(widths):
+        if ln and lw + sp + w > 900 * SS: lines.append(ln); ln, lw = [], 0
+        ln.append(i); lw += (sp if len(ln) > 1 else 0) + w
+    lines.append(ln)
+    per = min(.12, (cur[1] - cur[0]) * .4 / max(1, len(words)))
+    for j, ln in enumerate(lines):
+        tw = sum(widths[i] for i in ln) + sp * (len(ln) - 1); x = W2 / 2 - tw / 2; yy = (y + 72 * j) * SS
+        for i in ln:
+            k = back((t - cur[0] - i * per) / .22); key = words[i].startswith("*")
+            if k > .02:
+                fk = font(56 * (.6 + .4 * min(1.2, k)), "Black")
+                d.text((x + widths[i] / 2 + 3 * SS, yy + 4 * SS), plain[i], font=fk, fill=(0, 0, 0, int(190 * min(1, k))), anchor="mm")
+                d.text((x + widths[i] / 2, yy), plain[i], font=fk, fill=(*(YEL if key else WHT), int(255 * min(1, k))), anchor="mm")
+            x += widths[i] + sp
+
+def bigtitle(b, t, t1, l1, l2):
+    """gancho: dos líneas enormes en el centro durante el primer par de segundos."""
+    if t >= t1: return
+    d = ImageDraw.Draw(b, "RGBA"); k = back(t / .3) if t < .3 else 1.0; a = 1 - ease((t - t1 + .35) / .35)
+    for j, (txt, col) in enumerate(((l1, WHT), (l2, YEL))):
+        f = font(104 * (.85 + .15 * k), "Black"); y = (800 + 118 * j) * SS
+        d.text((W2 / 2 + 5 * SS, y + 6 * SS), txt, font=f, fill=(0, 0, 0, int(200 * a)), anchor="mm")
+        d.text((W2 / 2, y), txt, font=f, fill=(*col, int(255 * a)), anchor="mm")
+
+def flash(b, t, t0, txt, sub=None):
+    """golpe de texto enorme (GOL, 2 contra 1...)."""
+    u = t - t0
+    if u < 0 or u > 1.4: return
+    d = ImageDraw.Draw(b, "RGBA"); k = max(.05, back(u / .25)); a = 1 - ease((u - 1.0) / .4)
+    d.text((W2 / 2 + 6 * SS, 640 * SS + 8 * SS), txt, font=font(190 * k, "Black"), fill=(0, 0, 0, int(200 * a)), anchor="mm")
+    d.text((W2 / 2, 640 * SS), txt, font=font(190 * k, "Black"), fill=(*YEL, int(255 * a)), anchor="mm")
+    if sub: d.text((W2 / 2, 770 * SS), sub, font=font(48, "Bold"), fill=(*WHT, int(255 * a)), anchor="mm")
+
+def vignette():
+    y, x = np.mgrid[0:H2:8, 0:W2:8]; r = np.hypot((x - W2 / 2) / (W2 / 2), (y - H2 * .46) / (H2 / 2))
+    a = np.clip((r - .55) * 1.4, 0, 1) * 200
+    m = Image.fromarray(a.astype(np.uint8), "L").resize((W2, H2), Image.BILINEAR)
+    v = Image.new("RGBA", (W2, H2), (*BG, 255)); v.putalpha(m); return v
+
+def endcard(b, u, q1, q2, extra=None):
+    d = ImageDraw.Draw(b, "RGBA"); d.rectangle((0, 0, W2, H2), fill=(*BG, int(238 * ease(u / .35))))
+    m = _mark(); k0 = back((u - .05) / .4)
+    if m and k0 > .05:
+        w = int(260 * SS * k0); h = int(w * m.height / m.width); mm = m.resize((w, h), Image.LANCZOS)
+        b.paste(mm, (int(W2 / 2 - w / 2), int(560 * SS - h / 2)), mm)
+    k = back((u - .1) / .4)
+    if k > .05:
+        d.text((W2 / 2, 790 * SS), q1, font=font(80 * k, "Black"), fill=WHT, anchor="mm")
+        d.text((W2 / 2, 885 * SS), q2, font=font(80 * k, "Black"), fill=YEL, anchor="mm")
+    k2 = back((u - .35) / .4)
+    if k2 > .05:
+        w, h = 620 * SS * k2, 110 * SS * k2; d.rounded_rectangle((W2 / 2 - w / 2, 1040 * SS - h / 2, W2 / 2 + w / 2, 1040 * SS + h / 2), radius=h / 2, fill=YEL)
+        d.text((W2 / 2, 1040 * SS), "@antesdelos90", font=font(54 * k2, "Black"), fill=NAVY, anchor="mm")
+    if extra: d.text((W2 / 2, 1160 * SS), extra, font=font(34, "SemiBold"), fill=(200, 206, 212, int(255 * ease((u - .6) / .4))), anchor="mm")
+
+# ------------------------------------------------------------------ sonido: whoosh e impacto sintetizados (sin licencias)
+def sfx_track(path, total, whooshes=(), hits=(), sr=44100):
+    n = int(total * sr); out = np.zeros(n, np.float32); rng = np.random.default_rng(7)
+    for t0 in whooshes:
+        L = int(.55 * sr); noise = rng.standard_normal(L).astype(np.float32)
+        env = np.sin(np.linspace(0, math.pi, L)) ** 2
+        # filtro paso-banda que barre (whoosh): suavizado variable
+        y = np.zeros(L, np.float32); s = 0.0
+        for i in range(L):
+            a = .02 + .25 * (i / L); s += a * (noise[i] - s); y[i] = s
+        y = y / (np.abs(y).max() + 1e-6) * env * .35
+        i0 = int(t0 * sr); j = min(n, i0 + L); out[i0:j] += y[:j - i0]
+    for t0 in hits:
+        L = int(.6 * sr); tt = np.arange(L) / sr
+        y = (np.sin(2 * math.pi * 55 * tt) * np.exp(-tt * 7) * .9 + rng.standard_normal(L) * np.exp(-tt * 30) * .25).astype(np.float32)
+        i0 = int(t0 * sr); j = min(n, i0 + L); out[i0:j] += y[:j - i0]
+    out = np.clip(out, -1, 1); pcm = (out * 32000).astype(np.int16)
+    with wave.open(path, "wb") as w: w.setnchannels(1); w.setsampwidth(2); w.setframerate(sr); w.writeframes(pcm.tobytes())
+
+def encode(compose, total, out, music, sfx, gain=-6):
+    n = int(round(total * FPS)); tmp = out + ".part.mp4"
+    fc = (f"[1:a]atrim=0:{total:.2f},volume={gain}dB,afade=t=in:d=0.2,afade=t=out:st={total - 1.5:.2f}:d=1.5[m];"
+          f"[2:a]volume=3dB[s];[m][s]amix=inputs=2:normalize=0,aresample=44100,loudnorm=I=-14:TP=-1.5[a]")
+    enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-framerate", str(FPS), "-i", "-",
+                            "-i", music, "-i", sfx, "-filter_complex", fc, "-map", "0:v", "-map", "[a]", "-c:v", "libx264", "-preset", "medium", "-crf", "18",
+                            "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-t", f"{total:.3f}", "-movflags", "+faststart", tmp], stdin=subprocess.PIPE)
+    for k in range(n):
+        enc.stdin.write(compose(k / FPS).tobytes())
+        if k % 150 == 0: print("frame", k, "/", n, flush=True)
+    enc.stdin.close()
+    if enc.wait() == 0: os.replace(tmp, out); print("OK", out, round(total, 1), "s")
