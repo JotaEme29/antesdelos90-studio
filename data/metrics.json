@@ -1,8 +1,8 @@
 {
-  "updated": "2026-11-19T20:57:12+00:00",
+  "updated": "2026-11-20T07:43:10+00:00",
   "channel": {
-    "viewCount": "2750",
-    "subscriberCount": "9",
+    "viewCount": "2836",
+    "subscriberCount": "10",
     "hiddenSubscriberCount": false,
     "videoCount": "9"
   },
@@ -12,15 +12,15 @@
       "id": "fHijWa6IBfs",
       "title": "La estructura 2-2-6 del 4-2-3-1 explicada #shorts",
       "published_at": "2026-11-14T18:28:26+00:00",
-      "views": 445,
-      "estimatedMinutesWatched": 51,
+      "views": 441,
+      "estimatedMinutesWatched": 50,
       "averageViewDuration": 15,
       "averageViewPercentage": 48.79,
       "likes": 5,
       "comments": 0,
       "shares": 0,
       "subscribersGained": 0,
-      "live_views": 443,
+      "live_views": 444,
       "live_likes": 5,
       "live_comments": 0
     },
@@ -29,7 +29,7 @@
       "id": "XK35KKryEUI",
       "title": "El 4-4-2 explicado: seguridad o rigidez #shorts",
       "published_at": "2026-11-14T22:43:35+00:00",
-      "views": 704,
+      "views": 699,
       "estimatedMinutesWatched": 257,
       "averageViewDuration": 40,
       "averageViewPercentage": 53.64,
@@ -37,7 +37,7 @@
       "comments": 0,
       "shares": 2,
       "subscribersGained": 2,
-      "live_views": 735,
+      "live_views": 743,
       "live_likes": 14,
       "live_comments": 0
     },
@@ -46,16 +46,16 @@
       "id": "XXCkhduOdcU",
       "title": "4-2-3-1: el lateral, ¿por fuera o por dentro? #shorts",
       "published_at": "2026-11-15T19:05:39+00:00",
-      "views": 490,
-      "estimatedMinutesWatched": 53,
+      "views": 483,
+      "estimatedMinutesWatched": 52,
       "averageViewDuration": 18,
       "averageViewPercentage": 52.99,
       "likes": 4,
       "comments": 0,
       "shares": 0,
       "subscribersGained": 2,
-      "live_views": 483,
-      "live_likes": 4,
+      "live_views": 486,
+      "live_likes": 5,
       "live_comments": 0
     },
     {
@@ -63,16 +63,16 @@
       "id": "wvfFVvlTyF0",
       "title": "El 4-3-3 no existe: mismo dibujo, otro fútbol #shorts",
       "published_at": "2026-11-15T19:05:39+00:00",
-      "views": 234,
-      "estimatedMinutesWatched": 87,
+      "views": 233,
+      "estimatedMinutesWatched": 86,
       "averageViewDuration": 41,
       "averageViewPercentage": 56.31,
       "likes": 4,
       "comments": 0,
       "shares": 0,
       "subscribersGained": 0,
-      "live_views": 242,
-      "live_likes": 4,
+      "live_views": 245,
+      "live_likes": 5,
       "live_comments": 0
     },
     {
@@ -88,8 +88,8 @@
       "comments": 0,
       "shares": 0,
       "subscribersGained": 1,
-      "live_views": 36,
-      "live_likes": 3,
+      "live_views": 40,
+      "live_likes": 4,
       "live_comments": 0
     },
     {
@@ -106,7 +106,7 @@
       "shares": 0,
       "subscribersGained": 3,
       "live_views": 822,
-      "live_likes": 7,
+      "live_likes": 8,
       "live_comments": 0
     },
     {
@@ -114,8 +114,8 @@
       "id": "9kxm4cxKrcs",
       "title": "Basculación en el 4-4-2: todo el bloque hacia el balón #shorts",
       "published_at": "2026-11-18T20:53:12+00:00",
-      "live_views": 23,
-      "live_likes": 0,
+      "live_views": 25,
+      "live_likes": 1,
       "live_comments": 0
     },
     {
@@ -123,8 +123,8 @@
       "id": "91Ruq6c4cSw",
       "title": "El 3-5-2 explicado: tres centrales y dos carrileros #shorts",
       "published_at": "2026-11-19T20:57:11+00:00",
-      "live_views": 6,
-      "live_likes": 0,
+      "live_views": 61,
+      "live_likes": 1,
       "live_comments": 0
     }
   ],
