@@ -1,5 +1,5 @@
 {
-  "status": "approved",
+  "status": "scheduled",
   "format": "cine",
   "publish_at": "2026-11-21T19:30:00+01:00",
   "title": "Así ganó Mourinho el Clásico: le quitó el centro al Barça #shorts",
@@ -22,5 +22,8 @@
     "https://grupoanimal.mx/deportes/real-madrid-barcelona-resultado-clasico-mbappe-doblete-2026",
     "https://es.ara.cat/deportes/fc-barcelona/madrid-mou-deja-palmo-narices-barca_1_5890457.html"
   ],
-  "music": "music/got_it-cory_barker.mp3"
+  "music": "music/got_it-cory_barker.mp3",
+  "video_id": "63ZIgH9HvjY",
+  "uploaded_at": "2026-11-20T20:02:56+00:00",
+  "error": null
 }
