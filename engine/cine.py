@@ -201,18 +201,37 @@ def sfx_track(path, total, whooshes=(), hits=(), sr=44100):
     out = np.clip(out, -1, 1); pcm = (out * 32000).astype(np.int16)
     with wave.open(path, "wb") as w: w.setnchannels(1); w.setsampwidth(2); w.setframerate(sr); w.writeframes(pcm.tobytes())
 
-def encode(compose, total, out, music, sfx, gain=-6):
+def encode(compose, total, out, music, sfx, gain=-6, voice=None, voice_off=0.35):
+    """vídeo + música (+ voz con la música agachada debajo) + efectos."""
     n = int(round(total * FPS)); tmp = out + ".part.mp4"
-    fc = (f"[1:a]atrim=0:{total:.2f},volume={gain}dB,afade=t=in:d=0.2,afade=t=out:st={total - 1.5:.2f}:d=1.5[m];"
-          f"[2:a]volume=3dB[s];[m][s]amix=inputs=2:normalize=0,aresample=44100,loudnorm=I=-14:TP=-1.5[a]")
+    ins = ["-i", music, "-i", sfx] + (["-i", voice] if voice else [])
+    if voice:
+        ms = int(voice_off * 1000)
+        fc = (f"[1:a]atrim=0:{total:.2f},volume={gain - 4}dB,afade=t=in:d=0.2,afade=t=out:st={total - 1.5:.2f}:d=1.5[m0];"
+              f"[3:a]adelay={ms}|{ms},apad,atrim=0:{total:.2f},asplit=2[v][k];[m0][k]sidechaincompress=threshold=0.03:ratio=5:attack=20:release=300[m];"
+              f"[2:a]volume=1dB[s];[v][m][s]amix=inputs=3:normalize=0,aresample=44100,loudnorm=I=-14:TP=-1.5[a]")
+    else:
+        fc = (f"[1:a]atrim=0:{total:.2f},volume={gain}dB,afade=t=in:d=0.2,afade=t=out:st={total - 1.5:.2f}:d=1.5[m];"
+              f"[2:a]volume=3dB[s];[m][s]amix=inputs=2:normalize=0,aresample=44100,loudnorm=I=-14:TP=-1.5[a]")
     enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-framerate", str(FPS), "-i", "-",
-                            "-i", music, "-i", sfx, "-filter_complex", fc, "-map", "0:v", "-map", "[a]", "-c:v", "libx264", "-preset", "medium", "-crf", "18",
+                            *ins, "-filter_complex", fc, "-map", "0:v", "-map", "[a]", "-c:v", "libx264", "-preset", "medium", "-crf", "18",
                             "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-t", f"{total:.3f}", "-movflags", "+faststart", tmp], stdin=subprocess.PIPE)
     for k in range(n):
         enc.stdin.write(compose(k / FPS).tobytes())
         if k % 150 == 0: print("frame", k, "/", n, flush=True)
     enc.stdin.close()
     if enc.wait() == 0: os.replace(tmp, out); print("OK", out, round(total, 1), "s")
+    else: raise SystemExit("ffmpeg falló")
+
+def voice_clock(script):
+    """Para vídeos con voz: tiempos reales de cada frase del guion (VOICE_DIR = build/<slug> tras engine/voice.py).
+    Sin grabación todavía, tiempos estimados (solo para previsualizar). Devuelve un objeto con .at('frase'), .dur, .wav, .captions(keys)."""
+    from render_spec import Voice
+    return Voice(os.environ.get("VOICE_DIR", "/nonexistent"), script)
+
+def sheet(scene_fn, ts, out, real=lambda t: t):
+    ims = [scene_fn(t, real(t)).resize((540, 960)) for t in ts]
+    sh = Image.new("RGB", (540 * len(ims), 960)); [sh.paste(im, (540 * i, 0)) for i, im in enumerate(ims)]; sh.save(out, quality=85)
 
 # ------------------------------------------------------------------ efectos avanzados (v3.1)
 from PIL import ImageFilter

@@ -8,9 +8,12 @@ from common import items, save_meta, ROOT, BUILD, now, parse
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 
-def render(slug, d, voice=False):
+def render(slug, d, voice=False, fmt="short"):
     os.makedirs(BUILD, exist_ok=True); out = os.path.join(BUILD, f"{slug}.mp4")
     if voice: subprocess.run([sys.executable, os.path.join(ROOT, "engine", "voice.py"), d], check=True)
+    if fmt == "cine" and not os.path.isfile(out):              # formato cine: cada vídeo trae su propio render.py
+        env = dict(os.environ, VOICE_DIR=os.path.join(BUILD, slug))
+        subprocess.run([sys.executable, os.path.join(d, "render.py"), out], check=True, env=env)
     if not os.path.isfile(out):
         subprocess.run([sys.executable, os.path.join(ROOT, "engine", "render_spec.py"), os.path.join(d, "spec.json"), out], check=True)
     return out
@@ -66,7 +69,7 @@ def main():
     for slug, d, m in todo:
         print("→", slug)
         try:
-            path = os.path.join(d, "video.mp4") if m.get("format") in ("long", "file") else render(slug, d, voice=bool(m.get("voice")))
+            path = os.path.join(d, "video.mp4") if m.get("format") in ("long", "file") else render(slug, d, voice=bool(m.get("voice")), fmt=m.get("format", "short"))
             vid = upload(yt, path, m)
             thumb = os.path.join(d, "thumbnail.jpg")
             if m.get("format") == "long" and os.path.isfile(thumb):

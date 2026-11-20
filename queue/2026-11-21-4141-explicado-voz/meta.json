@@ -1,5 +1,5 @@
 {
-  "status": "awaiting_voice",
+  "status": "draft",
   "voice": true,
   "format": "short",
   "publish_at": "2026-11-21T19:30:00+01:00",
@@ -18,5 +18,6 @@
   ],
   "sources": [
     "https://www.premierleague.com/en/news/4243851"
-  ]
+  ],
+  "note": "Formato antiguo: descartado en el rediseño del 19-11-2026"
 }

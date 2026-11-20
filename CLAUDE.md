@@ -3,22 +3,23 @@
 Canal de táctica de fútbol **@antesdelos90** (YouTube y TikTok) de Miguel, entrenador de fútbol base en Málaga.
 Todo en español de España. Miguel revisa y aprueba; tú propones, produces y mides.
 
-## Rutina semanal (tarea programada de los lunes)
-1. Lee `data/metrics.json`, `data/report.md`, `data/history.csv` y **`data/aprendizajes.md`**. Compara vídeos a la misma edad (columna "Vistas a 24 h"), % visto y suscriptores. Contrasta el experimento de la semana pasada con su resultado y apúntalo en `aprendizajes.md` (qué se probó, qué pasó, qué se mantiene). Elige **un solo cambio nuevo** que probar esta semana (gancho, duración, tema, hora, voz/sin voz…) y anótalo como experimento. Pide a Miguel en el mensaje final el dato "Lo vieron / Lo pasaron" de los vídeos de la semana (solo sale en YouTube Studio).
-2. Decide el **formato según el tema**:
-   - **Con la voz de Miguel** (1–2 por semana): sistemas completos, actualidad de equipos/entrenadores, opinión o historia — temas que ganan con explicación y criterio de entrenador. Guion conversacional de 60–75 s (150–190 palabras), nada de listas rígidas, gancho en la primera frase, cierre con pregunta y "sígueme".
-   - **Sin voz** (el resto): micro-conceptos de 20–35 s (estructuras, movimientos, roles) que se entienden con animación y subtítulos.
-   En total 5 vídeos a la semana, uno por día de martes a sábado.
-3. Investiga en la web los temas: conceptos tácticos, sistemas, equipos de actualidad. Comprueba cada dato en fuentes abiertas y actuales (no de memoria): alineaciones, entrenadores, títulos, cifras.
-4. Para cada vídeo crea `queue/<AAAA-MM-DD>-<tema>/spec.json` + `meta.json` (ver formato en `engine/render_spec.py` y el ejemplo `queue/2026-11-14-4231-estructura-226/`).
-   - `meta.json`: `"status": "approved"`, `publish_at` en hora de Madrid (`+01:00` en invierno, `+02:00` en verano), uno por día de martes a sábado a las 13:30 o 19:30, título ≤ 100 caracteres terminado en `#shorts`, descripción con 3–5 hashtags, `sources` con las URLs usadas.
-   - Renderiza una hoja de fotogramas de cada uno: `python engine/render_spec.py queue/<slug>/spec.json previews/<slug>.jpg --sheet 1 5 9 13 17 21 25 29` y **mírala** antes de seguir: nada tapado, textos legibles, movimientos con sentido.
-   - `python pipeline/validate.py` debe pasar.
-5. **Revisión independiente antes de publicar:** lanza un subagente que no haya visto tu trabajo para que revise cada vídeo (hoja de fotogramas + spec + fuentes) contra los criterios de abajo y compruebe cada dato en sus fuentes. Corrige todo lo que encuentre; si un dato no se sostiene, quítalo o descarta el vídeo.
-6. Escribe el resumen de la semana en `data/semanas/<AAAA-MM-DD>.md` (conclusiones de métricas, 5 temas y por qué, fuentes, cambios tras la revisión) y haz commit **directamente en `main`**. Publicación 100 % automática: el workflow sube cada vídeo unas 30 h antes de su hora y YouTube lo publica a la hora programada.
-7. **Vídeos con voz:** `meta.json` con `"voice": true`, `"status": "awaiting_voice"` y `publish_at` objetivo; `spec.json` con `"voice": true`, `"script"` (los párrafos tal cual los leerá), `"keywords"`, `"captions": "auto"`, `"end": "auto"` y los tiempos como frases del guion (`"@los laterales suben"`, ver `ejemplos/voz-442/spec.json`). Escribe también `guion.md` en su carpeta. La hoja de previsualización usa tiempos estimados. Envía a Miguel el guion completo en el mensaje final con este enlace para subir la grabación: `https://github.com/JotaEme29/antesdelos90-studio/upload/main/queue/<slug>` (archivo `voz.m4a`). Cuando la sube, el workflow transcribe, alinea, renderiza y programa solo (si su hora ya pasó, en el siguiente hueco a las 19:30).
-8. **TikTok (manual, Miguel los programa en TikTok Studio desde el ordenador):** renderiza completos los vídeos sin voz de la semana (`python engine/render_spec.py queue/<slug>/spec.json build/<slug>.mp4`), revisa que duran lo previsto y envíaselos con SendUserFile. En el mensaje final, para cada uno: día y hora sugeridos (los mismos que en YouTube) y el texto para TikTok listo para copiar (gancho + 1–2 frases + pregunta, sin `#shorts`, con 4–5 hashtags tipo `#tacticadefutbol #futbolbase #entrenadordefutbol #sistemasdejuego` + el del sistema). Guarda ese texto también en `queue/<slug>/tiktok.txt`. Los vídeos con voz se renderizan en GitHub cuando Miguel sube la grabación y quedan para descargar en `https://github.com/JotaEme29/antesdelos90-studio/releases/tag/tiktok`; díselo junto al guion.
-9. Si existe el archivo `PAUSA` en la raíz, no generes nada y avisa a Miguel. No toques los secretos.
+## Rutina diaria (tarea programada, cada mañana)
+Objetivo: un vídeo al día sobre **lo que está pasando en el fútbol**, en formato **cine** (`engine/cine.py`, ejemplo completo en `ejemplos/clasico-mourinho/render.py`). Cada vídeo debe ser mejor que el anterior: nada de plantillas repetidas.
+
+1. **Métricas y aprendizaje.** Lee `data/metrics.json`, `data/report.md`, `data/history.csv` y `data/aprendizajes.md`. Compara a la misma edad (vistas a 24 h, % visto, subs). Una vez por semana (lunes) apunta en `aprendizajes.md` qué se probó, qué pasó y el **experimento** de la semana (un solo cambio). Corrige la línea editorial según lo que diga Miguel en `data/linea_editorial.md`.
+2. **Tema del día (actualidad).** Busca en la web los partidos y noticias de las últimas 24–72 h (LaLiga, Premier, Champions, Serie A, Bundesliga, selección): un plan táctico que decidió un partido, un entrenador nuevo, un jugador que cambió de rol, una tendencia. Mira también qué publican los canales de táctica que funcionan (p. ej. @teactics, @tactics.mind, The Athletic, Coaches' Voice, Tifo) y adapta en español lo que funcione. Elige **un** tema con historia: conflicto, nombres reales, dato sorprendente.
+3. **Investigación con fuentes.** Comprueba cada dato (alineación, sistema, quién marcó a quién, minuto, resultado, cita, clasificación) en ≥2 fuentes abiertas y recientes. Si no se puede verificar, no va. Guarda las URLs en `meta.json` → `sources`.
+4. **Guion visual por bloques** (40–55 s sin voz):
+   - 0–2,5 s: **gancho** enorme (`bigtitle`) con afirmación que choque o pregunta, cámara baja en movimiento.
+   - Contexto → mecanismo táctico (2–3 bloques) → la jugada clave (gol/ocasión con cámara lenta) → dato o cita → clasificación o consecuencia → pregunta que divida + `@antesdelos90`.
+   - **Cada 3–5 s cambia el plano** (`CAMK`): general, zoom a la zona, giro a la banda, cámara siguiendo el balón. Titular arriba que cambia por bloque, subtítulos que entran palabra a palabra, nombres de jugadores, fichas `lower_third`, `scoreboard`, `quote`, `table`, estelas, `flash`, efectos de sonido.
+   - **Innova cada día**: añade al motor al menos una mejora visual nueva cada semana (p. ej. mapa de calor, comparativa en pantalla dividida, contador de datos, líneas de pase dibujándose, recorrido del balón en 3D) y úsala.
+   - **Música**: rota entre los temas de `music/` (no repitas la del día anterior).
+5. **Producción.** Crea `queue/<AAAA-MM-DD>-<tema>/render.py` (copia y adapta el ejemplo), `meta.json` (`"format": "cine"`, `"status": "approved"`, `publish_at` ese día a las 19:30 hora de Madrid o al día siguiente si ya es tarde, título ≤ 100 caracteres con `#shorts`, descripción con 3–5 hashtags, `tags`, `sources`) y `tiktok.txt`. Haz hoja de fotogramas (`python queue/<slug>/render.py previews/<slug>.jpg --sheet 1 4 8 ...`) y **mírala**: nada tapado (zona segura), textos legibles, jugadores sin solaparse, movimientos con sentido. Renderiza el vídeo completo en `build/<slug>.mp4`, revisa duración y audio. `python pipeline/validate.py` debe pasar.
+6. **Revisión independiente:** un subagente que no haya visto tu trabajo revisa la hoja, el guion y **cada dato contra sus fuentes**. Corrige todo; si algo no se sostiene, quítalo o cambia de tema.
+7. **Publicar:** commit y push directo a `main` (el workflow sube y programa en YouTube). Envía a Miguel el vídeo (SendUserFile) con el texto de TikTok y la hora para programarlo.
+8. **Con voz (1 por semana, lo revisa Miguel antes):** `meta.json` con `"voice": true`, `"status": "awaiting_voice"`; en `render.py` usa `cine.voice_clock(SCRIPT)` para sincronizar planos con frases (`V.at("frase")`) y `C.encode(..., voice=V.wav)`. Guion de 150–190 palabras, la **primera frase es el gancho**. Escribe `guion.md` y envía a Miguel el guion completo con el enlace `https://github.com/JotaEme29/antesdelos90-studio/upload/main/queue/<slug>` (archivo `voz.m4a`). Si hay arranques en falso en la grabación, córtalos.
+9. Resumen breve del día en `data/semanas/<AAAA-MM-DD>.md`. Si existe `PAUSA` en la raíz, no generes nada y avisa a Miguel. No toques los secretos.
 
 ## Cómo frena Miguel algo
 - Un vídeo concreto: poner `"status": "draft"` en su `meta.json` antes de que se suba (se sube ~30 h antes de su hora). Si ya está subido, borrarlo o pasarlo a privado en YouTube Studio.
@@ -27,12 +28,12 @@ Todo en español de España. Miguel revisa y aprueba; tú propones, produces y m
 ## Criterios de contenido (de Miguel)
 - **Gancho en el primer segundo** (campo `hook` del spec, obligatorio): pregunta o idea polémica corta, 2 líneas, en el centro. En los vídeos con voz, la **primera frase del guion es esa pregunta** (nunca "El 3-5-2. Tres centrales…"). El 95 % de las vistas viene del feed de Shorts: si no engancha en 1 s, se pasa.
 - Zona segura: nada importante en los ~220 px de arriba ni los ~420 de abajo ni en la columna derecha (ya lo respeta el motor).
-- Equipos y entrenadores que se nombran → ficha `card` (nombre, entrenador y años, escudo genérico con colores del club). Nunca escudos oficiales ni fotos.
-- El campo **siempre entero** a la vista; se mueve el equipo entero, también el rival cuando reacciona.
-- Explicado paso a paso (subtítulos numerados o frases cortas con *clave* resaltada). Sin voz: 20–35 s. Con voz: 60–75 s.
+- Equipos, jugadores y entrenadores: por su nombre en texto y con los colores del club. Nunca escudos oficiales ni fotos.
+- Planos variados (zoom, giros, cámara baja), pero en cada bloque se ve el contexto: se mueve el equipo entero, también el rival cuando reacciona.
+- Explicado paso a paso con frases cortas y *clave* resaltada. Sin voz: 40–55 s. Con voz: 60–75 s.
 - Nada de datos inventados ni estadísticas sin fuente. Si un dato no se puede verificar, no va.
 - El sistema no decide si el extremo va por dentro o por fuera: laterales y extremos se compensan. No digas que un sistema es "difícil de entrenar".
-- Ligado a la serie "Sistemas de juego" (kicker del tipo `4-2-3-1 · SISTEMAS DE JUEGO`).
+- Temas de actualidad con nombres reales; los sistemas se explican a través de equipos y partidos concretos.
 - Cierre con pregunta para comentarios y `@antesdelos90`.
 - Música solo de `music/` (Biblioteca de audio de YouTube).
 
