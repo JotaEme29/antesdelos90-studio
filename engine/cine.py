@@ -275,7 +275,8 @@ def shake(img, t, t0, dur=.45, amp=22):
 def white_flash(b, t, t0, dur=.25):
     u = t - t0
     if 0 <= u <= dur:
-        d = ImageDraw.Draw(b, "RGBA"); d.rectangle((0, 0, W2, H2), fill=(255, 255, 255, int(140 * (1 - u / dur))))
+        # sobre RGBA, ImageDraw sustituye el píxel en vez de mezclar: se compone una capa para que sea un destello, no un fotograma blanco
+        b.alpha_composite(Image.new("RGBA", b.size, (255, 255, 255, int(140 * (1 - u / dur)))))
 
 def lower_third(b, t, t0, t1, name, role, extra=None, y=1210):
     """ficha tipo retransmisión: barra amarilla + nombre + rol."""
@@ -335,3 +336,64 @@ def cam_speed(keys, t, dt=1 / 30):
     a = camkeys(keys, t); b = camkeys(keys, max(0, t - dt))
     pa = a.P(0, 52.5); pb = b.P(0, 52.5)
     return math.hypot(pa[0] - pb[0], pa[1] - pb[1]) / SS / 40
+
+# ------------------------------------------------------------------ efectos nuevos (v3.2, semana 16–22 nov)
+def counter(b, t, t0, t1, n, label, broken_at=None, broken_txt=None, y=820):
+    """contador de datos: el número sube de 0 a n; si broken_at, una raya roja lo 'rompe' y aparece broken_txt."""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .3) * (1 - ease((t - t1 + .3) / .3))
+    d.rectangle((0, (y - 260) * SS, W2, (y + 250) * SS), fill=(*BG, int(170 * k)))
+    u = ease((t - t0 - .15) / 1.5); val = int(round(n * u))
+    pop = 1.0 + .08 * math.sin(min(1, max(0, (t - t0 - 1.65) / .3)) * math.pi)
+    jit = 0
+    if broken_at is not None and t >= broken_at:
+        e = t - broken_at; jit = int(14 * SS * max(0, 1 - e / .35) * math.sin(e * 80))
+    f = font(300 * pop, "Black"); cx = W2 / 2 + jit; cy = (y - 40) * SS
+    d.text((cx + 8 * SS, cy + 10 * SS), str(val), font=f, fill=(0, 0, 0, int(200 * k)), anchor="mm")
+    d.text((cx, cy), str(val), font=f, fill=(*YEL, int(255 * k)), anchor="mm")
+    d.text((W2 / 2, (y + 150) * SS), label, font=font(52, "Black"), fill=(*WHT, int(255 * k)), anchor="mm")
+    if broken_at is not None and t >= broken_at:
+        e = ease((t - broken_at) / .22); x0, y0 = W2 / 2 - 300 * SS, cy + 120 * SS; x1, y1 = W2 / 2 + 300 * SS, cy - 130 * SS
+        d.line((x0, y0, x0 + (x1 - x0) * e, y0 + (y1 - y0) * e), fill=(230, 40, 50, int(255 * k)), width=int(26 * SS))
+        if broken_txt:
+            kk = back((t - broken_at - .15) / .3)
+            if kk > .05:
+                fb = font(64 * kk, "Black"); tw = d.textlength(broken_txt, font=fb)
+                d.rounded_rectangle((W2 / 2 - tw / 2 - 30 * SS, (y + 230) * SS - 50 * SS * kk, W2 / 2 + tw / 2 + 30 * SS, (y + 230) * SS + 50 * SS * kk),
+                                    radius=18 * SS, fill=(230, 40, 50, int(255 * k)))
+                d.text((W2 / 2, (y + 230) * SS), broken_txt, font=fb, fill=(*WHT, int(255 * k)), anchor="mm")
+
+def pressure(b, cam, p, q, col, a=1.0, width=4.5):
+    """cono de presión a ras de suelo: del que presiona (p) al que recibe (q), se estrecha hacia el objetivo."""
+    if a <= .02: return
+    layer = Image.new("RGBA", b.size, (0, 0, 0, 0)); d = ImageDraw.Draw(layer)
+    dx, dz = q[0] - p[0], q[1] - p[1]; L = math.hypot(dx, dz) or 1; nx, nz = -dz / L, dx / L
+    for i in range(6):
+        u0, u1 = i / 6, (i + 1) / 6
+        w0, w1 = width * (1 - u0 * .8), width * (1 - u1 * .8)
+        pts = [(p[0] + dx * u0 + nx * w0, p[1] + dz * u0 + nz * w0), (p[0] + dx * u1 + nx * w1, p[1] + dz * u1 + nz * w1),
+               (p[0] + dx * u1 - nx * w1, p[1] + dz * u1 - nz * w1), (p[0] + dx * u0 - nx * w0, p[1] + dz * u0 - nz * w0)]
+        d.polygon([cam.P(*pt)[:2] for pt in pts], fill=(*col, int((60 + 25 * i) * a)))
+    b.alpha_composite(layer.filter(ImageFilter.GaussianBlur(3 * SS)))
+
+def versus(b, t, t0, t1, left, right, colL, colR, kicker, subL=None, subR=None, foot=None):
+    """cartel de cruce: pantalla partida en diagonal con los dos equipos (colores del club, sin escudos)."""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .35) * (1 - ease((t - t1 + .3) / .3))
+    s = ease((t - t0) / .45); off = (1 - s) * 700 * SS
+    yA, yB = 520 * SS, 1330 * SS
+    d.polygon([(-off, yA), (W2 / 2 + 90 * SS - off, yA), (W2 / 2 - 90 * SS - off, yB), (-off, yB)], fill=(*colL, int(235 * k)))
+    d.polygon([(W2 / 2 + 90 * SS + off, yA), (W2 + off, yA), (W2 + off, yB), (W2 / 2 - 90 * SS + off, yB)], fill=(*colR, int(235 * k)))
+    d.text((W2 / 2, 440 * SS), kicker, font=font(40, "Bold"), fill=(*YEL, int(255 * k)), anchor="mm")
+    kk = back((t - t0 - .3) / .35)
+    if kk > .05:
+        for txt, sub, cx, cy in ((left, subL, W2 * .27, 820 * SS), (right, subR, W2 * .70, 1030 * SS)):
+            f = font(84 * kk, "Black")
+            d.text((cx + 5 * SS, cy + 6 * SS), txt, font=f, fill=(0, 0, 0, int(160 * k)), anchor="mm")
+            d.text((cx, cy), txt, font=f, fill=(*WHT, int(255 * k)), anchor="mm")
+            if sub: d.text((cx, cy + 80 * SS), sub, font=font(34, "Bold"), fill=(*WHT, int(235 * k)), anchor="mm")
+        kv = back((t - t0 - .5) / .3)
+        if kv > .05:
+            r = 70 * SS * kv; cx, cy = W2 / 2, 925 * SS
+            d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(*YEL, int(255 * k))); d.text((cx, cy), "VS", font=font(58 * kv, "Black"), fill=(*NAVY, int(255 * k)), anchor="mm")
+    if foot: d.text((W2 / 2, 1410 * SS), foot, font=font(40, "Bold"), fill=(*WHT, int(255 * k * ease((t - t0 - .6) / .3))), anchor="mm")
