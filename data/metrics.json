@@ -1,10 +1,10 @@
 {
-  "updated": "2026-11-21T07:40:12+00:00",
+  "updated": "2026-11-21T19:45:23+00:00",
   "channel": {
-    "viewCount": "2928",
-    "subscriberCount": "10",
+    "viewCount": "2953",
+    "subscriberCount": "11",
     "hiddenSubscriberCount": false,
-    "videoCount": "10"
+    "videoCount": "11"
   },
   "videos": [
     {
@@ -20,7 +20,7 @@
       "comments": 0,
       "shares": 0,
       "subscribersGained": 0,
-      "live_views": 447,
+      "live_views": 449,
       "live_likes": 5,
       "live_comments": 0
     },
@@ -37,8 +37,8 @@
       "comments": 0,
       "shares": 2,
       "subscribersGained": 2,
-      "live_views": 761,
-      "live_likes": 15,
+      "live_views": 768,
+      "live_likes": 16,
       "live_comments": 0
     },
     {
@@ -71,8 +71,8 @@
       "comments": 0,
       "shares": 0,
       "subscribersGained": 0,
-      "live_views": 245,
-      "live_likes": 5,
+      "live_views": 247,
+      "live_likes": 6,
       "live_comments": 0
     },
     {
@@ -88,8 +88,8 @@
       "comments": 0,
       "shares": 0,
       "subscribersGained": 1,
-      "live_views": 40,
-      "live_likes": 4,
+      "live_views": 48,
+      "live_likes": 5,
       "live_comments": 0
     },
     {
@@ -105,7 +105,7 @@
       "comments": 0,
       "shares": 0,
       "subscribersGained": 3,
-      "live_views": 823,
+      "live_views": 826,
       "live_likes": 8,
       "live_comments": 0
     },
@@ -122,7 +122,7 @@
       "comments": 0,
       "shares": 0,
       "subscribersGained": 0,
-      "live_views": 34,
+      "live_views": 35,
       "live_likes": 1,
       "live_comments": 0
     },
@@ -139,8 +139,8 @@
       "comments": 0,
       "shares": 0,
       "subscribersGained": 0,
-      "live_views": 89,
-      "live_likes": 1,
+      "live_views": 98,
+      "live_likes": 3,
       "live_comments": 0
     },
     {
@@ -148,7 +148,16 @@
       "id": "SUXY9nJuRtM",
       "title": "3-5-2: el carrilero, extremo con balón y defensa sin él #shorts",
       "published_at": "2026-11-20T20:42:02+00:00",
-      "live_views": 32,
+      "live_views": 54,
+      "live_likes": 2,
+      "live_comments": 0
+    },
+    {
+      "slug": "2026-11-21-clasico-mourinho",
+      "id": "63ZIgH9HvjY",
+      "title": "Así ganó Mourinho el Clásico: le quitó el centro al Barça #shorts",
+      "published_at": "2026-11-21T19:45:22+00:00",
+      "live_views": 39,
       "live_likes": 1,
       "live_comments": 0
     }

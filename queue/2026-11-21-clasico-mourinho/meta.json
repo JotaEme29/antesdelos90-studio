@@ -1,5 +1,5 @@
 {
-  "status": "scheduled",
+  "status": "published",
   "format": "cine",
   "publish_at": "2026-11-21T19:30:00+01:00",
   "title": "Así ganó Mourinho el Clásico: le quitó el centro al Barça #shorts",
@@ -25,5 +25,6 @@
   "music": "music/got_it-cory_barker.mp3",
   "video_id": "63ZIgH9HvjY",
   "uploaded_at": "2026-11-20T20:02:56+00:00",
-  "error": null
+  "error": null,
+  "published_at": "2026-11-21T19:45:22+00:00"
 }
