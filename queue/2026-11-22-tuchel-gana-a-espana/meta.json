@@ -1,10 +1,21 @@
 {
-  "status": "approved",
+  "status": "scheduled",
   "format": "cine",
   "publish_at": "2026-11-22T19:30:00+01:00",
   "title": "Así ganó Inglaterra a la campeona del mundo: presión arriba y al hombre #shorts",
   "description": "España 2-3 Inglaterra (Nations League, Metropolitano, 15-11-2026). Tras 43 partidos sin perder, Tuchel presionó arriba con parejas al hombre: Rice encima de Zubimendi, Anderson encima de Fabián. Pase largo de Anderson, Kane a la espalda y penalti en el 45; Konsa (53') y White (57') pusieron el 0-3. Con diez, España se quedó a un gol (Oyarzabal y Nico Williams). En cuartos, la Francia de Zidane.\n\n¿Copiará Zidane el plan de Tuchel? Te leo en comentarios.\n\n#tactica #futbol #seleccionespañola #inglaterra #nationsleague",
-  "tags": ["táctica fútbol", "España Inglaterra", "Nations League", "Tuchel", "presión alta", "marcaje al hombre", "selección española", "Kane", "Lamine Yamal", "Zidane"],
+  "tags": [
+    "táctica fútbol",
+    "España Inglaterra",
+    "Nations League",
+    "Tuchel",
+    "presión alta",
+    "marcaje al hombre",
+    "selección española",
+    "Kane",
+    "Lamine Yamal",
+    "Zidane"
+  ],
   "sources": [
     "https://rfef.es/es/noticias/derrota-por-la-minima-que-no-empata-un-historico-2026",
     "https://rfef.es/es/noticias/queremos-volver-ganar-la-nations",
@@ -22,5 +33,8 @@
     "https://www.goal.com/en/news/uefa-nations-league-2026-27-quarter-final-draw-spain-france/blt66fa1e092f47896a",
     "https://www.elespectador.com/deportes/futbol-mundial/sorteados-los-cuartos-de-final-de-la-nations-league-espana-vs-francia-el-duelo-estelar/"
   ],
-  "music": "music/dance_with_you-everet_almond.mp3"
+  "music": "music/dance_with_you-everet_almond.mp3",
+  "video_id": "9-lijHew1Pc",
+  "uploaded_at": "2026-11-21T14:51:43+00:00",
+  "error": null
 }
