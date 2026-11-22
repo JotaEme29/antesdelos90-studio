@@ -1,4 +1,4 @@
-"""Estilo 'cine' (v3): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
+"""Estilo 'cine' (v3.3): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
 titular que cambia en cada bloque, subtítulos que entran palabra a palabra y efectos de sonido.
 Inspirado en lo que funciona en los canales grandes de táctica (planos cambiantes, historia real con nombres,
 gancho provocador), no en una plantilla fija."""
@@ -49,8 +49,10 @@ def pitch(b, cam):
 
 def zone(b, cam, pts, col, a=1.0, fill=55):
     if a <= .02: return
-    d = ImageDraw.Draw(b, "RGBA"); q = [cam.P(x, z)[:2] for x, z in pts]
+    # sobre RGBA ImageDraw sustituye el píxel (no mezcla): se pinta en una capa y se compone, si no la zona sale opaca
+    layer = Image.new("RGBA", b.size, (0, 0, 0, 0)); d = ImageDraw.Draw(layer); q = [cam.P(x, z)[:2] for x, z in pts]
     d.polygon(q, fill=(*col, int(fill * a))); d.line(q + [q[0]], fill=(*col, int(220 * a)), width=int(3 * SS), joint="curve")
+    b.alpha_composite(layer)
 
 def ring(b, cam, x, z, r, col, a=1.0, w=4):
     if a <= .02: return
@@ -397,3 +399,68 @@ def versus(b, t, t0, t1, left, right, colL, colR, kicker, subL=None, subR=None, 
             r = 70 * SS * kv; cx, cy = W2 / 2, 925 * SS
             d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(*YEL, int(255 * k))); d.text((cx, cy), "VS", font=font(58 * kv, "Black"), fill=(*NAVY, int(255 * k)), anchor="mm")
     if foot: d.text((W2 / 2, 1410 * SS), foot, font=font(40, "Bold"), fill=(*WHT, int(255 * k * ease((t - t0 - .6) / .3))), anchor="mm")
+
+# ------------------------------------------------------------------ efectos nuevos (v3.3, semana 23–29 nov)
+def statbars(b, t, t0, t1, title, nameL, nameR, colL, colR, rows, y=640):
+    """duelo de datos: barras enfrentadas que crecen desde el centro con los colores de cada club.
+    rows = [(etiqueta, valorL, valorR, textoL, textoR)]; la barra del que gana brilla."""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .35) * (1 - ease((t - t1 + .3) / .3))
+    d.rectangle((0, 0, W2, H2), fill=(*BG, int(215 * k)))
+    d.text((W2 / 2, y * SS), title, font=font(40, "Bold"), fill=(*YEL, int(255 * k)), anchor="mm")
+    kh = back((t - t0 - .1) / .35)
+    if kh > .05:
+        for txt, col, cx in ((nameL, colL, W2 * .28), (nameR, colR, W2 * .72)):
+            f = font(64 * kh, "Black"); tw = d.textlength(txt, font=f)
+            d.rounded_rectangle((cx - tw / 2 - 26 * SS, (y + 100) * SS - 46 * SS * kh, cx + tw / 2 + 26 * SS, (y + 100) * SS + 46 * SS * kh),
+                                radius=18 * SS, fill=(*col, int(245 * k)))
+            lum = sum(col) / 3; d.text((cx, (y + 100) * SS), txt, font=f, fill=((*NAVY, int(255 * k)) if lum > 150 else (*WHT, int(255 * k))), anchor="mm")
+    cx = W2 / 2; half = 270 * SS
+    for i, (lab, vL, vR, tL, tR) in enumerate(rows):
+        yy = (y + 300 + i * 250) * SS; u = ease((t - t0 - .45 - i * .55) / .9) * k
+        if u <= .01: continue
+        d.text((cx, yy - 70 * SS), lab, font=font(40, "Bold"), fill=(*WHT, int(235 * u)), anchor="mm")
+        m = max(vL, vR) or 1
+        for v, col, sg, txt in ((vL, colL, -1, tL), (vR, colR, 1, tR)):
+            L = half * (v / m) * u; win = v == m and vL != vR
+            x0, x1 = (cx - L, cx - 6 * SS) if sg < 0 else (cx + 6 * SS, cx + L)
+            if L > 8 * SS:
+                if win:
+                    g = Image.new("RGBA", b.size, (0, 0, 0, 0)); ImageDraw.Draw(g).rounded_rectangle((x0, yy - 30 * SS, x1, yy + 30 * SS), radius=14 * SS, fill=(*YEL, int(170 * u)))
+                    b.alpha_composite(g.filter(ImageFilter.GaussianBlur(14 * SS))); d = ImageDraw.Draw(b, "RGBA")
+                d.rounded_rectangle((x0, yy - 26 * SS, x1, yy + 26 * SS), radius=12 * SS, fill=(*col, int(250 * u)))
+            val = txt if u > .97 else (txt if not str(txt).isdigit() else str(int(round(v * u))))
+            tx = (cx - L - 24 * SS) if sg < 0 else (cx + L + 24 * SS)
+            fv = font(64, "Black"); d.text((tx, yy), str(val), font=fv, fill=(*(YEL if win else WHT), int(255 * u)), anchor=("rm" if sg < 0 else "lm"))
+
+def factlist(b, t, t0, t1, title, items, y=600):
+    """lista de consecuencias: tarjetas que caen una a una con un número grande a la izquierda.
+    items = [(numero_o_texto_corto, texto)]"""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .35) * (1 - ease((t - t1 + .3) / .3))
+    d.rectangle((0, 0, W2, H2), fill=(*BG, int(205 * k)))
+    d.text((W2 / 2, y * SS), title, font=font(44, "Black"), fill=(*YEL, int(255 * k)), anchor="mm")
+    for i, (big, txt) in enumerate(items):
+        u = back((t - t0 - .3 - i * .6) / .4); a = min(1, max(0, u)) * k
+        if a <= .02: continue
+        yy = (y + 150 + i * 190) * SS - (1 - min(1, u)) * 60 * SS; x0, x1 = 90 * SS, W2 - 150 * SS
+        d.rounded_rectangle((x0, yy - 70 * SS, x1, yy + 70 * SS), radius=22 * SS, fill=(26, 31, 37, int(245 * a)))
+        d.rounded_rectangle((x0, yy - 70 * SS, x0 + 210 * SS, yy + 70 * SS), radius=22 * SS, fill=(*YEL, int(255 * a)))
+        d.text((x0 + 105 * SS, yy), big, font=font(70 if len(big) <= 3 else 52, "Black"), fill=(*NAVY, int(255 * a)), anchor="mm")
+        f = font(40, "Bold"); words = txt.split(); lines, cur = [], ""
+        for w in words:
+            if d.textlength((cur + " " + w).strip(), font=f) > (x1 - x0 - 270 * SS) and cur: lines.append(cur); cur = w
+            else: cur = (cur + " " + w).strip()
+        lines.append(cur)
+        for j, l in enumerate(lines):
+            d.text((x0 + 240 * SS, yy + (j - (len(lines) - 1) / 2) * 50 * SS), l, font=f, fill=(*WHT, int(255 * a)), anchor="lm")
+
+def tag3d(b, cam, x, z, txt, col=(230, 40, 50), a=1.0, fg=WHT, h=4.2):
+    """etiqueta flotando sobre un jugador en el mundo 3D (LESIÓN, VAR, MANO...), con palito hasta la cabeza."""
+    if a <= .02: return
+    d = ImageDraw.Draw(b, "RGBA"); hx, hy, _ = cam.P(x, z, 2.9); tx, ty, _ = cam.P(x, z, h)
+    ty = min(ty, hy - 70 * SS)
+    f = font(34, "Black"); tw = d.textlength(txt, font=f)
+    d.line((hx, hy, tx, ty + 24 * SS), fill=(*col, int(230 * a)), width=int(3 * SS))
+    d.rounded_rectangle((tx - tw / 2 - 18 * SS, ty - 26 * SS, tx + tw / 2 + 18 * SS, ty + 26 * SS), radius=12 * SS, fill=(*col, int(245 * a)))
+    d.text((tx, ty), txt, font=f, fill=(*fg, int(255 * a)), anchor="mm")
