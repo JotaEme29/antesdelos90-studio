@@ -1,5 +1,5 @@
 {
-  "status": "approved",
+  "status": "scheduled",
   "format": "cine",
   "publish_at": "2026-11-22T21:00:00+01:00",
   "title": "Tres claves del 1-4 del Leeds al Chelsea de Xabi Alonso #shorts",
@@ -32,5 +32,8 @@
     "https://sports.yahoo.com/articles/noah-okafor-hero-9-10-165751731.html",
     "https://mundiario.com/deportes/chelsea-xabi-alonso-hunde-cuatro-goles-crisis-freno/20261122021911454265.html"
   ],
-  "music": "music/glitter_and_gold-patrick_patrikios.mp3"
+  "music": "music/glitter_and_gold-patrick_patrikios.mp3",
+  "video_id": "ZaPReVzu5mQ",
+  "uploaded_at": "2026-11-22T17:29:44+00:00",
+  "error": null
 }
