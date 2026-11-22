@@ -1,5 +1,5 @@
 {
-  "status": "scheduled",
+  "status": "draft",
   "format": "cine",
   "publish_at": "2026-11-23T19:30:00+01:00",
   "title": "El Leeds corrió 6 km más que el Chelsea de Xabi Alonso: así le ganó 1-4 #shorts",
@@ -35,5 +35,6 @@
   "music": "music/glitter_and_gold-patrick_patrikios.mp3",
   "video_id": "uVJAsmVbcl8",
   "uploaded_at": "2026-11-22T14:49:07+00:00",
-  "error": null
+  "error": "Sustituido por la versión táctica publicada el 22-11 a las 21:00. Este vídeo (uVJAsmVbcl8) sigue programado en YouTube para el 23-11 a las 19:30: hay que borrarlo en YouTube Studio (el token no tiene permiso para borrar).",
+  "replaced_by": "2026-11-22-por-que-cayo-el-chelsea"
 }

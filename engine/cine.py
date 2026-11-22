@@ -153,13 +153,13 @@ def bigtitle(b, t, t1, l1, l2):
         d.text((W2 / 2 + 5 * SS, y + 6 * SS), txt, font=f, fill=(0, 0, 0, int(200 * a)), anchor="mm")
         d.text((W2 / 2, y), txt, font=f, fill=(*col, int(255 * a)), anchor="mm")
 
-def flash(b, t, t0, txt, sub=None):
+def flash(b, t, t0, txt, sub=None, size=190):
     """golpe de texto enorme (GOL, 2 contra 1...)."""
     u = t - t0
     if u < 0 or u > 1.4: return
     d = ImageDraw.Draw(b, "RGBA"); k = max(.05, back(u / .25)); a = 1 - ease((u - 1.0) / .4)
-    d.text((W2 / 2 + 6 * SS, 640 * SS + 8 * SS), txt, font=font(190 * k, "Black"), fill=(0, 0, 0, int(200 * a)), anchor="mm")
-    d.text((W2 / 2, 640 * SS), txt, font=font(190 * k, "Black"), fill=(*YEL, int(255 * a)), anchor="mm")
+    d.text((W2 / 2 + 6 * SS, 640 * SS + 8 * SS), txt, font=font(size * k, "Black"), fill=(0, 0, 0, int(200 * a)), anchor="mm")
+    d.text((W2 / 2, 640 * SS), txt, font=font(size * k, "Black"), fill=(*YEL, int(255 * a)), anchor="mm")
     if sub: d.text((W2 / 2, 770 * SS), sub, font=font(48, "Bold"), fill=(*WHT, int(255 * a)), anchor="mm")
 
 def vignette():
