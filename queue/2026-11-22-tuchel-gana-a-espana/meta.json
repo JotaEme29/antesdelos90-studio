@@ -1,5 +1,5 @@
 {
-  "status": "scheduled",
+  "status": "published",
   "format": "cine",
   "publish_at": "2026-11-22T19:30:00+01:00",
   "title": "Así ganó Inglaterra a la campeona del mundo: presión arriba y al hombre #shorts",
@@ -36,5 +36,6 @@
   "music": "music/dance_with_you-everet_almond.mp3",
   "video_id": "9-lijHew1Pc",
   "uploaded_at": "2026-11-21T14:51:43+00:00",
-  "error": null
+  "error": null,
+  "published_at": "2026-11-22T19:57:16+00:00"
 }
