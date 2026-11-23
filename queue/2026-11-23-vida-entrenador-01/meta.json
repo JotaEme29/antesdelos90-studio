@@ -1,0 +1,24 @@
+{
+  "status": "draft",
+  "format": "cine",
+  "voice": true,
+  "series": "la-vida-del-entrenador",
+  "publish_at": "2026-11-27T19:30:00+01:00",
+  "title": "Cada semana dejo a 7 chavales fuera: lo que no se ve de un entrenador #shorts",
+  "description": "La vida del entrenador de fútbol base, ep. 1. Planificar la semana, preparar cada tarea, hacer la convocatoria sabiendo que siete se quedan fuera… y después los mensajes, la grada y el chaval que cree que es algo personal. No lo es. Y aun así, el sábado el equipo compite.\n\nEntrenadores: ¿cómo le decís a un chaval que no va convocado? Os leo.\n\n#futbolbase #entrenador #futbol #convocatoria #shorts",
+  "tags": [
+    "fútbol base",
+    "entrenador de fútbol",
+    "convocatoria",
+    "padres en el fútbol",
+    "vida del entrenador",
+    "planificar entrenamiento",
+    "fútbol formativo",
+    "antesdelos90"
+  ],
+  "sources": [
+    "Experiencia propia de Miguel (entrenador de fútbol base en Málaga). Sin datos externos; los planos de IA van rotulados como recreación."
+  ],
+  "music": "music/dance_with_you-everet_almond.mp3",
+  "notes": "Borrador: necesita los planos de clips/ (ver clips/LEEME.md) y voz.m4a de Miguel. El render completo se para si falta un clip. Cuando esté todo, pasar a awaiting_voice/approved tras la revisión de Miguel."
+}

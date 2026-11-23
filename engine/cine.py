@@ -488,3 +488,94 @@ def redcard(b, t, t0, dur=1.7, txt="ROJA", sub=None, y=640):
         if k > .05:
             d.text((cx, cy + h + 92 * SS), txt, font=font(104 * (.7 + .3 * k), "Black"), fill=(*WHT, int(255 * out * k)), anchor="mm")
             if sub: d.text((cx, cy + h + 182 * SS), sub, font=font(44, "Bold"), fill=(*YEL, int(255 * out * k)), anchor="mm")
+
+# ------------------------------------------------------------------ vídeo real / IA dentro del cine (v3.4, serie "la vida del entrenador")
+class Clip:
+    """Clip de vídeo (grabado por Miguel o generado con IA) como fondo a pantalla completa.
+    Se lee en orden con ffmpeg (barato en el render secuencial); recorta a 9:16, hace un zoom lento
+    y lo etalona al look del canal (más oscuro, algo desaturado). Si el archivo aún no existe,
+    pinta un marcador con la descripción del plano para poder previsualizar el montaje."""
+    def __init__(s, path, label="", zoom=(1.0, 1.08), grade=.82, sat=.85, start=0.0):
+        s.path, s.label, s.zoom, s.grade, s.sat, s.start = path, label, zoom, grade, sat, start
+        s.ok = bool(path) and os.path.isfile(path); s.p = None; s.pos = -1; s.last = None
+        if s.ok:
+            r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path], capture_output=True, text=True)
+            s.dur = float(r.stdout.strip() or 5)
+    def _open(s, t):
+        if s.p: s.p.kill()
+        s.p = subprocess.Popen(["ffmpeg", "-v", "error", "-ss", f"{s.start + t:.3f}", "-i", s.path, "-an",
+                                "-vf", f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS}",
+                                "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        s.pos = int(round(t * FPS)) - 1
+    def raw(s, t):
+        t = t % max(.5, s.dur - s.start - .05)              # si el plano dura más que el clip, vuelve a empezar
+        k = int(round(t * FPS))
+        if s.p is None or k <= s.pos - 1 or k > s.pos + 45: s._open(t)
+        while s.pos < k:
+            buf = s.p.stdout.read(W * H * 3)
+            if len(buf) < W * H * 3: s._open(0); buf = s.p.stdout.read(W * H * 3)
+            s.last = buf; s.pos += 1
+        return Image.frombytes("RGB", (W, H), s.last)
+    def frame(s, t, u):
+        """t: segundos dentro del plano; u: 0..1 avance del plano (para el zoom)."""
+        if not s.ok:
+            im = Image.new("RGBA", (W2, H2), (24, 30, 36, 255)); d = ImageDraw.Draw(im)
+            for i in range(0, W2 + H2, 120 * SS): d.line((i, 0, i - H2, H2), fill=(30, 37, 44, 255), width=int(40 * SS))
+            d.text((W2 / 2, 1060 * SS), "PLANO PENDIENTE", font=font(40, "Bold"), fill=(*YEL, 255), anchor="mm")
+            y = 1130 * SS
+            for ln in _wrap(d, s.label, font(36, "SemiBold"), 860 * SS):
+                d.text((W2 / 2, y), ln, font=font(36, "SemiBold"), fill=(*WHT, 230), anchor="mm"); y += 50 * SS
+            return im
+        im = s.raw(t); z = s.zoom[0] + (s.zoom[1] - s.zoom[0]) * ease(u)
+        if abs(z - 1) > .002:
+            cw, ch = W / z, H / z; im = im.crop(((W - cw) / 2, (H - ch) / 2, (W + cw) / 2, (H + ch) / 2))
+        im = im.resize((W2, H2), Image.BILINEAR)
+        a = np.asarray(im).astype(np.float32); g = a.mean(axis=2, keepdims=True)
+        a = (g + (a - g) * s.sat) * s.grade; a[..., 2] *= 1.04
+        return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), "RGB").convert("RGBA")
+
+def _wrap(d, txt, f, maxw):
+    out, cur = [], ""
+    for w in txt.split():
+        if cur and d.textlength(cur + " " + w, font=f) > maxw: out.append(cur); cur = w
+        else: cur = (cur + " " + w).strip()
+    return out + ([cur] if cur else [])
+
+def rec_tag(b, txt="Recreación", y=412, a=1.0):
+    """chip pequeño arriba a la izquierda: avisa de que el plano es recreación (IA) y no imagen real."""
+    if a <= .02: return
+    d = ImageDraw.Draw(b, "RGBA"); f = font(26, "Bold"); tw = d.textlength(txt, font=f); x0 = 64 * SS
+    d.rounded_rectangle((x0, (y - 22) * SS, x0 + tw + 56 * SS, (y + 22) * SS), radius=22 * SS, fill=(14, 18, 22, int(200 * a)))
+    d.ellipse((x0 + 16 * SS, (y - 6) * SS, x0 + 28 * SS, (y + 6) * SS), fill=(230, 40, 50, int(255 * a)))
+    d.text((x0 + 40 * SS, y * SS), txt, font=f, fill=(*WHT, int(235 * a)), anchor="lm")
+
+def roster(b, t, t0, t1, n=18, out=(), cross_at=None, title="CONVOCATORIA", y=560):
+    """lista de dorsales (sin nombres: son menores); los de 'out' se tachan en rojo a partir de cross_at, uno tras otro."""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .35) * (1 - ease((t - t1 + .3) / .3))
+    cols = 3; rows = math.ceil(n / cols); cw, rh = 280, 104; x0 = W2 / 2 - cols * cw * SS / 2
+    d.rounded_rectangle((x0 - 30 * SS, (y - 80) * SS, W2 - x0 + 30 * SS, (y + rows * rh + 20) * SS), radius=28 * SS, fill=(246, 244, 238, int(242 * k)))
+    d.text((W2 / 2, (y - 30) * SS), title, font=font(40, "Black"), fill=(*NAVY, int(255 * k)), anchor="mm")
+    for i in range(n):
+        u = ease((t - t0 - .15 - i * .04) / .25) * k
+        cx = x0 + (i % cols + .5) * cw * SS; cy = (y + 40 + (i // cols) * rh) * SS
+        dead = cross_at is not None and (i + 1) in out
+        e = ease((t - cross_at - list(out).index(i + 1) * .28) / .25) if dead else 0.0
+        col = tuple(int(NAVY[j] + (150 - NAVY[j]) * e) for j in range(3))
+        d.text((cx, cy), f"Nº {i + 1}", font=font(46, "Black"), fill=(*col, int(255 * u)), anchor="mm")
+        if dead:
+            if e > .01: d.line((cx - 95 * SS, cy + 4 * SS, cx - 95 * SS + 190 * SS * e, cy - 4 * SS), fill=(222, 32, 40, int(255 * k)), width=int(9 * SS))
+
+def chat(b, t, t0, t1, msgs, y=600):
+    """burbujas de mensaje genéricas (sin app ni nombres reales) que entran una a una: msgs = [(texto, quien)]."""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = 1 - ease((t - t1 + .3) / .3); f = font(40, "SemiBold"); fw = font(26, "Bold"); yy = y * SS
+    for i, (txt, who) in enumerate(msgs):
+        u = back((t - t0 - i * .9) / .35); a = min(1, max(0, u)) * k
+        if a <= .02: continue
+        lines = _wrap(d, txt, f, 720 * SS); h = (len(lines) * 52 + 70) * SS; x0 = 90 * SS
+        w = max(d.textlength(l, font=f) for l in lines) + 70 * SS
+        d.rounded_rectangle((x0, yy, x0 + w, yy + h), radius=30 * SS, fill=(250, 250, 250, int(245 * a)))
+        d.text((x0 + 36 * SS, yy + 30 * SS), who, font=fw, fill=(120, 126, 132, int(255 * a)), anchor="lm")
+        for j, l in enumerate(lines): d.text((x0 + 36 * SS, yy + (78 + j * 52) * SS), l, font=f, fill=(*NAVY, int(255 * a)), anchor="lm")
+        yy += h + 30 * SS
