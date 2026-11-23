@@ -1,5 +1,9 @@
 # Planos de vídeo · La vida del entrenador, ep. 1
 
+**Ya están (fotos de Miguel, 23-11):** 01 hablando al equipo · 02 de espaldas · 05 en la banda · 10 de espaldas mirando el partido · 11 piña del equipo (caras de los chavales difuminadas) · 12 agachado en la banda. Vale foto o vídeo con el mismo nombre y cualquier extensión (.jpg, .png, .mp4, .mov).
+
+**Faltan:** 03 mesa planificando · 04 conos y balones · 06 chico/mochila · 07 móvil en la mesa · 08 grada · 09 banquillo.
+
 Sube cada clip a esta carpeta con **el nombre exacto** que aparece abajo. Formato: vertical (9:16) si se puede (si es horizontal, lo recorto), entre 5 y 8 s, plano estable y sin audio importante (se pone tu voz y música encima).
 
 **Reglas fijas:** ninguna cara de los chavales ni nombres legibles (son menores); ni escudos ni logos; los padres, nunca reconocibles. Los planos de IA llevan en pantalla la etiqueta "Recreación con IA".

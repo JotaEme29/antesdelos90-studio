@@ -31,18 +31,19 @@ def cp(name, label, ia=False, **kw):
     return dict(clip=C.Clip(os.path.join(HERE, "clips", name), label, **kw), ia=ia)
 # (frase donde empieza el plano, plano). Un plano dura hasta que empieza el siguiente.
 SHOTS = [
-    ("Cada semana dejo",            cp("01-libreta-tachar.mp4", "TU PLANO: mano tachando nombres en la libreta de la convocatoria (sin que se lean)")),
-    ("Y nadie ve",                  cp("02-campo-noche.mp4", "IA: campo de fútbol base vacío de noche, focos encendidos, travelling lento", ia=True)),
-    ("El lunes empieza",            cp("03-mesa-planificar.mp4", "TU PLANO: tu mesa de noche, libreta/portátil con la planificación y un flexo")),
+    ("Cada semana dejo",            cp("01-miguel-habla.jpg", "Foto de Miguel hablando al equipo", zoom=(1.0, 1.10))),
+    ("Y nadie ve",                  cp("02-espaldas-luz.jpg", "Foto de Miguel de espaldas (U.D. Mortadelo)", zoom=(1.12, 1.0))),
+    ("El lunes empieza",            cp("03-mesa-planificar.mp4", "TU FOTO O VÍDEO: tu mesa de noche con la libreta o el portátil de la planificación y un flexo")),
     ("pensar cada tarea",           dict(anim="rondo")),
-    ("que el balón no pare",        cp("04-conos-balones.mp4", "TU PLANO: conos y balones colocados en el campo, cámara baja a ras de césped")),
-    ("Luego llega la convocatoria", cp("05-pizarra-vestuario.mp4", "TU PLANO: pizarra o puerta del vestuario donde se cuelga la lista (sin nombres legibles)", zoom=(1.04, 1.12))),
-    ("Y cada uno es un chaval",     cp("06-chico-mochila.mp4", "IA: chico de espaldas con mochila caminando de noche bajo farolas, sin cara", ia=True)),
-    ("Entonces llegan los mensajes", cp("07-movil-mesa.mp4", "TU PLANO o IA: móvil sobre una mesa que se ilumina con notificaciones (sin logos)")),
-    ("El padre que te explica",     cp("08-padre-grada.mp4", "IA: adulto en la grada de un campo de fútbol base gesticulando hacia el campo, plano lejano", ia=True)),
-    ("Y el chico que está",         cp("09-chico-banquillo.mp4", "IA: chico sentado solo en el banquillo, de espaldas, cabeza baja", ia=True)),
-    ("No es personal",              cp("10-banda-entrenador.mp4", "TU PLANO: tú de espaldas en la banda o tus manos con la pizarra táctica")),
-    ("Y aun así, el sábado",        cp("11-botas-salen.mp4", "TU PLANO o IA: botas del equipo saliendo al campo / piña de espaldas, sin caras")),
+    ("que el balón no pare",        cp("04-conos-balones.mp4", "TU FOTO O VÍDEO: conos y balones colocados en el campo, casi a ras de césped")),
+    ("Luego llega la convocatoria", cp("05-banda-perfil.jpg", "Foto de Miguel en la banda", zoom=(1.04, 1.12))),
+    ("Y cada uno es un chaval",     cp("06-chico-mochila.mp4", "IA o FOTO: chico de espaldas con mochila de noche (o mochila y botas en un banco)", ia=True)),
+    ("Entonces llegan los mensajes", cp("07-movil-mesa.mp4", "TU FOTO O VÍDEO: tu móvil en la mesa con la pantalla encendida, sin app ni nombres")),
+    ("El padre que te explica",     cp("08-padre-grada.mp4", "IA o FOTO: la grada del campo, adulto lejos y de espaldas", ia=True)),
+    ("Y el chico que está",         cp("09-chico-banquillo.mp4", "IA o FOTO: banquillo vacío, o chico de espaldas con capucha", ia=True)),
+    ("No es personal",              cp("10-espaldas-partido.jpg", "Foto de Miguel de espaldas mirando el partido", zoom=(1.0, 1.10))),
+    ("Y aun así, el sábado",        cp("11-equipo-pina.jpg", "Foto de la piña del equipo (caras difuminadas)", zoom=(1.0, 1.05))),
+    ("Eso es lo que no se ve",      cp("12-agachado-banda.jpg", "Foto de Miguel agachado en la banda", zoom=(1.10, 1.0))),
     ("Entrenador, ¿cómo le dices",  dict(end=True)),
 ]
 T = [V.at(p) for p, _ in SHOTS]
@@ -88,6 +89,10 @@ def scene(t):
             prev = pv["clip"].frame(t - T[i - 1], 1.0); b = Image.blend(prev, b, ease(lt / .18))
     b.alpha_composite(VIG)
     if sh.get("ia"): C.rec_tag(b, "Recreación con IA", a=ease(lt / .3))
+    if t < 2.4:                                             # banda oscura detrás del gancho para que se lea sobre la foto
+        from PIL import ImageFilter
+        sh_ = Image.new("RGBA", b.size, (0, 0, 0, 0)); a_ = int(170 * (1 - ease((t - 2.0) / .4)))
+        ImageDraw.Draw(sh_).rectangle((0, 700 * 2, W2, 1020 * 2), fill=(*BG, a_)); b.alpha_composite(sh_.filter(ImageFilter.GaussianBlur(60)))
     C.bigtitle(b, t, 2.4, "Cada semana dejo", "a 7 fuera")
     if 2.2 < t < END: C.headline(b, t, HEAD)
     C.roster(b, t, V.at("Luego llega la convocatoria") + .1, V.at("Y cada uno es un chaval") - .05, PLANTILLA, FUERA,
