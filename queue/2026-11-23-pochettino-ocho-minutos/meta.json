@@ -1,5 +1,5 @@
 {
-  "status": "approved",
+  "status": "scheduled",
   "format": "cine",
   "publish_at": "2026-11-23T14:00:00+01:00",
   "title": "El debut de Pochettino duró 8 minutos: Liverpool 4-0 United #shorts",
@@ -29,5 +29,8 @@
     "https://www.skysports.com/football/liverpool-vs-man-utd/5154073202367135232",
     "https://www.theukjournal.co.uk/liverpool-4-0-manchester-united/"
   ],
-  "music": "music/okay_for_now-televisions.mp3"
+  "music": "music/okay_for_now-televisions.mp3",
+  "video_id": "mK7ab2vekLo",
+  "uploaded_at": "2026-11-23T10:44:17+00:00",
+  "error": null
 }
