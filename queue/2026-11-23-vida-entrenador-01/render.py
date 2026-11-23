@@ -5,10 +5,11 @@ pinta un marcador; el render completo se para (no se publica un vídeo con hueco
 Uso: python queue/2026-11-23-vida-entrenador-01/render.py salida.mp4 [--sheet t1 t2 ...]"""
 import sys, os, math
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, "..", "..", "engine"))
+sys.path.insert(0, os.path.join(HERE, "..", "..", "engine")); sys.path.insert(0, HERE)
 from PIL import Image, ImageDraw
 from flat import W2, H2, BG, YEL, WHT, ease, finish
 import cine as C
+import planos
 
 ROOT = os.path.join(HERE, "..", "..")
 SCRIPT = [
@@ -33,19 +34,23 @@ def cp(name, label, ia=False, **kw):
 SHOTS = [
     ("Cada semana dejo",            cp("01-miguel-habla.jpg", "Foto de Miguel hablando al equipo", zoom=(1.0, 1.10))),
     ("Y nadie ve",                  cp("02-espaldas-luz.jpg", "Foto de Miguel de espaldas (U.D. Mortadelo)", zoom=(1.12, 1.0))),
-    ("El lunes empieza",            cp("03-mesa-planificar.mp4", "TU FOTO O VÍDEO: tu mesa de noche con la libreta o el portátil de la planificación y un flexo")),
+    ("El lunes empieza",            dict(anim="mesa", clip_alt=os.path.join(HERE, "clips", "03-mesa-planificar.mp4"))),
     ("pensar cada tarea",           dict(anim="rondo")),
-    ("que el balón no pare",        cp("04-conos-balones.mp4", "TU FOTO O VÍDEO: conos y balones colocados en el campo, casi a ras de césped")),
+    ("que el balón no pare",        dict(anim="conos", clip_alt=os.path.join(HERE, "clips", "04-conos-balones.mp4"))),
     ("Luego llega la convocatoria", cp("05-banda-perfil.jpg", "Foto de Miguel en la banda", zoom=(1.04, 1.12))),
-    ("Y cada uno es un chaval",     cp("06-chico-mochila.mp4", "IA o FOTO: chico de espaldas con mochila de noche (o mochila y botas en un banco)", ia=True)),
-    ("Entonces llegan los mensajes", cp("07-movil-mesa.mp4", "TU FOTO O VÍDEO: tu móvil en la mesa con la pantalla encendida, sin app ni nombres")),
-    ("El padre que te explica",     cp("08-padre-grada.mp4", "IA o FOTO: la grada del campo, adulto lejos y de espaldas", ia=True)),
-    ("Y el chico que está",         cp("09-chico-banquillo.mp4", "IA o FOTO: banquillo vacío, o chico de espaldas con capucha", ia=True)),
+    ("Y cada uno es un chaval",     dict(anim="calle", clip_alt=os.path.join(HERE, "clips", "06-chico-mochila.mp4"))),
+    ("Entonces llegan los mensajes", dict(anim="movil", clip_alt=os.path.join(HERE, "clips", "07-movil-mesa.mp4"))),
+    ("El padre que te explica",     dict(anim="grada", clip_alt=os.path.join(HERE, "clips", "08-padre-grada.mp4"))),
+    ("Y el chico que está",         dict(anim="banquillo", clip_alt=os.path.join(HERE, "clips", "09-chico-banquillo.mp4"))),
     ("No es personal",              cp("10-espaldas-partido.jpg", "Foto de Miguel de espaldas mirando el partido", zoom=(1.0, 1.10))),
     ("Y aun así, el sábado",        cp("11-equipo-pina.jpg", "Foto de la piña del equipo (caras difuminadas)", zoom=(1.0, 1.05))),
     ("Eso es lo que no se ve",      cp("12-agachado-banda.jpg", "Foto de Miguel agachado en la banda", zoom=(1.10, 1.0))),
     ("Entrenador, ¿cómo le dices",  dict(end=True)),
 ]
+for _k, (_p, _s) in enumerate(SHOTS):                       # si llega el clip real o de IA, sustituye al plano dibujado
+    if "clip_alt" in _s:
+        _c = C.Clip(_s["clip_alt"], "")
+        if _c.ok: SHOTS[_k] = (_p, dict(clip=_c, ia=True))
 T = [V.at(p) for p, _ in SHOTS]
 END = T[-1] - .15; TOTAL = max(END + 3.4, V.dur + V.OFF + 1.0)
 CAPS = V.captions(KEYS)
@@ -82,6 +87,7 @@ def scene(t):
     i, t0, t1 = shot_at(min(t, END - .01)); sh = SHOTS[i][1]; lt = t - t0
     b = Image.new("RGBA", (W2, H2), (*BG, 255))
     if sh.get("anim") == "rondo": rondo(b, lt)
+    elif sh.get("anim") in planos.FN: planos.FN[sh["anim"]](b, lt, t1 - t0)
     elif "clip" in sh: b = sh["clip"].frame(lt, min(1, lt / max(.5, t1 - t0)))
     if i > 0 and lt < .18:                                  # corte con un fundido muy corto desde el plano anterior
         pv = SHOTS[i - 1][1]
@@ -97,7 +103,7 @@ def scene(t):
     if 2.2 < t < END: C.headline(b, t, HEAD)
     C.roster(b, t, V.at("Luego llega la convocatoria") + .1, V.at("Y cada uno es un chaval") - .05, PLANTILLA, FUERA,
              V.at("Siete nombres que no salen"), "CONVOCATORIA · SÁBADO")
-    C.chat(b, t, V.at("Entonces llegan los mensajes") + .5, V.at("El padre que te explica") + 1.6, MSGS)
+    C.chat(b, t, V.at("Entonces llegan los mensajes") + .5, V.at("El padre que te explica") + .2, MSGS)
     C.flash(b, t, V.at("No es personal"), "NO ES PERSONAL", None, size=100)
     if t < END and not (V.at("Luego llega la convocatoria") < t < V.at("Y cada uno es un chaval")) and t > 2.4: C.subs(b, t, SUBS)
     if t >= END: C.endcard(b, t - END, "¿Cómo le dices a un chaval", "que no va convocado?", "Entrenadores: os leo")

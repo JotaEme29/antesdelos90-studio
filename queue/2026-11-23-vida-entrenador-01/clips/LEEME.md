@@ -2,7 +2,7 @@
 
 **Ya están (fotos de Miguel, 23-11):** 01 hablando al equipo · 02 de espaldas · 05 en la banda · 10 de espaldas mirando el partido · 11 piña del equipo (caras de los chavales difuminadas) · 12 agachado en la banda. Vale foto o vídeo con el mismo nombre y cualquier extensión (.jpg, .png, .mp4, .mov).
 
-**Faltan:** 03 mesa planificando · 04 conos y balones · 06 chico/mochila · 07 móvil en la mesa · 08 grada · 09 banquillo.
+**Generados por código (planos.py, 24-11):** 03 mesa planificando · 04 conos y balones · 06 calle de noche · 07 móvil · 08 grada · 09 banquillo. Son ilustraciones animadas. Si se sube un clip con ese nombre (vídeo o foto, real o de IA), sustituye automáticamente al dibujado.
 
 Sube cada clip a esta carpeta con **el nombre exacto** que aparece abajo. Formato: vertical (9:16) si se puede (si es horizontal, lo recorto), entre 5 y 8 s, plano estable y sin audio importante (se pone tu voz y música encima).
 
