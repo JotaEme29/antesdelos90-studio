@@ -1,5 +1,5 @@
 {
-  "status": "scheduled",
+  "status": "published",
   "format": "cine",
   "publish_at": "2026-11-22T21:00:00+01:00",
   "title": "Tres claves del 1-4 del Leeds al Chelsea de Xabi Alonso #shorts",
@@ -35,5 +35,6 @@
   "music": "music/glitter_and_gold-patrick_patrikios.mp3",
   "video_id": "ZaPReVzu5mQ",
   "uploaded_at": "2026-11-22T17:29:44+00:00",
-  "error": null
+  "error": null,
+  "published_at": "2026-11-23T08:10:15+00:00"
 }
