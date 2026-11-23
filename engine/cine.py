@@ -490,15 +490,26 @@ def redcard(b, t, t0, dur=1.7, txt="ROJA", sub=None, y=640):
             if sub: d.text((cx, cy + h + 182 * SS), sub, font=font(44, "Bold"), fill=(*YEL, int(255 * out * k)), anchor="mm")
 
 # ------------------------------------------------------------------ vídeo real / IA dentro del cine (v3.4, serie "la vida del entrenador")
+VID_EXT = (".mp4", ".mov", ".m4v", ".webm")
+IMG_EXT = (".jpg", ".jpeg", ".png", ".webp")
+
 class Clip:
     """Clip de vídeo (grabado por Miguel o generado con IA) como fondo a pantalla completa.
     Se lee en orden con ffmpeg (barato en el render secuencial); recorta a 9:16, hace un zoom lento
     y lo etalona al look del canal (más oscuro, algo desaturado). Si el archivo aún no existe,
     pinta un marcador con la descripción del plano para poder previsualizar el montaje."""
     def __init__(s, path, label="", zoom=(1.0, 1.08), grade=.82, sat=.85, start=0.0):
+        if path and not os.path.isfile(path):                # vale cualquier formato con el mismo nombre: vídeo o foto
+            import glob
+            alt = sorted(glob.glob(os.path.splitext(path)[0] + ".*")); alt = [a for a in alt if a.lower().endswith(VID_EXT + IMG_EXT)]
+            if alt: path = alt[0]
         s.path, s.label, s.zoom, s.grade, s.sat, s.start = path, label, zoom, grade, sat, start
-        s.ok = bool(path) and os.path.isfile(path); s.p = None; s.pos = -1; s.last = None
-        if s.ok:
+        s.ok = bool(path) and os.path.isfile(path); s.p = None; s.pos = -1; s.last = None; s.img = None
+        if s.ok and path.lower().endswith(IMG_EXT):          # foto: se anima con zoom lento (efecto Ken Burns)
+            from PIL import ImageOps
+            im = ImageOps.exif_transpose(Image.open(path)).convert("RGB")
+            s.img = ImageOps.fit(im, (W, H), Image.LANCZOS); s.dur = 99.0; s.zoom = (zoom[0], max(zoom[1], 1.12))
+        elif s.ok:
             r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path], capture_output=True, text=True)
             s.dur = float(r.stdout.strip() or 5)
     def _open(s, t):
@@ -526,7 +537,7 @@ class Clip:
             for ln in _wrap(d, s.label, font(36, "SemiBold"), 860 * SS):
                 d.text((W2 / 2, y), ln, font=font(36, "SemiBold"), fill=(*WHT, 230), anchor="mm"); y += 50 * SS
             return im
-        im = s.raw(t); z = s.zoom[0] + (s.zoom[1] - s.zoom[0]) * ease(u)
+        im = s.img.copy() if s.img is not None else s.raw(t); z = s.zoom[0] + (s.zoom[1] - s.zoom[0]) * ease(u)
         if abs(z - 1) > .002:
             cw, ch = W / z, H / z; im = im.crop(((W - cw) / 2, (H - ch) / 2, (W + cw) / 2, (H + ch) / 2))
         im = im.resize((W2, H2), Image.BILINEAR)
