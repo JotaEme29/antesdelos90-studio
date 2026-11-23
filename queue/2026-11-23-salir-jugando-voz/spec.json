@@ -1,0 +1,79 @@
+{
+ "voice": true,
+ "kicker": "SALIR JUGANDO · BAJO PRESIÓN",
+ "title": ["Salir jugando", "bajo presión"],
+ "music": "music/got_it-cory_barker.mp3",
+ "end": "auto",
+ "captions": "auto",
+ "endcard": {"q1": "¿Tu equipo sale jugando", "q2": "o la regala?", "dur": 3.0},
+ "keywords": ["Chelsea", "United", "presionados", "estructura", "un hombre más", "baja", "se abren",
+  "tres atrás", "superioridad", "paciencia", "conduce", "arrastra", "interior", "largo", "espalda",
+  "dos opciones"],
+ "script": [
+  "¿Por qué tu equipo pierde el balón justo al sacarlo desde atrás? Esta semana lo vimos con el Chelsea y con el United: presionados arriba, acabaron regalándolo. Salir jugando no es de valientes ni de locos; es cuestión de estructura.",
+  "La idea es sencilla: crear un hombre más cerca del balón. El pivote baja entre los centrales y los laterales se abren. Así, contra dos puntas, tienes tres atrás: superioridad para el primer pase.",
+  "La clave es la paciencia. Si el rival no aprieta, el central conduce hacia el medio campo y arrastra a un contrario. En ese momento se abre el pase al interior.",
+  "¿Y si te presionan muy arriba? No te empeñes: el portero juega largo a la espalda de esa presión. Salir jugando y jugar en largo no son enemigos; son dos salidas del mismo plan.",
+  "En fútbol base, enseña dos cosas: mirar antes de recibir y tener siempre dos opciones de pase.",
+  "¿Tu equipo sale jugando o la regala? Cuéntamelo en comentarios y sígueme."
+ ],
+ "team": {
+  "nums": [1, 2, 5, 4, 3, 6, 8, 10, 7, 11, 9],
+  "base": [
+   [0, 6], [24, 24], [8, 22], [-8, 22], [-24, 24],
+   [0, 36], [12, 52], [-12, 52], [26, 66], [-26, 66], [0, 74]
+  ],
+  "moves": [
+   {"t": "@El pivote baja entre", "dur": 1.6, "to": {
+    "5": [0, 22], "2": [13, 19], "3": [-13, 19], "1": [30, 30], "4": [-30, 30]
+   }},
+   {"t": "@los laterales se abren", "dur": 1.0, "to": {"1": [31, 34], "4": [-31, 34]}},
+   {"t": "@el central conduce", "dur": 1.6, "to": {"2": [4, 40], "6": [11, 48]}},
+   {"t": "@se abre el pase al interior", "dur": 1.0, "to": {"6": [9, 44]}},
+   {"t": "@el portero juega largo", "dur": 1.8, "to": {
+    "0": [0, 12], "10": [0, 80], "8": [26, 72]
+   }},
+   {"t": "@En fútbol base", "dur": 1.4, "to": {
+    "0": [0, 6], "1": [24, 24], "2": [8, 22], "3": [-8, 22], "4": [-24, 24],
+    "5": [0, 36], "6": [12, 52], "7": [-12, 52], "8": [26, 66], "9": [-26, 66], "10": [0, 74]
+   }}
+  ]
+ },
+ "rivals": {
+  "show": "@crear un hombre más",
+  "hide": "@En fútbol base",
+  "base": [[-9, 50], [9, 50], [0, 60]],
+  "moves": [
+   {"t": "@El pivote baja entre", "dur": 1.6, "to": {"0": [-9, 36], "1": [9, 36]}},
+   {"t": "@el central conduce", "dur": 1.6, "to": {"0": [-4, 44], "2": [0, 52]}},
+   {"t": "@el portero juega largo", "dur": 1.8, "to": {"0": [-8, 32], "1": [8, 32], "2": [0, 44]}}
+  ]
+ },
+ "ball": [
+  [0, 2],
+  ["@El pivote baja entre", [0, 8]],
+  ["@los laterales se abren", [8, 20]],
+  ["@el central conduce", [4, 40]],
+  ["@se abre el pase al interior", [9, 44]],
+  ["@el portero juega largo", [0, 10]],
+  ["@a la espalda de esa presión", [0, 80]]
+ ],
+ "events": [
+  {"type": "lines", "t0": "@crear un hombre más", "t1": "@Así, contra dos puntas", "groups": [[1, 2, 3, 4]]},
+  {"type": "ring", "t0": "@El pivote baja entre", "t1": "@el central conduce", "players": [5], "col": "yellow"},
+  {"type": "zone", "t0": "@tienes tres atrás", "t1": "@La clave es la paciencia", "rect": [-34, 14, 34, 32], "col": "green"},
+  {"type": "count", "t0": "@tienes tres atrás", "t1": "@La clave es la paciencia", "at": [-39.5, 22], "text": "3"},
+  {"type": "pill", "t0": "@superioridad para el primer pase", "t1": "@La clave es la paciencia", "at": [0, 10], "text": "3 contra 2", "size": 36},
+  {"type": "arrow", "t0": "@el central conduce", "t1": "@se abre el pase al interior", "from": [4, 34], "to": [4, 46], "col": "white"},
+  {"type": "ring", "t0": "@arrastra a un contrario", "t1": "@se abre el pase al interior", "players": [6], "col": "green"},
+  {"type": "zone", "t0": "@se abre el pase al interior", "t1": "@Y si te presionan", "rect": [2, 38, 20, 52], "col": "green", "pulse": true},
+  {"type": "arrow", "t0": "@el portero juega largo", "t1": "@son dos salidas", "from": [0, 14], "to": [0, 76], "col": "yellow"},
+  {"type": "pill", "t0": "@a la espalda de esa presión", "t1": "@son dos salidas", "at": [0, 90], "text": "a la espalda", "size": 32},
+  {"type": "lines", "t0": "@En fútbol base", "groups": [[1, 2, 3, 4]], "col": "green"},
+  {"type": "card", "t0": "@lo vimos con el Chelsea", "t1": "@Salir jugando no es", "items": [
+   {"name": "CHELSEA", "sub": "presionado por el Leeds", "colors": ["#1844A0", "#1844A0"]},
+   {"name": "UNITED", "sub": "con uno menos en Anfield", "colors": ["#DA020E", "#DA020E"]}
+  ]}
+ ],
+ "hook": {"text": "¿Pierdes el balón|al sacarlo desde atrás?", "t1": "@Esta semana lo vimos"}
+}
