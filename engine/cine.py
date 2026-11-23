@@ -464,3 +464,27 @@ def tag3d(b, cam, x, z, txt, col=(230, 40, 50), a=1.0, fg=WHT, h=4.2):
     d.line((hx, hy, tx, ty + 24 * SS), fill=(*col, int(230 * a)), width=int(3 * SS))
     d.rounded_rectangle((tx - tw / 2 - 18 * SS, ty - 26 * SS, tx + tw / 2 + 18 * SS, ty + 26 * SS), radius=12 * SS, fill=(*col, int(245 * a)))
     d.text((tx, ty), txt, font=f, fill=(*fg, int(255 * a)), anchor="mm")
+
+# ------------------------------------------------------------------ efectos nuevos (v3.4, semana 23–29 nov)
+def heatmap(b, cam, blobs, col=(255, 96, 56), a=1.0):
+    """mapa de calor a ras de suelo: blobs = [(x, z, radio, peso 0..1)]. Varias capas difuminadas se suman."""
+    if a <= .02: return
+    layer = Image.new("RGBA", b.size, (0, 0, 0, 0)); d = ImageDraw.Draw(layer)
+    for x, z, r, w in blobs:
+        for k, al in ((1.0, 34), (.62, 46), (.3, 58)):
+            d.polygon([cam.P(px, pz)[:2] for px, pz in arc(x, z, max(.4, r * k), 0, 360, 26)], fill=(*col, int(al * w * a)))
+    b.alpha_composite(layer.filter(ImageFilter.GaussianBlur(16 * SS)))
+
+def redcard(b, t, t0, dur=1.7, txt="ROJA", sub=None, y=640):
+    """tarjeta roja que gira hasta ponerse de frente, con el motivo debajo."""
+    u = t - t0
+    if u < 0 or u > dur: return
+    d = ImageDraw.Draw(b, "RGBA"); out = 1 - ease((u - (dur - .4)) / .4)
+    sx = abs(math.cos(min(1.0, u / .5) * 3 * math.pi / 2)) if u < .5 else 1.0
+    w, h = 150 * SS * max(.05, sx), 215 * SS; cx, cy = W2 / 2, y * SS
+    d.rounded_rectangle((cx - w, cy - h, cx + w, cy + h), radius=16 * SS, fill=(222, 32, 40, int(250 * out)))
+    if sx > .55:
+        k = min(1.0, (u - .35) / .3)
+        if k > .05:
+            d.text((cx, cy + h + 92 * SS), txt, font=font(104 * (.7 + .3 * k), "Black"), fill=(*WHT, int(255 * out * k)), anchor="mm")
+            if sub: d.text((cx, cy + h + 182 * SS), sub, font=font(44, "Bold"), fill=(*YEL, int(255 * out * k)), anchor="mm")
