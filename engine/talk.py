@@ -33,6 +33,25 @@ def apply_zoom(im, z, cy=.36):
     w, h = int(W / z), int(H / z); x0 = (W - w) // 2; y0 = int((H - h) * cy / .5 * .5)
     return im.crop((x0, y0, x0 + w, y0 + h)).resize((W, H), Image.BILINEAR)
 
+def subtitle_clean(d, words, t, y):
+    """subtítulo limpio: 2–3 palabras, blanco con contorno, la que suena en amarillo; sin cajas."""
+    groups, cur = [], []
+    for w in words:
+        cur.append(w)
+        if len(cur) >= 3 or w[2].endswith((".", ",", "?", "!")): groups.append(cur); cur = []
+    if cur: groups.append(cur)
+    g = None
+    for gr in groups:
+        if gr[0][0] - .05 <= t: g = gr
+    if not g or t > g[-1][1] + .5: return
+    f = font(70, "Black"); sp = d.textlength(" ", font=f)
+    ws = [d.textlength(w[2], font=f) for w in g]; x = W / 2 - (sum(ws) + sp * (len(ws) - 1)) / 2
+    k = min(1, back((t - g[0][0]) / .15))
+    for (a, b, s, key), ww in zip(g, ws):
+        on = a <= t < max(b, a + .1)
+        d.text((x, y + (1 - k) * 10), s, font=f, fill=(*(YEL if on else WHT), 255), stroke_width=6, stroke_fill=(0, 0, 0, 230), anchor="lm")
+        x += ww + sp
+
 def subtitle(d, words, t, y=1440):
     """frase actual (bloques de ~4 palabras), palabra que suena en caja amarilla."""
     groups, cur = [], []
@@ -120,7 +139,11 @@ def build(E):
             for t0, t1, txt in E.get("top", []): top_label(d, t, t0, t1, txt)
         for t0, t1, kind, o in E.get("cards", []):
             if not clean or kind in E.get("allow", []): card(d, t, t0, t1, kind, o)
-        if t < E["end"]["t"] and E.get("subs", not clean): subtitle(d, W4, t)
+        if t < E["end"]["t"] and E.get("subs", not clean):
+            yy = E.get("subs_y", 1440)
+            for a, b, y2 in E.get("subs_move", []):
+                if a <= t < b: yy = y2
+            (subtitle_clean if E.get("sub_style") == "clean" else subtitle)(d, W4, t, yy)
         endcard(d, t, E["end"]["t"], E["end"])
         im.alpha_composite(lay); return im.convert("RGB")
     return overlay
@@ -128,6 +151,14 @@ def build(E):
 def render(E, out):
     ov = build(E); dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", E["video"]], capture_output=True, text=True).stdout)
     total = dur + float(E["end"].get("tail", 0.0))
+    if not E.get("music"):
+        fc = "[1:a]anull[a]"
+        enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-framerate", str(FPS), "-i", "-",
+                                "-i", E["video"], "-filter_complex", fc, "-map", "0:v", "-map", "[a]", "-c:v", "libx264", "-preset", "medium", "-crf", "18",
+                                "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-t", f"{total:.3f}", "-movflags", "+faststart", out], stdin=subprocess.PIPE)
+        n = 0
+        for im in frames(E["video"]): enc.stdin.write(ov(im, n / FPS).tobytes()); n += 1
+        enc.stdin.close(); enc.wait(); print("OK", out, round(n / FPS, 1)); return
     fc = (f"[0:a]highpass=f=80,acompressor=threshold=-20dB:ratio=3,apad,atrim=0:{total:.2f},asplit=2[v][k];"
           f"[1:a]atrim=0:{total:.2f},volume={E.get('music_db', -20)}dB,afade=t=out:st={total - 1.2:.2f}:d=1.2[m0];"
           f"[m0][k]sidechaincompress=threshold=0.04:ratio=6:attack=15:release=250[m];[v][m]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5[a]")
