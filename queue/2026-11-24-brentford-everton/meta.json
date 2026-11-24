@@ -1,5 +1,5 @@
 {
-  "status": "approved",
+  "status": "scheduled",
   "format": "cine",
   "publish_at": "2026-11-24T14:00:00+01:00",
   "title": "Antes de la roja ya ganaba 2-0: así goleó el Brentford al Everton de Moyes #shorts",
@@ -25,6 +25,7 @@
     "https://www.sportsmole.co.uk/football/premier-league/brentford-vs-everton_game_263338.html"
   ],
   "music": "music/got_it-cory_barker.mp3",
-  "video_id": null,
-  "error": null
+  "video_id": "PMSVjeUY2pw",
+  "error": null,
+  "uploaded_at": "2026-11-24T10:12:53+00:00"
 }
