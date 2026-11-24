@@ -1,4 +1,4 @@
-"""Estilo 'cine' (v3.3): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
+"""Estilo 'cine' (v3.5): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
 titular que cambia en cada bloque, subtítulos que entran palabra a palabra y efectos de sonido.
 Inspirado en lo que funciona en los canales grandes de táctica (planos cambiantes, historia real con nombres,
 gancho provocador), no en una plantilla fija."""
@@ -126,7 +126,12 @@ def subs(b, t, items, y=1420):
         if it[0] <= t < it[1]: cur = it
     if not cur: return
     d = ImageDraw.Draw(b, "RGBA"); f = font(56, "Black"); words = cur[2].split()
-    plain = [w.strip("*") for w in words]; sp = d.textlength(" ", font=f)
+    keys, on = [], False                                  # v3.5: *clave* de varias palabras y con puntuación pegada
+    for w in words:
+        st = on or w.startswith("*"); n = w.count("*")
+        keys.append(st or n > 0); on = (on or w.startswith("*")) and not (w.rstrip(".,:;!?…").endswith("*") or (n == 1 and on and not w.startswith("*")))
+        if n >= 2: on = False
+    plain = [w.replace("*", "") for w in words]; sp = d.textlength(" ", font=f)
     widths = [d.textlength(w, font=f) for w in plain]
     lines, ln, lw = [], [], 0
     for i, w in enumerate(widths):
@@ -137,7 +142,7 @@ def subs(b, t, items, y=1420):
     for j, ln in enumerate(lines):
         tw = sum(widths[i] for i in ln) + sp * (len(ln) - 1); x = W2 / 2 - tw / 2; yy = (y + 72 * j) * SS
         for i in ln:
-            k = back((t - cur[0] - i * per) / .22); key = words[i].startswith("*")
+            k = back((t - cur[0] - i * per) / .22); key = keys[i]
             if k > .02:
                 fk = font(56 * (.6 + .4 * min(1.2, k)), "Black")
                 d.text((x + widths[i] / 2 + 3 * SS, yy + 4 * SS), plain[i], font=fk, fill=(0, 0, 0, int(190 * min(1, k))), anchor="mm")
@@ -590,3 +595,45 @@ def chat(b, t, t0, t1, msgs, y=600):
         d.text((x0 + 36 * SS, yy + 30 * SS), who, font=fw, fill=(120, 126, 132, int(255 * a)), anchor="lm")
         for j, l in enumerate(lines): d.text((x0 + 36 * SS, yy + (78 + j * 52) * SS), l, font=f, fill=(*NAVY, int(255 * a)), anchor="lm")
         yy += h + 30 * SS
+
+# ------------------------------------------------------------------ efectos nuevos (v3.5, semana 23–29 nov)
+def stopwatch(b, t, t0, t1, m0, m1, label, sub=None, y=760):
+    """cronómetro de partido: esfera de 90' con la aguja que corre de m0 a m1; el tramo recorrido se pinta
+    en amarillo y el minuto grande va contando. Para 'dos goles en dos minutos' y similares."""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .3) * (1 - ease((t - t1 + .3) / .3))
+    d.rectangle((0, (y - 330) * SS, W2, (y + 330) * SS), fill=(*BG, int(175 * k)))
+    cx, cy, R = W2 / 2, (y - 40) * SS, 230 * SS
+    u = ease((t - t0 - .35) / 1.2); m = m0 + (m1 - m0) * u
+    d.ellipse((cx - R, cy - R, cx + R, cy + R), outline=(60, 68, 78, int(255 * k)), width=int(26 * SS))
+    for i in range(0, 91, 5):                                         # marcas cada 5 minutos
+        a = math.radians(-90 + 360 * i / 90); r0 = R - (40 if i % 15 == 0 else 26) * SS
+        d.line((cx + r0 * math.cos(a), cy + r0 * math.sin(a), cx + (R - 14 * SS) * math.cos(a), cy + (R - 14 * SS) * math.sin(a)),
+               fill=(*WHT, int(150 * k)), width=int((5 if i % 15 == 0 else 3) * SS))
+    a0, a1 = -90 + 360 * m0 / 90, -90 + 360 * m / 90
+    if a1 - a0 < 4: a1 = a0 + 4                                       # que el tramo se vea aunque sean 2 minutos
+    d.arc((cx - R, cy - R, cx + R, cy + R), a0, a1, fill=(*YEL, int(255 * k)), width=int(30 * SS))
+    a = math.radians(a1)
+    d.line((cx, cy, cx + (R - 50 * SS) * math.cos(a), cy + (R - 50 * SS) * math.sin(a)), fill=(*YEL, int(255 * k)), width=int(9 * SS))
+    d.ellipse((cx - 14 * SS, cy - 14 * SS, cx + 14 * SS, cy + 14 * SS), fill=(*YEL, int(255 * k)))
+    f = font(120, "Black"); txt = f"{int(round(m))}'"
+    d.text((cx + 6 * SS, cy + 6 * SS), txt, font=f, fill=(0, 0, 0, int(190 * k)), anchor="mm")
+    d.text((cx, cy), txt, font=f, fill=(*WHT, int(255 * k)), anchor="mm")
+    kk = back((t - t0 - 1.1) / .35)
+    if kk > .05:
+        fb = font(64 * min(1.0, kk), "Black"); tw = d.textlength(label, font=fb); ly = (y + 250) * SS
+        d.rounded_rectangle((W2 / 2 - tw / 2 - 30 * SS, ly - 48 * SS, W2 / 2 + tw / 2 + 30 * SS, ly + 48 * SS), radius=18 * SS, fill=(*YEL, int(255 * k)))
+        d.text((W2 / 2, ly), label, font=fb, fill=(*NAVY, int(255 * k)), anchor="mm")
+        if sub: d.text((W2 / 2, ly + 92 * SS), sub, font=font(40, "Bold"), fill=(*WHT, int(235 * k)), anchor="mm")
+
+def spark(b, cam, x, z, t, t0, col=(255, 204, 0), dur=.7, y=.6):
+    """chispazo donde el balón toca a un defensor y cambia de dirección (desvío): rayos que salen y se apagan."""
+    u = (t - t0) / dur
+    if not (0 <= u < 1): return
+    d = ImageDraw.Draw(b, "RGBA"); px, py, sc = cam.P(x, z, y); a = 1 - ease(u)
+    r0, r1 = (6 + 30 * u) * sc * SS * .12 + 10 * SS, (14 + 70 * ease(u)) * sc * SS * .12 + 30 * SS
+    for i in range(10):
+        ang = math.radians(i * 36 + 12)
+        d.line((px + r0 * math.cos(ang), py + r0 * math.sin(ang), px + r1 * math.cos(ang), py + r1 * math.sin(ang)),
+               fill=(*col, int(255 * a)), width=int(5 * SS))
+    rr = r1 * .55; d.ellipse((px - rr, py - rr, px + rr, py + rr), outline=(*WHT, int(200 * a)), width=int(3 * SS))
