@@ -1,5 +1,5 @@
 {
-  "status": "scheduled",
+  "status": "published",
   "format": "cine",
   "publish_at": "2026-11-23T14:00:00+01:00",
   "title": "El debut de Pochettino duró 8 minutos: Liverpool 4-0 United #shorts",
@@ -32,5 +32,6 @@
   "music": "music/okay_for_now-televisions.mp3",
   "video_id": "mK7ab2vekLo",
   "uploaded_at": "2026-11-23T10:44:17+00:00",
-  "error": null
+  "error": null,
+  "published_at": "2026-11-24T00:19:34+00:00"
 }
