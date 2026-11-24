@@ -115,9 +115,12 @@ def build(E):
     def overlay(im, t):
         im = apply_zoom(im, zoom_at(t, E.get("zooms", [])))
         im = im.convert("RGBA"); lay = Image.new("RGBA", im.size, (0, 0, 0, 0)); d = ImageDraw.Draw(lay)
-        for t0, t1, txt in E.get("top", []): top_label(d, t, t0, t1, txt)
-        for t0, t1, kind, o in E.get("cards", []): card(d, t, t0, t1, kind, o)
-        if t < E["end"]["t"]: subtitle(d, W4, t)
+        clean = E.get("style", "clean") == "clean"        # estilo por defecto (Miguel): limpio, la cara manda
+        if not clean:
+            for t0, t1, txt in E.get("top", []): top_label(d, t, t0, t1, txt)
+        for t0, t1, kind, o in E.get("cards", []):
+            if not clean or kind in E.get("allow", []): card(d, t, t0, t1, kind, o)
+        if t < E["end"]["t"] and E.get("subs", not clean): subtitle(d, W4, t)
         endcard(d, t, E["end"]["t"], E["end"])
         im.alpha_composite(lay); return im.convert("RGB")
     return overlay
