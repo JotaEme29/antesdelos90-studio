@@ -1,5 +1,5 @@
 {
-  "status": "approved",
+  "status": "scheduled",
   "format": "cine",
   "publish_at": "2026-11-25T14:00:00+01:00",
   "title": "Perdía 0-1 y Mourinho hizo tres cambios al descanso: así llegó el 5-1 al PSV #shorts",
@@ -28,5 +28,8 @@
     "https://www.eltiempo.com/deportes/futbol-internacional/tremendo-despertar-del-real-madrid-le-remonto-al-psv-y-acabo-goleandolo-en-la-champions-3603943",
     "https://www.bernabeudigital.com/noticias/mourinho-goleada-psv-el-vestuario-vegas-pasa-queda-ahi-349069"
   ],
-  "music": "music/dance_with_you-everet_almond.mp3"
+  "music": "music/dance_with_you-everet_almond.mp3",
+  "video_id": "7IStO4_j-qg",
+  "uploaded_at": "2026-11-25T10:16:48+00:00",
+  "error": null
 }
