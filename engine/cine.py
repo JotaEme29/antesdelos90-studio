@@ -1,4 +1,4 @@
-"""Estilo 'cine' (v3.5): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
+"""Estilo 'cine' (v3.6): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
 titular que cambia en cada bloque, subtítulos que entran palabra a palabra y efectos de sonido.
 Inspirado en lo que funciona en los canales grandes de táctica (planos cambiantes, historia real con nombres,
 gancho provocador), no en una plantilla fija."""
@@ -131,7 +131,7 @@ def subs(b, t, items, y=1420):
         st = on or w.startswith("*"); n = w.count("*")
         keys.append(st or n > 0); on = (on or w.startswith("*")) and not (w.rstrip(".,:;!?…").endswith("*") or (n == 1 and on and not w.startswith("*")))
         if n >= 2: on = False
-    plain = [w.replace("*", "") for w in words]; sp = d.textlength(" ", font=f)
+    plain = [w.replace("*", "") for w in words]; sp = d.textlength(" ", font=f) * 1.4   # v3.6: más aire entre palabras
     widths = [d.textlength(w, font=f) for w in plain]
     lines, ln, lw = [], [], 0
     for i, w in enumerate(widths):
@@ -637,3 +637,60 @@ def spark(b, cam, x, z, t, t0, col=(255, 204, 0), dur=.7, y=.6):
         d.line((px + r0 * math.cos(ang), py + r0 * math.sin(ang), px + r1 * math.cos(ang), py + r1 * math.sin(ang)),
                fill=(*col, int(255 * a)), width=int(5 * SS))
     rr = r1 * .55; d.ellipse((px - rr, py - rr, px + rr, py + rr), outline=(*WHT, int(200 * a)), width=int(3 * SS))
+
+# ------------------------------------------------------------------ efectos nuevos (v3.6, semana 23–29 nov)
+def subboard(b, t, t0, t1, outs, ins, title="DESCANSO", y=860):
+    """cartel del cuarto árbitro: tablero LED que gira hasta ponerse de frente; cada fila (SALE en rojo / ENTRA en
+    verde) se enciende por turnos con un barrido. outs/ins = listas de nombres del mismo tamaño."""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .3) * (1 - ease((t - t1 + .3) / .3))
+    d.rectangle((0, 0, W2, H2), fill=(*BG, int(150 * k)))
+    u = t - t0; sx = min(1.0, max(.04, abs(math.sin(min(1.0, u / .45) * math.pi / 2))))
+    n = len(outs); rh = 118; hh = (130 + n * rh * 2 + 40) / 2
+    cx, cy = W2 / 2, y * SS; w = 430 * SS * sx; h = hh * SS
+    d.rounded_rectangle((cx - w - 14 * SS, cy - h - 14 * SS, cx + w + 14 * SS, cy + h + 14 * SS), radius=26 * SS, fill=(40, 46, 54, int(255 * k)))
+    d.rounded_rectangle((cx - w, cy - h, cx + w, cy + h), radius=18 * SS, fill=(6, 8, 10, int(255 * k)))
+    if sx < .9: return
+    for yy in range(int(cy - h), int(cy + h), int(9 * SS)):           # rejilla LED
+        d.line((cx - w, yy, cx + w, yy), fill=(255, 255, 255, int(10 * k)), width=1)
+    d.text((cx, cy - h + 66 * SS), title, font=font(44, "Black"), fill=(*YEL, int(255 * k)), anchor="mm")
+    RED_, GRN_ = (240, 60, 60), (60, 220, 120)
+    for i in range(n):
+        for j, (nm, col, tag) in enumerate(((outs[i], RED_, "SALE"), (ins[i], GRN_, "ENTRA"))):
+            st = t0 + .5 + i * .45 + j * .18; e = ease((t - st) / .25)
+            if e <= .02: continue
+            ry = cy - h + (150 + (2 * i + j) * rh) * SS
+            glow = 1 + .5 * max(0, 1 - (t - st) / .4)
+            d.polygon([(cx - w + 50 * SS, ry + (-18 if j else 18) * SS), (cx - w + 86 * SS, ry + (-18 if j else 18) * SS),
+                       (cx - w + 68 * SS, ry + (18 if j else -18) * SS)], fill=(*col, int(255 * k * e)))
+            d.text((cx - w + 110 * SS, ry), tag, font=font(30, "Bold"), fill=(*col, int(255 * k * e)), anchor="lm")
+            f = font(62, "Black"); x0 = cx - w + 230 * SS; full = d.textlength(nm, font=f)
+            # barrido: el nombre se enciende de izquierda a derecha
+            lay = Image.new("RGBA", b.size, (0, 0, 0, 0)); ld = ImageDraw.Draw(lay)
+            ld.text((x0, ry), nm, font=f, fill=(*[min(255, int(c * glow)) for c in col], 255), anchor="lm")
+            m = Image.new("L", b.size, 0); ImageDraw.Draw(m).rectangle((x0 - 4, ry - 60 * SS, x0 + full * e + 4, ry + 60 * SS), fill=int(255 * k))
+            b.paste(lay, (0, 0), Image.composite(lay.getchannel("A"), Image.new("L", b.size, 0), m))
+            d = ImageDraw.Draw(b, "RGBA")
+
+def lineband(b, cam, z, col=(255, 204, 0), a=1.0, label=None, x0=-34, x1=34, zfrom=None):
+    """línea defensiva luminosa de banda a banda en la altura z; si zfrom, deja la huella de dónde estaba
+    y una flecha de lo que ha subido. La etiqueta va a la izquierda (fuera de la columna de iconos)."""
+    if a <= .02: return
+    layer = Image.new("RGBA", b.size, (0, 0, 0, 0)); d = ImageDraw.Draw(layer)
+    if zfrom is not None:
+        d.line([cam.P(x, zfrom)[:2] for x in (x0, x1)], fill=(255, 255, 255, int(110 * a)), width=int(4 * SS))
+        d.polygon([cam.P(x, zz)[:2] for x, zz in ((x0, zfrom), (x1, zfrom), (x1, z), (x0, z))], fill=(*col, int(34 * a)))
+    d.polygon([cam.P(x, zz)[:2] for x, zz in ((x0, z - .9), (x1, z - .9), (x1, z + .9), (x0, z + .9))], fill=(*col, int(150 * a)))
+    b.alpha_composite(layer.filter(ImageFilter.GaussianBlur(5 * SS)))
+    d = ImageDraw.Draw(b, "RGBA"); d.line([cam.P(x, z)[:2] for x in (x0, x1)], fill=(*col, int(255 * a)), width=int(5 * SS))
+    if zfrom is not None and abs(z - zfrom) > 2:
+        for xa in (-14, 14):
+            p, q = cam.P(xa, zfrom)[:2], cam.P(xa, z - 1.2)[:2]
+            d.line((p, q), fill=(*col, int(230 * a)), width=int(6 * SS))
+            ang = math.atan2(q[1] - p[1], q[0] - p[0]); s = 22 * SS
+            d.polygon([q, (q[0] - s * math.cos(ang - .5), q[1] - s * math.sin(ang - .5)), (q[0] - s * math.cos(ang + .5), q[1] - s * math.sin(ang + .5))], fill=(*col, int(230 * a)))
+    if label:
+        px, py, _ = cam.P(x0 + 6, z); px = max(px, 70 * SS); f = font(34, "Black"); tw = d.textlength(label, font=f)
+        py -= 46 * SS
+        d.rounded_rectangle((px, py - 26 * SS, px + tw + 36 * SS, py + 26 * SS), radius=12 * SS, fill=(*col, int(245 * a)))
+        d.text((px + 18 * SS, py), label, font=f, fill=(*NAVY, int(255 * a)), anchor="lm")
