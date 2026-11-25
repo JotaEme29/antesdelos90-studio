@@ -1,5 +1,6 @@
 name: tts-tmp
 on: { push: { branches: [tts-tmp] } }
+permissions: { contents: write }
 jobs:
   tts:
     runs-on: ubuntu-latest
@@ -11,5 +12,7 @@ jobs:
       - uses: actions/cache@v4
         with: { path: ~/.local/share/tts, key: xtts-v2 }
       - run: pip install -q "torch==2.8.*" "torchaudio==2.8.*" --index-url https://download.pytorch.org/whl/cpu && pip install -q coqui-tts soundfile six "transformers>=4.43,<4.50" "torch==2.8.*" "torchaudio==2.8.*" --extra-index-url https://download.pytorch.org/whl/cpu && (pip uninstall -y -q torchcodec || true) && pip list 2>/dev/null | grep -iE "^torch|coqui|transformers" && python tmp_tts/tts.py
-      - uses: actions/upload-artifact@v4
-        with: { name: voz, path: out/voz_clonada.wav }
+      - env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          gh release view tmp-tts >/dev/null 2>&1 || gh release create tmp-tts --title "tmp tts" --notes "pruebas de voz" --target tts-tmp
+          gh release upload tmp-tts out/voz_clonada.wav --clobber
