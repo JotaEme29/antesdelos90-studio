@@ -10,6 +10,6 @@ jobs:
         with: { python-version: "3.11" }
       - uses: actions/cache@v4
         with: { path: ~/.local/share/tts, key: xtts-v2 }
-      - run: pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu && pip install -q "coqui-tts[codec]" soundfile && python tmp_tts/tts.py
+      - run: pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu && pip install -q "coqui-tts[codec]" soundfile six && python tmp_tts/tts.py
       - uses: actions/upload-artifact@v4
         with: { name: voz, path: out/voz_clonada.wav }
