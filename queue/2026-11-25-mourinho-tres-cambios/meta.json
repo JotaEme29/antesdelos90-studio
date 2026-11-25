@@ -1,5 +1,5 @@
 {
-  "status": "scheduled",
+  "status": "published",
   "format": "cine",
   "publish_at": "2026-11-25T14:00:00+01:00",
   "title": "Perdía 0-1 y Mourinho hizo tres cambios al descanso: así llegó el 5-1 al PSV #shorts",
@@ -31,5 +31,6 @@
   "music": "music/dance_with_you-everet_almond.mp3",
   "video_id": "7IStO4_j-qg",
   "uploaded_at": "2026-11-25T10:16:48+00:00",
-  "error": null
+  "error": null,
+  "published_at": "2026-11-25T21:58:02+00:00"
 }
