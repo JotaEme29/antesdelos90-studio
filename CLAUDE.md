@@ -12,6 +12,7 @@ Objetivo: un vídeo al día sobre **lo que está pasando en el fútbol**, en for
 4. **Guion visual por bloques** (40–55 s sin voz):
    - 0–2,5 s: **gancho** enorme (`bigtitle`) con afirmación que choque o pregunta, cámara baja en movimiento.
    - Contexto → mecanismo táctico (2–3 bloques) → la jugada clave (gol/ocasión con cámara lenta) → dato o cita → clasificación o consecuencia → pregunta que divida + `@antesdelos90`.
+   - **Bloque «Antes de los 90» (obligatorio, 5–7 s, antes de la pregunta):** cómo se entrena esa clave **de forma integrada**: una tarea real (espacio, nº de jugadores, regla, qué se busca) donde lo físico, lo técnico, lo táctico y la decisión van juntos. Nunca "primero físico, luego técnico, luego táctico": el fútbol es uno solo (ver `data/linea_editorial.md`, 26-11-2026). Es propuesta de entrenador, no dato: va rotulada como tal y no necesita fuente.
    - **Cada 3–5 s cambia el plano** (`CAMK`): general, zoom a la zona, giro a la banda, cámara siguiendo el balón. Titular arriba que cambia por bloque, subtítulos que entran palabra a palabra, nombres de jugadores, fichas `lower_third`, `scoreboard`, `quote`, `table`, estelas, `flash`, efectos de sonido.
    - **Innova cada día**: añade al motor al menos una mejora visual nueva cada semana (p. ej. mapa de calor, comparativa en pantalla dividida, contador de datos, líneas de pase dibujándose, recorrido del balón en 3D) y úsala.
    - **Música**: rota entre los temas de `music/` (no repitas la del día anterior).
@@ -34,6 +35,7 @@ Objetivo: un vídeo al día sobre **lo que está pasando en el fútbol**, en for
 - Nada de datos inventados ni estadísticas sin fuente. Si un dato no se puede verificar, no va.
 - El sistema no decide si el extremo va por dentro o por fuera: laterales y extremos se compensan. No digas que un sistema es "difícil de entrenar".
 - Temas de actualidad con nombres reales; los sistemas se explican a través de equipos y partidos concretos.
+- El nombre del canal tiene doble sentido: lo que decide un partido **y** cómo se prepara y se entrena hoy antes de los 90'. El fútbol se entiende y se entrena como un todo (físico, técnico, táctico y psicológico a la vez), nunca por partes.
 - Cierre con pregunta para comentarios y `@antesdelos90`.
 - Música solo de `music/` (Biblioteca de audio de YouTube).
 
