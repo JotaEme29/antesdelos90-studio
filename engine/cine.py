@@ -1,4 +1,4 @@
-"""Estilo 'cine' (v3.6): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
+"""Estilo 'cine' (v3.7): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
 titular que cambia en cada bloque, subtítulos que entran palabra a palabra y efectos de sonido.
 Inspirado en lo que funciona en los canales grandes de táctica (planos cambiantes, historia real con nombres,
 gancho provocador), no en una plantilla fija."""
@@ -694,3 +694,48 @@ def lineband(b, cam, z, col=(255, 204, 0), a=1.0, label=None, x0=-34, x1=34, zfr
         py -= 46 * SS
         d.rounded_rectangle((px, py - 26 * SS, px + tw + 36 * SS, py + 26 * SS), radius=12 * SS, fill=(*col, int(245 * a)))
         d.text((px + 18 * SS, py), label, font=f, fill=(*NAVY, int(255 * a)), anchor="lm")
+
+# ------------------------------------------------------------------ efectos nuevos (v3.7, semana 23–29 nov)
+def ghost(b, cam, x, z, col, name, a=1.0, t=0.0, tag="BAJA"):
+    """jugador ausente (lesionado/baja): silueta hueca y translúcida con contorno discontinuo que respira,
+    una cruz roja sobre la cabeza y su nombre con la etiqueta BAJA. Para enseñar el hueco que deja en el once."""
+    if a <= .02: return
+    layer = Image.new("RGBA", b.size, (0, 0, 0, 0)); d = ImageDraw.Draw(layer)
+    gx, gy, sc = cam.P(x, z); _, hy, _ = cam.P(x, z, 2.5); _, my, _ = cam.P(x, z, 1.2)
+    r = 1.05 * sc * SS; bw = max(r * 1.15, 3.5 * SS); hr = max(r * 1.25, 9 * SS)
+    pulse = .75 + .25 * math.sin(t * 5 + x)
+    d.ellipse((gx - r * 1.6, gy - r * .55, gx + r * 1.6, gy + r * .55), outline=(*col, int(150 * a)), width=int(2 * SS))
+    d.rounded_rectangle((gx - bw, min(my, gy - 1), gx + bw, gy), radius=bw * .9, fill=(*col, int(55 * a * pulse)))
+    n = 18                                                              # cabeza: contorno discontinuo
+    for i in range(0, n, 2):
+        a0, a1 = 360 * i / n + t * 40, 360 * (i + 1) / n + t * 40
+        d.arc((gx - hr, hy - hr, gx + hr, hy + hr), a0, a1, fill=(*col, int(235 * a)), width=int(4 * SS))
+    d.ellipse((gx - hr * .8, hy - hr * .8, gx + hr * .8, hy + hr * .8), fill=(*col, int(45 * a * pulse)))
+    s = hr * .55; R_ = (240, 50, 56, int(255 * a))
+    d.line((gx - s, hy - s, gx + s, hy + s), fill=R_, width=int(5 * SS)); d.line((gx - s, hy + s, gx + s, hy - s), fill=R_, width=int(5 * SS))
+    b.alpha_composite(layer)
+    d = ImageDraw.Draw(b, "RGBA"); f = font(max(22, min(32, hr / SS * 1.4)), "Bold"); ft = font(22, "Black")
+    ty = hy - hr - 24 * SS; tw = d.textlength(name, font=f); gw = d.textlength(tag, font=ft) + 20 * SS
+    x0 = gx - (tw + gw + 34 * SS) / 2
+    d.rounded_rectangle((x0, ty - 20 * SS, x0 + tw + gw + 34 * SS, ty + 18 * SS), radius=10 * SS, fill=(0, 0, 0, int(175 * a)))
+    d.text((x0 + 12 * SS, ty), name, font=f, fill=(*WHT, int(200 * a)), anchor="lm")
+    bx = x0 + tw + 22 * SS
+    d.rounded_rectangle((bx, ty - 14 * SS, bx + gw, ty + 13 * SS), radius=7 * SS, fill=(240, 50, 56, int(240 * a)))
+    d.text((bx + gw / 2, ty), tag, font=ft, fill=(*WHT, int(255 * a)), anchor="mm")
+
+def passline(b, cam, p, q, t, t0, dur=.6, col=(255, 204, 0), a=1.0, hold=1.2, w=5):
+    """pase que se dibuja: trazo discontinuo que avanza de p a q mientras viaja el balón, con un aro que se
+    abre en el punto de llegada y se queda marcado 'hold' segundos antes de apagarse."""
+    if t < t0: return
+    u = min(1.0, (t - t0) / dur); fade = a * (1 - ease((t - t0 - dur - hold) / .35))
+    if fade <= .02: return
+    d = ImageDraw.Draw(b, "RGBA"); n = 26
+    for i in range(0, n, 2):
+        u0, u1 = i / n, (i + 1) / n
+        if u0 > u: break
+        d.line([cam.P(*lerp2(p, q, u0))[:2], cam.P(*lerp2(p, q, min(u, u1)))[:2]], fill=(*col, int(245 * fade)), width=int(w * SS))
+    hx, hy, _ = cam.P(*lerp2(p, q, u)); d.ellipse((hx - 7 * SS, hy - 7 * SS, hx + 7 * SS, hy + 7 * SS), fill=(*col, int(255 * fade)))
+    if u >= 1:
+        k = ease((t - t0 - dur) / .35); rr = 1.2 + 2.2 * k
+        q2 = [cam.P(px, pz)[:2] for px, pz in arc(q[0], q[1], rr, 0, 360, 36)]
+        d.line(q2, fill=(*col, int(235 * fade * (1 - .4 * k))), width=int(4 * SS), joint="curve")
