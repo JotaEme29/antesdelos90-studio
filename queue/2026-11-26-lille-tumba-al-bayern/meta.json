@@ -1,5 +1,5 @@
 {
-  "status": "scheduled",
+  "status": "published",
   "format": "cine",
   "publish_at": "2026-11-26T14:00:00+01:00",
   "title": "Ganaba el Bayern y cayó en 3 minutos: así lo tumbó el Lille #shorts",
@@ -32,5 +32,6 @@
   "music": "music/glitter_and_gold-patrick_patrikios.mp3",
   "video_id": "2ijI4px7I0c",
   "uploaded_at": "2026-11-26T10:13:38+00:00",
-  "error": null
+  "error": null,
+  "published_at": "2026-11-26T21:54:04+00:00"
 }
