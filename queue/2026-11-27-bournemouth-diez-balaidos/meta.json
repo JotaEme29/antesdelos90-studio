@@ -1,5 +1,5 @@
 {
-  "status": "approved",
+  "status": "scheduled",
   "format": "cine",
   "publish_at": "2026-11-27T14:00:00+01:00",
   "title": "Con 10 desde el 23' y ganó en Balaídos: así remontó el Bournemouth al Celta #shorts",
@@ -30,5 +30,8 @@
     "https://es.uefa.com/uefaeuropaleague/news/02ab-222a833c11e1-f7f0c92348b7-1000--resumen-de-la-jornada-5-de-la-europa-league-bournemouth-y/",
     "https://www.elperiodicodeceuta.es/resultados-europa-league-jornada-5-2026-27/"
   ],
-  "music": "music/okay_for_now-televisions.mp3"
+  "music": "music/okay_for_now-televisions.mp3",
+  "video_id": "dPXHfPS7LiA",
+  "uploaded_at": "2026-11-27T10:15:08+00:00",
+  "error": null
 }
