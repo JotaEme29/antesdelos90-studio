@@ -1,0 +1,6 @@
+# Páginas de Mixkit de las que el workflow "Música (Mixkit)" descarga temas (licencia: Mixkit Stock Music Free License,
+# https://mixkit.co/license/#musicFree — uso en cualquier web o red social, sin atribución). Máximo por página tras el '|'.
+https://mixkit.co/free-stock-music/mood/calm/ | 6
+https://mixkit.co/free-stock-music/hip-hop/ | 4
+https://mixkit.co/free-stock-music/lo-fi-beats/ | 2
+https://mixkit.co/free-stock-music/electronica/ | 4

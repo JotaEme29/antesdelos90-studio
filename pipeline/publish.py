@@ -43,6 +43,8 @@ def upload(yt, path, m):
         if st: print(f"  subiendo… {int(st.progress() * 100)} %", flush=True)
     return resp["id"]
 
+from zoneinfo import ZoneInfo
+MAD = ZoneInfo("Europe/Madrid")
 WINDOW_H = 30   # solo se sube lo que se publica en las próximas 30 h: hasta entonces se puede frenar
 
 def main():
@@ -52,7 +54,12 @@ def main():
     taken = [parse(m["publish_at"]) for _, _, m in allm if m.get("publish_at") and m.get("status") in ("approved", "scheduled", "published")]
     for slug, d, m in allm:                         # vídeos con voz: en cuanto llega la grabación, se programan
         if m.get("status") == "awaiting_voice" and has_voice(d):
-            if not m.get("publish_at") or parse(m["publish_at"]) < now() + dt.timedelta(hours=3):
+            pa = parse(m["publish_at"]) if m.get("publish_at") else None
+            if pa and pa.astimezone(MAD).date() == now().astimezone(MAD).date():    # actualidad: sale HOY, en cuanto se pueda
+                cand = max(pa, now() + dt.timedelta(minutes=75))
+                while any(abs((cand - x).total_seconds()) < 1.5 * 3600 for x in taken): cand += dt.timedelta(minutes=30)
+                m["publish_at"] = cand.astimezone(MAD).replace(microsecond=0).isoformat(); taken.append(cand)
+            elif not pa or pa < now() + dt.timedelta(hours=3):
                 m["publish_at"] = next_slot(taken); taken.append(parse(m["publish_at"]))
             m["status"] = "approved"; save_meta(d, m); print(f"voz recibida: {slug} → {m['publish_at']}")
     todo = [(s, d, m) for s, d, m in items() if m.get("status") == "approved" and not m.get("video_id") and parse(m["publish_at"]) <= limit]

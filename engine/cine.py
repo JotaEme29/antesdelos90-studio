@@ -1,4 +1,4 @@
-"""Estilo 'cine' (v3.8): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
+"""Estilo 'cine' (v3.9, con modo pizarra): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
 titular que cambia en cada bloque, subtítulos que entran palabra a palabra y efectos de sonido.
 Inspirado en lo que funciona en los canales grandes de táctica (planos cambiantes, historia real con nombres,
 gancho provocador), no en una plantilla fija."""
@@ -829,3 +829,38 @@ def drillboard(b, t, t0, t1, kicker, title, rows, colA, colD, chip="Propuesta de
             pw = w.replace("*", "") + " "
             d.text((x, yy), pw, font=fr_, fill=(*(YEL if on else WHT), int(255 * a)), anchor="lm"); x += d.textlength(pw, font=fr_)
             if en: on = False
+
+# ------------------------------------------------------------------ modo PIZARRA (v3.9, 27-11-2026: "más lento, más limpio, se tiene que leer")
+GREY = (96, 104, 114)
+def caption(b, t, caps, y=1360, hold=1.6, size=62):
+    """subtítulo tranquilo: la frase entera a la vez (no palabra a palabra), una sola línea sobre una píldora oscura,
+    *clave* en amarillo. caps = [(t0, t1, 'texto con *clave*')]. Si t1 es None, se queda 'hold' s."""
+    cur = None
+    for c in caps:
+        t1 = c[1] if c[1] is not None else c[0] + hold
+        if c[0] <= t < t1: cur = (c[0], t1, c[2])
+    if not cur: return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - cur[0]) / .18) * (1 - ease((t - cur[1] + .15) / .15))
+    if k <= .02: return
+    f = font(size, "Black"); words = cur[2].split(); on = False; parts = []
+    for w in words:
+        st = w.startswith("*"); on = on or st; en = w.rstrip(".,:;!?¿¡…").endswith("*") or (st and w.count("*") == 2)
+        parts.append((w.replace("*", ""), on)); on = on and not en
+    sp = d.textlength(" ", font=f); tw = sum(d.textlength(p, font=f) for p, _ in parts) + sp * (len(parts) - 1)
+    scale = min(1.0, 900 * SS / max(1, tw)); f = font(size * scale, "Black")
+    tw = sum(d.textlength(p, font=f) for p, _ in parts) + d.textlength(" ", font=f) * (len(parts) - 1); sp = d.textlength(" ", font=f)
+    yy = y * SS - (1 - k) * 14 * SS; padx, h = 34 * SS, 58 * SS * scale + 22 * SS
+    d.rounded_rectangle((W2 / 2 - tw / 2 - padx, yy - h, W2 / 2 + tw / 2 + padx, yy + h), radius=h, fill=(8, 10, 12, int(205 * k)))
+    x = W2 / 2 - tw / 2
+    for p, key in parts:
+        d.text((x, yy), p, font=f, fill=(*(YEL if key else WHT), int(255 * k)), anchor="lm"); x += d.textlength(p, font=f) + sp
+
+def question_top(b, t, t0, l1, l2, kicker=None, top=250):
+    """la pregunta del vídeo, fija arriba todo el rato (lo que en el feed decide si te quedas)."""
+    if t < t0: return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .4)
+    if kicker: d.text((W2 / 2, (top - 10) * SS), kicker, font=font(28, "Bold"), fill=(*YEL, int(230 * k)), anchor="mm")
+    for j, (txt, col) in enumerate(((l1, WHT), (l2, YEL))):
+        f = font(58, "Black"); yy = (top + 50 + 66 * j) * SS
+        d.text((W2 / 2 + 3 * SS, yy + 4 * SS), txt, font=f, fill=(0, 0, 0, int(170 * k)), anchor="mm")
+        d.text((W2 / 2, yy), txt, font=f, fill=(*col, int(255 * k)), anchor="mm")
