@@ -1,4 +1,4 @@
-"""Estilo 'cine' (v3.7): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
+"""Estilo 'cine' (v3.8): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
 titular que cambia en cada bloque, subtítulos que entran palabra a palabra y efectos de sonido.
 Inspirado en lo que funciona en los canales grandes de táctica (planos cambiantes, historia real con nombres,
 gancho provocador), no en una plantilla fija."""
@@ -739,3 +739,93 @@ def passline(b, cam, p, q, t, t0, dur=.6, col=(255, 204, 0), a=1.0, hold=1.2, w=
         k = ease((t - t0 - dur) / .35); rr = 1.2 + 2.2 * k
         q2 = [cam.P(px, pz)[:2] for px, pz in arc(q[0], q[1], rr, 0, 360, 36)]
         d.line(q2, fill=(*col, int(235 * fade * (1 - .4 * k))), width=int(4 * SS), joint="curve")
+
+# ------------------------------------------------------------------ efectos nuevos (v3.8, semana 23–29 nov)
+def outnumber(b, t, t0, t1, nL, nR, colL, colR, labL, labR, out_at=None, y=600):
+    """contador de superioridad: dos filas de muñecos con los colores de cada club; en la fila del que se queda
+    con uno menos, un muñeco se apaga con una cruz roja (en out_at) y el marcador grande pasa a 'nL v nR'."""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .3) * (1 - ease((t - t1 + .3) / .3))
+    if k <= .02: return
+    out_at = t0 + .6 if out_at is None else out_at; gone = ease((t - out_at) / .35)
+    x0, x1 = 90 * SS, W2 - 160 * SS; h = 250
+    d.rounded_rectangle((x0, (y - 40) * SS, x1, (y + h) * SS), radius=26 * SS, fill=(14, 18, 22, int(225 * k)))
+    nr_show = nR if gone < .5 else nR
+    big = f"{nL} v {nR if gone >= .5 else nR + 1}"
+    d.text((x0 + 40 * SS, (y + 4) * SS), "SUPERIORIDAD", font=font(28, "Bold"), fill=(*YEL, int(255 * k)), anchor="lm")
+    kb = back((t - out_at) / .35) if gone > 0 else 1.0
+    d.text((x1 - 40 * SS, (y + 4) * SS), big, font=font(56 * (.8 + .2 * min(1.2, kb)), "Black"), fill=(*WHT, int(255 * k)), anchor="rm")
+    for row, (n, col, lab, drop) in enumerate(((nL, colL, labL, False), (nR + 1, colR, labR, True))):
+        yy = (y + 90 + row * 92) * SS
+        d.text((x0 + 40 * SS, yy), lab, font=font(34, "Black"), fill=(*WHT, int(255 * k)), anchor="lm")
+        sx = x0 + 250 * SS; step = (x1 - 40 * SS - sx) / 11
+        for i in range(n):
+            u = ease((t - t0 - .05 * i) / .25) * k; cx = sx + step * (i + .5)
+            dead = drop and i == n - 1
+            a = u * (1 - .78 * gone) if dead else u
+            r = 17 * SS
+            d.rounded_rectangle((cx - r * .8, yy - r * .1, cx + r * .8, yy + r * 1.5), radius=r * .7, fill=(*[int(c * .78) for c in col], int(255 * a)))
+            d.ellipse((cx - r * .75, yy - r * 1.6, cx + r * .75, yy - r * .1), fill=(*col, int(255 * a)))
+            if dead and gone > .02:
+                s_ = r * 1.3 * gone; RC = (240, 50, 56, int(255 * k))
+                d.line((cx - s_, yy - s_ * .5, cx + s_, yy + s_ * 1.1), fill=RC, width=int(6 * SS))
+                d.line((cx - s_, yy + s_ * 1.1, cx + s_, yy - s_ * .5), fill=RC, width=int(6 * SS))
+
+def drillboard(b, t, t0, t1, kicker, title, rows, colA, colD, chip="Propuesta de entrenador", y=520):
+    """'Antes de los 90': pizarra de la tarea de entrenamiento vista desde arriba. Mini campo con tres pasillos,
+    ataque (colA) contra defensa (colD) y porteros; el balón viaja de pasillo en pasillo con el pase dibujándose,
+    la defensa bascula y al final hay remate. Debajo, las reglas (rows, con *clave* en amarillo) caen una a una."""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .35) * (1 - ease((t - t1 + .3) / .3)); u = t - t0
+    d.rectangle((0, 0, W2, H2), fill=(*BG, int(232 * k)))
+    d.text((90 * SS, (y - 260) * SS), kicker, font=font(30, "Bold"), fill=(*YEL, int(255 * k)), anchor="lm")
+    d.text((90 * SS, (y - 205) * SS), title, font=font(58, "Black"), fill=(*WHT, int(255 * k)), anchor="lm")
+    f = font(24, "Bold"); cw = d.textlength(chip, font=f)
+    d.rounded_rectangle((90 * SS, (y - 160) * SS, 90 * SS + cw + 40 * SS, (y - 122) * SS), radius=19 * SS, fill=(*YEL, int(235 * k)))
+    d.text((110 * SS, (y - 141) * SS), chip, font=f, fill=(*NAVY, int(255 * k)), anchor="lm")
+    # mini campo: 40x30 (largo en horizontal), de x=110 a x=910, y de y-90 a y+410
+    X0, X1, Y0, Y1 = 110 * SS, 910 * SS, (y - 90) * SS, (y + 410) * SS
+    kp = ease((u - .1) / .4) * k
+    d.rounded_rectangle((X0, Y0, X1, Y1), radius=14 * SS, fill=(26, 40, 34, int(250 * kp)), outline=(*WHT, int(200 * kp)), width=int(3 * SS))
+    for j in (1, 2):                                                  # pasillos (discontinuo, horizontales)
+        yy = Y0 + (Y1 - Y0) * j / 3
+        for xx in range(int(X0), int(X1), int(36 * SS)):
+            d.line((xx, yy, min(X1, xx + 18 * SS), yy), fill=(*YEL, int(150 * kp)), width=int(3 * SS))
+    gh = (Y1 - Y0) * .26
+    for gx in (X0, X1):
+        d.rectangle((gx - 10 * SS, (Y0 + Y1) / 2 - gh / 2, gx + 10 * SS, (Y0 + Y1) / 2 + gh / 2), fill=(*WHT, int(230 * kp)))
+    def P(px, py): return X0 + (X1 - X0) * px, Y0 + (Y1 - Y0) * py
+    ph = min(1.0, max(0.0, (u - .5) / 2.6))                           # 0..1: el balón cambia de pasillo y remata
+    A = [(.30, .16), (.52, .14), (.28, .50), (.55, .52), (.32, .84), (.74, .82)]
+    D = [(.66, .28), (.66, .56), (.80, .40), (.56, .34), (.58, .70)]
+    sw = ease(min(1, ph * 1.4))                                       # la defensa bascula hacia abajo
+    D = [(x, y_ + .14 * sw) for x, y_ in D]; A[5] = (.74 + .08 * ease(max(0, ph - .55) / .45), .82)
+    seq = [A[1], A[3], A[2], A[4], A[5]]; nseg = len(seq) - 1
+    s_ = min(nseg - 1e-6, ph * nseg); i = int(s_); fr = s_ - i
+    for (x, y_), col in (((.04, .5), colA), ((.96, .5), colD)):     # porteros: cada uno en su portería
+        cx, cy = P(x, y_); d.ellipse((cx - 16 * SS, cy - 16 * SS, cx + 16 * SS, cy + 16 * SS), fill=(*col, int(255 * kp)), outline=(*WHT, int(255 * kp)), width=int(3 * SS))
+    for a_, b_ in zip(seq[:i + 1], seq[1:i + 2]):                     # pases ya dados
+        e = 1.0 if (a_, b_) != (seq[i], seq[i + 1]) else fr
+        pa, pb = P(*a_), P(*b_); pm = (pa[0] + (pb[0] - pa[0]) * e, pa[1] + (pb[1] - pa[1]) * e)
+        d.line((pa, pm), fill=(*YEL, int(230 * kp)), width=int(5 * SS))
+    for x, y_ in D:
+        cx, cy = P(x, y_); d.ellipse((cx - 20 * SS, cy - 20 * SS, cx + 20 * SS, cy + 20 * SS), fill=(*colD, int(255 * kp)), outline=(*NAVY, int(255 * kp)), width=int(3 * SS))
+    for x, y_ in A:
+        cx, cy = P(x, y_); d.ellipse((cx - 20 * SS, cy - 20 * SS, cx + 20 * SS, cy + 20 * SS), fill=(*colA, int(255 * kp)), outline=(*NAVY, int(255 * kp)), width=int(3 * SS))
+    if ph < 1:
+        pa, pb = P(*seq[i]), P(*seq[i + 1]); bx, by = pa[0] + (pb[0] - pa[0]) * fr, pa[1] + (pb[1] - pa[1]) * fr
+    else:
+        sh = ease(min(1, (u - 3.1) / .35)); pa, pb = P(*seq[-1]), P(.995, .5); bx, by = pa[0] + (pb[0] - pa[0]) * sh, pa[1] + (pb[1] - pa[1]) * sh
+    d.ellipse((bx - 11 * SS, by - 11 * SS, bx + 11 * SS, by + 11 * SS), fill=(*WHT, int(255 * kp)), outline=(*NAVY, int(255 * kp)), width=int(2 * SS))
+    fr_ = font(40, "Black")
+    for j, txt in enumerate(rows):
+        a = ease((u - .6 - j * .55) / .35) * k
+        if a <= .02: continue
+        yy = (y + 480 + j * 66) * SS; x = 110 * SS
+        d.ellipse((x, yy - 9 * SS, x + 18 * SS, yy + 9 * SS), fill=(*YEL, int(255 * a)))
+        x += 40 * SS; on = False
+        for w in txt.split():
+            st = w.startswith("*"); en = w.rstrip(".,:;").endswith("*"); on = on or st
+            pw = w.replace("*", "") + " "
+            d.text((x, yy), pw, font=fr_, fill=(*(YEL if on else WHT), int(255 * a)), anchor="lm"); x += d.textlength(pw, font=fr_)
+            if en: on = False
