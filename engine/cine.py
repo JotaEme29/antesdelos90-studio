@@ -1,4 +1,4 @@
-"""Estilo 'cine' (v3.9, con modo pizarra): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
+"""Estilo 'cine' (v3.10, con modo pizarra y cota de distancia entre líneas): cámara 3D que se mueve entre planos, campo oscuro, jugadores en 3D con nombre,
 titular que cambia en cada bloque, subtítulos que entran palabra a palabra y efectos de sonido.
 Inspirado en lo que funciona en los canales grandes de táctica (planos cambiantes, historia real con nombres,
 gancho provocador), no en una plantilla fija."""
@@ -864,3 +864,85 @@ def question_top(b, t, t0, l1, l2, kicker=None, top=250):
         f = font(58, "Black"); yy = (top + 50 + 66 * j) * SS
         d.text((W2 / 2 + 3 * SS, yy + 4 * SS), txt, font=f, fill=(0, 0, 0, int(170 * k)), anchor="mm")
         d.text((W2 / 2, yy), txt, font=f, fill=(*col, int(255 * k)), anchor="mm")
+
+# ------------------------------------------------------------------ mejora visual (v3.10, semana 23–29 nov)
+def gap(b, cam, x, z0, z1, col=(255, 204, 0), a=1.0, label=None, grow=1.0, label_z=None):
+    """distancia entre líneas: una cota vertical (línea con topes en z0 y z1) a la altura x, que se estira con 'grow'
+    (0..1) y una etiqueta corta al lado (HUECO, JUNTOS); con label_z, la etiqueta va a esa altura, pegada a la cota
+    (para no taparse con jugadores). Para que se vea de un vistazo si un bloque está largo o corto,
+    sin flechas ni zonas extra encima de los jugadores."""
+    if a <= .02: return
+    zz = z0 + (z1 - z0) * max(0.0, min(1.0, grow))
+    d = ImageDraw.Draw(b, "RGBA"); p, q = cam.P(x, z0)[:2], cam.P(x, zz)[:2]
+    d.line((p, q), fill=(0, 0, 0, int(120 * a)), width=int(11 * SS))
+    d.line((p, q), fill=(*col, int(250 * a)), width=int(6 * SS))
+    for (px, py), ok in ((p, True), (q, grow >= .98)):
+        if ok: d.line((px - 22 * SS, py, px + 22 * SS, py), fill=(*col, int(250 * a)), width=int(6 * SS))
+    if label and grow >= .6:
+        k = a * ease((grow - .6) / .4); mx, my = (p[0] + q[0]) / 2, (p[1] + q[1]) / 2
+        f = font(36, "Black"); tw = d.textlength(label, font=f); x0 = mx + 26 * SS
+        if label_z is not None: mx, my = cam.P(x, label_z)[:2]; x0 = max(40 * SS, mx - 18 * SS)
+        if x0 + tw + 40 * SS > W2 - 150 * SS: x0 = mx - 26 * SS - tw - 36 * SS      # nunca en la columna de iconos
+        d.rounded_rectangle((x0, my - 28 * SS, x0 + tw + 36 * SS, my + 28 * SS), radius=12 * SS, fill=(*col, int(245 * k)))
+        d.text((x0 + 18 * SS, my), label, font=f, fill=(*NAVY, int(255 * k)), anchor="lm")
+
+def drillboard_press(b, t, t0, t1, kicker, title, rows, colA, colD, chip="Propuesta de entrenador", y=520):
+    """'Antes de los 90' para tareas de PRESIÓN: mini campo en tres FRANJAS (a lo largo). El equipo que presiona (colA)
+    empieza estirado por las tres franjas, se junta en las dos de arriba (se ilumina la zona válida), roba y remata.
+    Debajo, las reglas caen una a una (como drillboard)."""
+    if not (t0 <= t < t1): return
+    d = ImageDraw.Draw(b, "RGBA"); k = ease((t - t0) / .35) * (1 - ease((t - t1 + .3) / .3)); u = t - t0
+    d.rectangle((0, 0, W2, H2), fill=(*BG, int(232 * k)))
+    d.text((90 * SS, (y - 260) * SS), kicker, font=font(30, "Bold"), fill=(*YEL, int(255 * k)), anchor="lm")
+    d.text((90 * SS, (y - 205) * SS), title, font=font(58, "Black"), fill=(*WHT, int(255 * k)), anchor="lm")
+    f = font(24, "Bold"); cw = d.textlength(chip, font=f)
+    d.rounded_rectangle((90 * SS, (y - 160) * SS, 90 * SS + cw + 40 * SS, (y - 122) * SS), radius=19 * SS, fill=(*YEL, int(235 * k)))
+    d.text((110 * SS, (y - 141) * SS), chip, font=f, fill=(*NAVY, int(255 * k)), anchor="lm")
+    X0, X1, Y0, Y1 = 110 * SS, 910 * SS, (y - 90) * SS, (y + 410) * SS
+    def P(px, py): return X0 + (X1 - X0) * px, Y0 + (Y1 - Y0) * py
+    kp = ease((u - .1) / .4) * k
+    d.rounded_rectangle((X0, Y0, X1, Y1), radius=14 * SS, fill=(26, 40, 34, int(250 * kp)), outline=(*WHT, int(200 * kp)), width=int(3 * SS))
+    ph = min(1.0, max(0.0, (u - .6) / 2.4))                            # 0..1: se junta, roba y remata
+    jn = ease(min(1, ph / .45))                                       # se junta
+    if jn > .05:                                                      # zona válida: las dos franjas de arriba
+        lay = Image.new("RGBA", b.size, (0, 0, 0, 0))
+        ImageDraw.Draw(lay).rectangle((P(1 / 3, 0)[0], Y0 + 3 * SS, X1 - 3 * SS, Y1 - 3 * SS), fill=(*YEL, int(46 * kp * jn)))
+        ImageDraw.Draw(lay).rectangle((P(2 / 3, 0)[0], Y0 + 3 * SS, X1 - 3 * SS, Y1 - 3 * SS), fill=(*YEL, int(40 * kp * jn)))
+        b.alpha_composite(lay); d = ImageDraw.Draw(b, "RGBA")
+        d.text((P(5 / 6, 0)[0], Y0 + 34 * SS), "ROBO = x2", font=font(30, "Black"), fill=(*YEL, int(255 * kp * jn)), anchor="mm")
+    for j in (1, 2):                                                  # franjas (discontinuo, verticales)
+        xx = X0 + (X1 - X0) * j / 3
+        for yy in range(int(Y0), int(Y1), int(36 * SS)):
+            d.line((xx, yy, xx, min(Y1, yy + 18 * SS)), fill=(*YEL, int(150 * kp)), width=int(3 * SS))
+    gh = (Y1 - Y0) * .26
+    for gx in (X0, X1):
+        d.rectangle((gx - 10 * SS, (Y0 + Y1) / 2 - gh / 2, gx + 10 * SS, (Y0 + Y1) / 2 + gh / 2), fill=(*WHT, int(230 * kp)))
+    A0 = [(.16, .30), (.16, .70), (.42, .22), (.42, .78), (.62, .40), (.66, .62)]      # estirado
+    A1 = [(.44, .30), (.44, .70), (.60, .22), (.62, .76), (.80, .42), (.82, .60)]      # junto, arriba
+    A = [lerp2(p, q, jn) for p, q in zip(A0, A1)]
+    D = [(.90, .34), (.90, .66), (.76, .18), (.74, .82), (.66, .50), (.56, .30)]
+    rob = ease(min(1, max(0, ph - .45) / .2)); shot = ease(min(1, max(0, ph - .7) / .3))
+    bx, by = P(*lerp2((.90, .66), (.82, .60), rob)); 
+    if shot > 0: bx, by = P(*lerp2((.82, .60), (.995, .5), shot))
+    for (x, y_), col in (((.04, .5), colA), ((.96, .5), colD)):
+        cx, cy = P(x, y_); d.ellipse((cx - 16 * SS, cy - 16 * SS, cx + 16 * SS, cy + 16 * SS), fill=(*col, int(255 * kp)), outline=(*WHT, int(255 * kp)), width=int(3 * SS))
+    for x, y_ in D:
+        cx, cy = P(x, y_); d.ellipse((cx - 20 * SS, cy - 20 * SS, cx + 20 * SS, cy + 20 * SS), fill=(*colD, int(255 * kp)), outline=(*NAVY, int(255 * kp)), width=int(3 * SS))
+    for x, y_ in A:
+        cx, cy = P(x, y_); d.ellipse((cx - 20 * SS, cy - 20 * SS, cx + 20 * SS, cy + 20 * SS), fill=(*colA, int(255 * kp)), outline=(*NAVY, int(255 * kp)), width=int(3 * SS))
+    d.ellipse((bx - 11 * SS, by - 11 * SS, bx + 11 * SS, by + 11 * SS), fill=(*WHT, int(255 * kp)), outline=(*NAVY, int(255 * kp)), width=int(2 * SS))
+    if .45 < ph < .75:
+        cx, cy = P(.84, .62); r = (16 + 40 * (ph - .45) / .3) * SS
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=(*YEL, int(230 * kp * (1 - (ph - .45) / .3))), width=int(4 * SS))
+    fr_ = font(40, "Black")
+    for j, txt in enumerate(rows):
+        a = ease((u - .6 - j * .55) / .35) * k
+        if a <= .02: continue
+        yy = (y + 480 + j * 66) * SS; x = 110 * SS
+        d.ellipse((x, yy - 9 * SS, x + 18 * SS, yy + 9 * SS), fill=(*YEL, int(255 * a)))
+        x += 40 * SS; on = False
+        for w in txt.split():
+            st = w.startswith("*"); en = w.rstrip(".,:;").endswith("*"); on = on or st
+            pw = w.replace("*", "") + " "
+            d.text((x, yy), pw, font=fr_, fill=(*(YEL if on else WHT), int(255 * a)), anchor="lm"); x += d.textlength(pw, font=fr_)
+            if en: on = False
